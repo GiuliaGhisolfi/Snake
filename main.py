@@ -2,4 +2,8 @@
 
 # 
 
+# cose
+
 print('yolo guys')
+
+# aggiunto in fine
