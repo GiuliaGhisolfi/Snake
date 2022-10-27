@@ -6,6 +6,7 @@ from snake import *
 from food import Food
 
 
+
 pygame.init()
 x_chessboard = 40
 y_chessboard = 34
@@ -15,8 +16,9 @@ window = pygame.display.set_mode(bounds)
 pygame.display.set_caption("Snake")
 block_size = x_pixel/x_chessboard
 
-snake = Snake(block_size, bounds, (0,190,80), x_chessboard, y_chessboard)
-bot = Snake(block_size, bounds, (0,0,155), x_chessboard, y_chessboard)
+block_size = 20 ## se si aumenta si rompe e non prende più le mele a meno che non si cambino anche le dimensioni del body dello snake
+## le dimensioni devono essere coerenti!!
+snake = Snake(block_size, bounds)
 food = Food(block_size,bounds)
 font = pygame.font.SysFont('comicsans',60, True)
 
@@ -83,3 +85,4 @@ while run:
   bot.draw(pygame, window)
   food.draw(pygame, window)
   pygame.display.update()
+
