@@ -3,10 +3,12 @@ from snake import *
 from food import Food
 
 
+
 pygame.init()
 bounds = (700,700) ## dimensioni scacchiera
 window = pygame.display.set_mode(bounds)
 pygame.display.set_caption("Snake")
+
 
 block_size = 20 ## se si aumenta si rompe e non prende più le mele a meno che non si cambino anche le dimensioni del body dello snake
 ## le dimensioni devono essere coerenti!!
@@ -59,3 +61,4 @@ while run:
   snake.draw(pygame, window)
   food.draw(pygame, window)
   pygame.display.update()
+
