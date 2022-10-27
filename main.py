@@ -19,6 +19,7 @@ block_size = x_pixel/x_chessboard
 block_size = 20 ## se si aumenta si rompe e non prende più le mele a meno che non si cambino anche le dimensioni del body dello snake
 ## le dimensioni devono essere coerenti!!
 snake = Snake(block_size, bounds)
+bot =  Snake(block_size, bounds)
 food = Food(block_size,bounds)
 font = pygame.font.SysFont('comicsans',60, True)
 
