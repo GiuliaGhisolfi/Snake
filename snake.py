@@ -81,6 +81,7 @@ class Snake:
 
 
   def check_tail_collision(self):
+    #TODO: questa funzione si può ottimizzare mettendola in check_adversarial_collision(self, self)
     head = self.body[-1]
     has_eaten_tail = False
 
@@ -91,6 +92,14 @@ class Snake:
         has_eaten_tail = True
 
     return has_eaten_tail
+  
+  def check_adversarial_collision(self, adversarial):
+    head = self.body[-1]
+    for i in range(len(adversarial.body)):
+      segment = adversarial.body[i]
+      if head[0] == segment[0] and head[1] == segment[1]:
+        return True
+    return False
 
 
   def check_bounds(self):
