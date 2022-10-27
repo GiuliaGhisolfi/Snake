@@ -5,22 +5,19 @@ from snake import *
 from food import Food
 
 
-
 pygame.init()
-x_chessboard = 40
-y_chessboard = 34 #per cambiare griglia di gioco cambio questa
+x_chessboard = 20
+y_chessboard = 20 #per cambiare griglia di gioco cambio questa
 x_pixel = 700-(700%x_chessboard)
 bounds = (x_pixel,x_pixel*y_chessboard/x_chessboard)
 window = pygame.display.set_mode(bounds)
 pygame.display.set_caption("Snake")
 block_size = x_pixel/x_chessboard
 
-block_size = 20 ## se si aumenta si rompe e non prende più le mele a meno che non si cambino anche le dimensioni del body dello snake
-## le dimensioni devono essere coerenti!!
 snake = Snake(block_size, bounds, (0,190,80), x_chessboard, y_chessboard)
 bot =  Snake(block_size, bounds, (0, 0, 255), x_chessboard, y_chessboard)
 food = Food(block_size,bounds)
-font = pygame.font.SysFont('comicsans',60, True)
+font = pygame.font.SysFont('Arial',60, True)
 
 run = True
 while run:
@@ -35,7 +32,6 @@ while run:
   #### QUA AGGIORNA LE DIREZIONI IN BASE AI COMANDI DELL'UTENTE ####
   # direzione snake in base ai comandi  
   keys = pygame.key.get_pressed()
-  
   # check: se non ho dato indicazioni diverse dalla direzione corrente o opposta, aggiorno la direzione
   if keys[pygame.K_LEFT]: #K_direction è una lista di istruzioni di default di pygame
     snake.steer(Direction.LEFT)
@@ -50,7 +46,6 @@ while run:
        
   snake.move() # mi muovo in base alle direzioni date prima
   snake.check_for_food(food)
-  
   keys_bot = randrange(0,4)
   if keys_bot == 0:
     bot.steer(Direction.LEFT)
@@ -64,23 +59,25 @@ while run:
   bot.check_for_food(food)
   
   ## quando tocco i bordi -> perdo
-  if snake.check_bounds() == True or snake.check_tail_collision() == True or \
-    bot.check_bounds() == True or bot.check_tail_collision() == True:
-      if snake.check_bounds() == True or snake.check_tail_collision() == True:
-        text = font.render('Game Over', True, (255,0,100))
-      else:
-        text = font.render('Win', True, (255,0,100))
-  
-      window.blit(text, (180,270))
+  if snake.check_bounds() or snake.check_tail_collision() or snake.check_adversarial_collision(bot) or \
+    bot.check_bounds() or bot.check_tail_collision() or bot.check_adversarial_collision(snake):
+      if snake.check_adversarial_collision(bot) and bot.check_adversarial_collision(snake) == True:
+        text = font.render('DRAW', True, (255,0,100)) # se le due teste si sovrappongono
+        window.blit(text, (250,270))  
+      elif snake.check_bounds() or snake.check_tail_collision() or snake.check_adversarial_collision(bot):
+        text = font.render('GAME OVER', True, (255,0,100))
+        window.blit(text, (180,270))     
+      elif bot.check_bounds() or bot.check_tail_collision() or bot.check_adversarial_collision(snake):
+        text = font.render('WIN', True, (255,0,100))
+        window.blit(text, (270,270))   
+      
       pygame.display.update()
       pygame.time.delay(700) ## tempo tra game over e nuova partita
       snake.respawn(x_chessboard, y_chessboard)
       bot.respawn(x_chessboard, y_chessboard)
       food.respawn()
-  
-  ## background  
-  window.fill((0,0,0))  ## bianco
-  ## nero (0,0,0)
+    
+  window.fill((0,0,0)) ## background  
   snake.draw(pygame, window)
   bot.draw(pygame, window)
   food.draw(pygame, window)
