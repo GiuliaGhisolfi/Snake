@@ -8,7 +8,7 @@ from food import Food
 
 pygame.init()
 x_chessboard = 40
-y_chessboard = 34
+y_chessboard = 34 #per cambiare griglia di gioco cambio questa
 x_pixel = 700-(700%x_chessboard)
 bounds = (x_pixel,x_pixel*y_chessboard/x_chessboard)
 window = pygame.display.set_mode(bounds)
