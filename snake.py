@@ -1,4 +1,5 @@
 from enum import Enum
+from random import random, randrange
 
 class Direction(Enum):
   UP = 0
@@ -12,19 +13,24 @@ class Snake:
   direction = None
   body = None
   block_size = None
-  color = (0,190,80)
+  #color = (0,190,80)
   bounds = None
 
 
-  def __init__(self, block_size, bounds):
+  def __init__(self, block_size, bounds, color, x_chessboard, y_chessboard):
     self.block_size = block_size
     self.bounds = bounds
-    self.respawn()
+    self.color = color
+    self.respawn(x_chessboard, y_chessboard)
 
 
-  def respawn(self):
+  def respawn(self, x_chessboard, y_chessboard):
     self.length = 3
-    self.body = [(20,20),(20,40),(20,60)]
+    # partono tutti gli snake nella stessa posizione
+    x_number = randrange(4, x_chessboard-4)
+    y_number = randrange(4, y_chessboard-4)
+    self.body = [(x_number*self.block_size,y_number*self.block_size), \
+                 (x_number*self.block_size,(y_number+1)*self.block_size),(x_number*self.block_size,(y_number+2)*self.block_size)]
     self.direction = Direction.DOWN
 
 

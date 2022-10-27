@@ -1,21 +1,19 @@
 import random
+from typing_extensions import Self
 
 class Food:
     block_size = None
     color = (255,0,0) 
     ## verde: (0,255,0)
-    
-    x = 120;
-    y = 80; ## posizione iniziale food
-    ## posizione deve essere multiplo di 20 (per coerenza con dimensioni snake)
-    ## bisogna randomizzare anche questa (?)
-    
+    x = None
+    y = None
     bouds = None
 
 
     def __init__(self, block_size, bounds):
         self.block_size = block_size
         self.bounds = bounds
+        self.respawn()
 
 
     def draw(self, game, window):
