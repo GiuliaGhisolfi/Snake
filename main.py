@@ -1,14 +1,64 @@
-#main vuoto
+import pygame
+from snake import *
+from food import Food
 
-# 
 
 
-print('yolo guys')
-print('prova ancora una volta')
+pygame.init()
+bounds = (700,700) ## dimensioni scacchiera
+window = pygame.display.set_mode(bounds)
+pygame.display.set_caption("Snake")
 
-# cose
 
-print('yolo guys')
+block_size = 20 ## se si aumenta si rompe e non prende più le mele a meno che non si cambino anche le dimensioni del body dello snake
+## le dimensioni devono essere coerenti!!
+snake = Snake(block_size, bounds)
+food = Food(block_size,bounds)
+font = pygame.font.SysFont('comicsans',60, True)
 
-# aggiunto in fine
+run = True
+while run:
+  pygame.time.delay(100) ##tempo tra un frame e il successivo (in millisecondi)
+  
+  for event in pygame.event.get():
+    if event.type == pygame.QUIT:
+      run = False
+  
+  
+  ##################################################################
+  #### QUA AGGIORNA LE DIREZIONI IN BASE AI COMANDI DELL'UTENTE ####
+  
+  # direzione snake in base ai comandi  
+  keys = pygame.key.get_pressed()
+  
+  # check: se non ho dato indicazioni diverse dalla direzione corrente o opposta, aggiorno la direzione
+  if keys[pygame.K_LEFT]: #K_direction è una lista di istruzioni di default di pygame
+    snake.steer(Direction.LEFT)
+  elif keys[pygame.K_RIGHT]:
+    snake.steer(Direction.RIGHT)
+  elif keys[pygame.K_UP]:
+    snake.steer(Direction.UP)
+  elif keys[pygame.K_DOWN]:
+    snake.steer(Direction.DOWN)
+  ##################################################################
+  ##################################################################
+        
+  snake.move() # mi muovo in base alle direzioni date prima
+  snake.check_for_food(food)
+  
+  ## quando tocco i bordi -> perdo
+  if snake.check_bounds() == True or snake.check_tail_collision() == True:
+    text = font.render('Game Over', True, (255,0,100))
+    window.blit(text, (180,270))
+    pygame.display.update()
+    pygame.time.delay(700) ## tempo tra game over e nuova partita
+    snake.respawn()
+    food.respawn()
+  
+  ## background  
+  window.fill((0,0,0))  ## bianco
+  ## nero (0,0,0)
+  snake.draw(pygame, window)
+  food.draw(pygame, window)
+  pygame.display.update()
 
