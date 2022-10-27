@@ -1,7 +1,6 @@
 from math import floor
 from random import random, randrange
 import pygame
-from torch import rand
 from snake import *
 from food import Food
 
@@ -18,8 +17,8 @@ block_size = x_pixel/x_chessboard
 
 block_size = 20 ## se si aumenta si rompe e non prende più le mele a meno che non si cambino anche le dimensioni del body dello snake
 ## le dimensioni devono essere coerenti!!
-snake = Snake(block_size, bounds)
-bot =  Snake(block_size, bounds)
+snake = Snake(block_size, bounds, (0,190,80), x_chessboard, y_chessboard)
+bot =  Snake(block_size, bounds, (0, 0, 255), x_chessboard, y_chessboard)
 food = Food(block_size,bounds)
 font = pygame.font.SysFont('comicsans',60, True)
 

@@ -1,5 +1,4 @@
 import random
-from typing_extensions import Self
 
 class Food:
     block_size = None
