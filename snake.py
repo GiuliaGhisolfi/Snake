@@ -10,10 +10,11 @@ class Direction(Enum):
 
 class Snake:
 
-  def __init__(self, block_size, bounds, color, x_chessboard, y_chessboard):
+  def __init__(self, block_size, bounds, color, x_chessboard, y_chessboard, player):
     self.block_size = block_size
     self.bounds = bounds
     self.color = color
+    self.player = player
     self.x_chessboard = x_chessboard
     self.y_chessboard = y_chessboard
     self.respawn()
@@ -21,17 +22,20 @@ class Snake:
 
   def respawn(self):
     self.length = 3
-    # partono tutti gli snake nella stessa posizione
-    x_number = randrange(4, self.x_chessboard-4)
-    y_number = randrange(4, self.y_chessboard-4)
-    self.body = [(x_number*self.block_size,y_number*self.block_size), \
-                 (x_number*self.block_size,(y_number+1)*self.block_size),(x_number*self.block_size,(y_number+2)*self.block_size)]
-    self.direction = Direction.DOWN
+    if self.player == "user":
+      self.body = [(3*self.block_size,2*self.block_size), \
+                  (3*self.block_size,3*self.block_size),(3*self.block_size,4*self.block_size)]
+      self.direction = Direction.DOWN
+    if self.player == "agent":
+      self.body = [((self.x_chessboard-4)*self.block_size,(self.y_chessboard-4)*self.block_size), \
+                  ((self.x_chessboard-4)*self.block_size,(self.y_chessboard-5)*self.block_size), \
+                  ((self.x_chessboard-4)*self.block_size,(self.y_chessboard-6)*self.block_size)]
+      self.direction = Direction.UP
 
 
   def draw(self, game, window):
     for segment in self.body:
-      game.draw.rect(window, self.color, (segment[0],segment[1],self.block_size, self.block_size))
+      game.draw.rect(window, self.color, (segment[0], segment[1], self.block_size, self.block_size))
 
 
   def move(self, keys):
@@ -44,10 +48,10 @@ class Snake:
     elif keys == 3:
       self.steer(Direction.RIGHT)
     
-    curr_head = self.body[-1] ## def. testa di questa iterazione
+    curr_head = self.body[-1]
     if self.direction == Direction.DOWN:
       next_head = (curr_head[0], curr_head[1] + self.block_size)
-      self.body.append(next_head) ## aggiungo la testa nuova
+      self.body.append(next_head)
     elif self.direction == Direction.UP:
       next_head = (curr_head[0], curr_head[1] - self.block_size)
       self.body.append(next_head)
@@ -63,7 +67,6 @@ class Snake:
 
 
   def steer(self, direction):
-    # controlla che io abbia dato un indicazione coerente
     if self.direction == Direction.DOWN and direction != Direction.UP:
       self.direction = direction
     elif self.direction == Direction.UP and direction != Direction.DOWN:
@@ -77,18 +80,17 @@ class Snake:
   def eat(self):
     self.length += 1
 
-  def check_for_food(self, food):
+  def check_for_food(self, food, snake_body, bot_body):
     head = self.body[-1]
     if head[0] == food.x and head[1] == food.y:
-      self.eat() ## allunga snake quando mangia
-      food.respawn() ## fa riapparire mele in una posizione random
+      self.eat()
+      food.respawn(snake_body, bot_body)
 
 
   def check_tail_collision(self):
     head = self.body[-1]
     for i in range(len(self.body) - 1):
       segment = self.body[i]
-      ## controllo se le cordinate della testa è nella stessa posizione del corpo
       if head[0] == segment[0] and head[1] == segment[1]:
         return True
     return False
@@ -103,7 +105,6 @@ class Snake:
 
 
   def check_bounds(self):
-    ## cotrollo che le coordinate della testa siano interne alla griglia di gioco
     head = self.body[-1]
     if head[0] >= self.bounds[0]:
       return True
