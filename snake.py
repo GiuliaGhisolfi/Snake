@@ -9,25 +9,21 @@ class Direction(Enum):
 
 
 class Snake:
-  length = None
-  direction = None
-  body = None
-  block_size = None
-  bounds = None
-
 
   def __init__(self, block_size, bounds, color, x_chessboard, y_chessboard):
     self.block_size = block_size
     self.bounds = bounds
     self.color = color
-    self.respawn(x_chessboard, y_chessboard)
+    self.x_chessboard = x_chessboard
+    self.y_chessboard = y_chessboard
+    self.respawn()
 
 
-  def respawn(self, x_chessboard, y_chessboard):
+  def respawn(self):
     self.length = 3
     # partono tutti gli snake nella stessa posizione
-    x_number = randrange(4, x_chessboard-4)
-    y_number = randrange(4, y_chessboard-4)
+    x_number = randrange(4, self.x_chessboard-4)
+    y_number = randrange(4, self.y_chessboard-4)
     self.body = [(x_number*self.block_size,y_number*self.block_size), \
                  (x_number*self.block_size,(y_number+1)*self.block_size),(x_number*self.block_size,(y_number+2)*self.block_size)]
     self.direction = Direction.DOWN
@@ -38,8 +34,16 @@ class Snake:
       game.draw.rect(window, self.color, (segment[0],segment[1],self.block_size, self.block_size))
 
 
-  def move(self):
-    # definisco dove mi muovo in base ai comandi
+  def move(self, keys):
+    if keys == 0:
+      self.steer(Direction.UP)
+    elif keys == 1:
+      self.steer(Direction.DOWN)
+    elif keys == 2:
+      self.steer(Direction.LEFT)
+    elif keys == 3:
+      self.steer(Direction.RIGHT)
+    
     curr_head = self.body[-1] ## def. testa di questa iterazione
     if self.direction == Direction.DOWN:
       next_head = (curr_head[0], curr_head[1] + self.block_size)
@@ -82,15 +86,20 @@ class Snake:
 
   def check_tail_collision(self):
     head = self.body[-1]
-    has_eaten_tail = False
-
     for i in range(len(self.body) - 1):
       segment = self.body[i]
       ## controllo se le cordinate della testa è nella stessa posizione del corpo
       if head[0] == segment[0] and head[1] == segment[1]:
-        has_eaten_tail = True
-
-    return has_eaten_tail
+        return True
+    return False
+  
+  def check_adversarial_collision(self, adversarial):
+    head = self.body[-1]
+    for i in range(len(adversarial.body)):
+      segment = adversarial.body[i]
+      if head[0] == segment[0] and head[1] == segment[1]:
+        return True
+    return False
 
 
   def check_bounds(self):

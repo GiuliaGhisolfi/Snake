@@ -1,13 +1,8 @@
 import random
 
 class Food:
-    block_size = None
     color = (255,0,0) 
     ## verde: (0,255,0)
-    x = None
-    y = None
-    bouds = None
-
 
     def __init__(self, block_size, bounds):
         self.block_size = block_size
