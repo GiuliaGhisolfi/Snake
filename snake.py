@@ -1,36 +1,25 @@
-from enum import Enum
-from random import random, randrange
-
-class Direction(Enum):
-  UP = 0
-  DOWN = 1
-  LEFT = 2
-  RIGHT = 3
-
+from directions import Directions
 
 class Snake:
 
-  def __init__(self, block_size, bounds, color, x_chessboard, y_chessboard, player):
+  def __init__(self, block_size, bounds, color, player):
     self.block_size = block_size
     self.bounds = bounds
     self.color = color
     self.player = player
-    self.x_chessboard = x_chessboard
-    self.y_chessboard = y_chessboard
-    self.respawn()
 
 
-  def respawn(self):
+  def respawn(self, x_chessboard, y_chessboard):
     self.length = 3
     if self.player == "user":
       self.body = [(3*self.block_size,2*self.block_size), \
                   (3*self.block_size,3*self.block_size),(3*self.block_size,4*self.block_size)]
-      self.direction = Direction.DOWN
+      self.direction = Directions.DOWN
     if self.player == "agent":
-      self.body = [((self.x_chessboard-4)*self.block_size,(self.y_chessboard-4)*self.block_size), \
-                  ((self.x_chessboard-4)*self.block_size,(self.y_chessboard-5)*self.block_size), \
-                  ((self.x_chessboard-4)*self.block_size,(self.y_chessboard-6)*self.block_size)]
-      self.direction = Direction.UP
+      self.body = [((x_chessboard-4)*self.block_size,(y_chessboard-4)*self.block_size), \
+                  ((x_chessboard-4)*self.block_size,(y_chessboard-5)*self.block_size), \
+                  ((x_chessboard-4)*self.block_size,(y_chessboard-6)*self.block_size)]
+      self.direction = Directions.UP
 
 
   def draw(self, game, window):
@@ -38,27 +27,20 @@ class Snake:
       game.draw.rect(window, self.color, (segment[0], segment[1], self.block_size, self.block_size))
 
 
-  def move(self, keys):
-    if keys == 0:
-      self.steer(Direction.UP)
-    elif keys == 1:
-      self.steer(Direction.DOWN)
-    elif keys == 2:
-      self.steer(Direction.LEFT)
-    elif keys == 3:
-      self.steer(Direction.RIGHT)
+  def move(self, direction):
+    self.steer(direction)
     
     curr_head = self.body[-1]
-    if self.direction == Direction.DOWN:
+    if self.direction == Directions.DOWN:
       next_head = (curr_head[0], curr_head[1] + self.block_size)
       self.body.append(next_head)
-    elif self.direction == Direction.UP:
+    elif self.direction == Directions.UP:
       next_head = (curr_head[0], curr_head[1] - self.block_size)
       self.body.append(next_head)
-    elif self.direction == Direction.RIGHT:
+    elif self.direction == Directions.RIGHT:
       next_head = (curr_head[0] + self.block_size, curr_head[1])
       self.body.append(next_head)
-    elif self.direction == Direction.LEFT:
+    elif self.direction == Directions.LEFT:
       next_head = (curr_head[0] - self.block_size, curr_head[1])
       self.body.append(next_head)
 
@@ -67,13 +49,15 @@ class Snake:
 
 
   def steer(self, direction):
-    if self.direction == Direction.DOWN and direction != Direction.UP:
+    if direction == None:
+      return
+    if self.direction == Directions.DOWN and direction != Directions.UP:
       self.direction = direction
-    elif self.direction == Direction.UP and direction != Direction.DOWN:
+    elif self.direction == Directions.UP and direction != Directions.DOWN:
       self.direction = direction
-    elif self.direction == Direction.LEFT and direction != Direction.RIGHT:
+    elif self.direction == Directions.LEFT and direction != Directions.RIGHT:
       self.direction = direction
-    elif self.direction == Direction.RIGHT and direction != Direction.LEFT:
+    elif self.direction == Directions.RIGHT and direction != Directions.LEFT:
       self.direction = direction
 
 

@@ -1,14 +1,13 @@
 import random
 
 class Food:
-    color = (255,0,0) 
-
-    def __init__(self, block_size, x_chessboard, y_chessboard, snake_body, bot_body):
+    def __init__(self, color, block_size, x_chessboard, y_chessboard, snake_body, bot_body):
+        self.color = color
         self.block_size = block_size
         self.x_chessboard = x_chessboard
         self.y_chessboard = y_chessboard
         self.x_old = -1
-        self.y_old= -1
+        self.y_old = -1
         self.respawn(snake_body, bot_body)
 
 
