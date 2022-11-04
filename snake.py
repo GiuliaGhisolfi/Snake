@@ -16,11 +16,11 @@ class Snake:
         if self.start_location == "bottom-right":
             self.body = [
                 ((chessboard.x_blocks-4)*chessboard.block_size, \
-                (chessboard.y_blocks-4)*chessboard.block_size), \
+                (chessboard.y_blocks-3)*chessboard.block_size), \
                 ((chessboard.x_blocks-4)*chessboard.block_size, \
-                    (chessboard.y_blocks-5)*chessboard.block_size), \
+                    (chessboard.y_blocks-4)*chessboard.block_size), \
                 ((chessboard.x_blocks-4)*chessboard.block_size, \
-                    (chessboard.y_blocks-6)*chessboard.block_size)]
+                    (chessboard.y_blocks-5)*chessboard.block_size)]
             self.direction = Directions.UP
 
     def draw(self, game, window, chessboard):

@@ -5,7 +5,7 @@ from human_player import HumanPlayer
 from bot import Bot
 from snake import Snake
 from food import Food
-
+ 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 190, 80)
@@ -18,7 +18,7 @@ Y_BLOCKS = 25
 PLAYER_1 = "human"
 PLAYER_1_KEYS = (pygame.K_UP, pygame.K_DOWN, pygame.K_RIGHT, pygame.K_LEFT)
 PLAYER_2 = "bot"
-PLAYER_2_KEYS = (None, None, None, None) # (pygame.K_w, pygame.K_z, pygame.K_s, pygame.K_a)
+PLAYER_2_KEYS = (pygame.K_w, pygame.K_z, pygame.K_s, pygame.K_a) #(None, None, None, None)
 
 pygame.init()
 chessboard = ChessBoard(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
@@ -67,9 +67,9 @@ while run:
     steps = steps + 1
 
     if isinstance(player1, Bot):
-        pool.submit(player1.compute_next_move)
+        pool.submit(player1.compute_next_move, player1_snake, player2_snake, food, chessboard)
     if isinstance(player2, Bot):
-        pool.submit(player2.compute_next_move)
+        pool.submit(player2.compute_next_move, player2_snake, player1_snake, food, chessboard)
 
     pygame.time.delay(FRAME_DELAY)
     
@@ -102,6 +102,7 @@ while run:
         #window.fill(BLACK)
         #player1_snake.draw(pygame, window, chessboard)
         #player2_snake.draw(pygame, window, chessboard)
+        #TODO: aggiornare grafica se si mangiano, e no se sbattono contro il muro
 
         if player1_lost and player2_lost:
             text = font.render('DRAW', True, PINK)
