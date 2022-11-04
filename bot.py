@@ -31,7 +31,8 @@ class Bot(Player):
         self.block_size = chessboard.block_size
         self.x_matrix = chessboard.x_blocks
         self.y_matrix = chessboard.y_blocks
-        self.next_adversarial_position()
+        self.adversary_direction = adversary_snake.direction
+        self.next_adversary_position()
 
         if self.my_position[0] > self.food_position[0]:
             if self.left_allowed():
@@ -102,46 +103,25 @@ class Bot(Player):
         return check
 
 
-    def next_adversarial_position(self):
+    def next_adversary_position(self):
         self.next_position_snake = self.adversary_body[1:]
-        # TODO: si può ottimizzare importando la direzione attuale dell'altro snake
 
-        # destra
-        check = 1
-        for segment in self.next_position_snake:
-            if (self.adversary_position[0] + self.block_size, self.adversary_position[1]) == segment or \
-                    self.adversary_position[0] + self.block_size > self.x_matrix - self.block_size:
-                check = 0
-        if check == 1:
-            self.next_position_snake.append(
-                (self.adversary_position[0] + self.block_size, self.adversary_position[1]))
-
-        # sinistra
-        check = 1
-        for segment in self.next_position_snake:
-            if (self.adversary_position[0] - self.block_size, self.adversary_position[1]) == segment or \
-                    self.adversary_position[0] - self.block_size < 0:
-                check = 0
-        if check == 1:
-            self.next_position_snake.append(
-                (self.adversary_position[0] - self.block_size, self.adversary_position[1]))
-
-        # basso
-        check = 1
-        for segment in self.next_position_snake:
-            if (self.adversary_position[0], self.adversary_position[1] + self.block_size) == segment or \
-                    self.adversary_position[1] + self.block_size < 0:
-                check = 0
-        if check == 1:
-            self.next_position_snake.append(
-                (self.adversary_position[0], self.adversary_position[1] + self.block_size))
-
-        # alto
-        check = 1
-        for segment in self.next_position_snake:
-            if (self.adversary_position[0], self.adversary_position[1] - self.block_size) == segment or \
-                    self.adversary_position[1] - self.block_size > self.y_matrix - self.block_size:
-                check = 0
-        if check == 1:
-            self.next_position_snake.append(
-                (self.adversary_position[0], self.adversary_position[1] - self.block_size))
+        if self.adversary_direction != Directions.RIGHT or \
+            self.adversary_position[0] + self.block_size > self.x_matrix - self.block_size:
+                self.next_position_snake.append(
+                    (self.adversary_position[0] + self.block_size, self.adversary_position[1]))
+        
+        if self.adversary_direction != Directions.LEFT or \
+            self.adversary_position[0] - self.block_size < 0:
+                self.next_position_snake.append(
+                    (self.adversary_position[0] - self.block_size, self.adversary_position[1]))
+        
+        if self.adversary_direction != Directions.UP or \
+            self.adversary_position[1] - self.block_size > self.y_matrix - self.block_size:
+                self.next_position_snake.append(
+                    (self.adversary_position[0], self.adversary_position[1] - self.block_size))
+        
+        if self.adversary_direction != Directions.DOWN or \
+            self.adversary_position[1] + self.block_size < 0:
+                self.next_position_snake.append(
+                    (self.adversary_position[0], self.adversary_position[1] + self.block_size))
