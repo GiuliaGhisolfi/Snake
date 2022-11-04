@@ -91,19 +91,24 @@ while run:
         player2_snake.eat()
         food.respawn(player1_snake.body, player2_snake.body, chessboard)
 
-    player1_lost = player1_snake.check_bounds(chessboard) or \
-        player1_snake.check_tail_collision() or \
+        
+    player1_collision = player1_snake.check_tail_collision() or \
         player1_snake.check_adversarial_collision(player2_snake.body)
-    player2_lost = player2_snake.check_bounds(chessboard) or \
-        player2_snake.check_tail_collision() or \
+    player1_lost = player1_snake.check_bounds(chessboard) or \
+        player1_collision
+    
+    player2_collision =  player2_snake.check_tail_collision() or \
         player2_snake.check_adversarial_collision(player1_snake.body)
+    player2_lost = player2_snake.check_bounds(chessboard) or \
+        player2_collision
+    
+    if player1_collision or player2_collision:
+        window.fill(BLACK)
+        player1_snake.draw(pygame, window, chessboard)
+        player2_snake.draw(pygame, window, chessboard)
+        
 
     if player1_lost or player2_lost:
-        #window.fill(BLACK)
-        #player1_snake.draw(pygame, window, chessboard)
-        #player2_snake.draw(pygame, window, chessboard)
-        #TODO: aggiornare grafica se si mangiano, e no se sbattono contro il muro
-
         if player1_lost and player2_lost:
             text = font.render('DRAW', True, PINK)
             window.blit(text, (250, 270))

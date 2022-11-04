@@ -31,7 +31,6 @@ class Bot(Player):
         self.block_size = chessboard.block_size
         self.x_matrix = chessboard.x_blocks
         self.y_matrix = chessboard.y_blocks
-        check
         self.next_adversarial_position()
 
         if self.my_position[0] > self.food_position[0]:
