@@ -8,9 +8,15 @@ class Bot(Player):
         self.next_move = None
         self.lock = threading.Lock()
 
-    def compute_next_move(self, my_snake, adversary_snake, food, chessboard):
-        #move = Directions(random.randint(0, 3))
-        move = self.binary_search(my_snake, adversary_snake, food, chessboard)
+    # Se si scontrano due bot uno va sempre dritto 
+    # (se però li si fanno muovere entrambi in modo casuale funziona)
+    def compute_next_move(self, snakes, my_index, food, chessboard):
+        # move = Directions(random.randint(0, 3))
+        if len(snakes) > 1:
+            adv_index = 1 if my_index == 0 else 0
+            move = self.binary_search(snakes[my_index], snakes[adv_index], food, chessboard)
+        else: # per adesso se non c'è un avversario si muove in modo casuale
+            move = Directions(random.randint(0, 3))
         self.lock.acquire()
         self.next_move = move
         self.lock.release()
