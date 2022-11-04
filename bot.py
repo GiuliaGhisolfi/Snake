@@ -32,7 +32,7 @@ class Bot(Player):
         self.x_matrix = chessboard.x_blocks
         self.y_matrix = chessboard.y_blocks
         self.adversary_direction = adversary_snake.direction
-        self.next_adversarial_position()
+        self.next_adversary_position()
 
         if self.my_position[0] > self.food_position[0]:
             if self.left_allowed():
@@ -103,7 +103,7 @@ class Bot(Player):
         return check
 
 
-    def next_adversarial_position(self):
+    def next_adversary_position(self):
         self.next_position_snake = self.adversary_body[1:]
 
         if self.adversary_direction != Directions.RIGHT or \
