@@ -8,8 +8,6 @@ class Bot(Player):
         self.next_move = None
         self.lock = threading.Lock()
 
-    # Se si scontrano due bot uno va sempre dritto 
-    # (se però li si fanno muovere entrambi in modo casuale funziona)
     def compute_next_move(self, snakes, my_index, food, chessboard):
         # move = Directions(random.randint(0, 3))
         if len(snakes) > 1:
@@ -40,6 +38,8 @@ class Bot(Player):
         self.adversary_direction = adversary_snake.direction
         self.next_adversary_position()
 
+        # TODO: bisognerebbe mettere i controlli affinché se non posso muovermi 
+        # in una direzione ottima, mi muovo in una consentita
         if self.my_position[0] > self.food_position[0]:
             if self.left_allowed():
                 return Directions.LEFT
@@ -55,11 +55,61 @@ class Bot(Player):
         if self.my_position[1] < self.food_position[1]:
             if self.down_allowed():
                 return Directions.DOWN
+        # line 43 -> 57 ho provato a mettere questi controlli ma mi sembra che funzioni peggio
+        """if self.my_position[0] > self.food_position[0]:
+            self.possible_move_left = self.left_allowed()
+            if self.possible_move_left:
+                return Directions.LEFT
+            else:
+                self.possible_move_right = self.right_allowed
+
+        if self.my_position[0] < self.food_position[0]:
+            self.possible_move_right = self.right_allowed           
+            if self.possible_move_right:
+                return Directions.RIGHT
+            else:
+                self.possible_move_left = self.left_allowed()
+
+        if self.my_position[1] > self.food_position[1]:
+            self.possible_move_up = self.up_allowed 
+            if self.possible_move_up:
+                return Directions.UP
+            else:
+                self.possible_move_down = self.down_allowed 
+
+        if self.my_position[1] < self.food_position[1]:
+            self.possible_move_down = self.down_allowed 
+            if self.possible_move_down:
+                return Directions.DOWN
+            else:
+                self.possible_move_up = self.up_allowed 
+        
+        # se non posso muovermi in una direzione ottimale mi muovo in una direzione in cui non muoio se possibile
+        if self.my_position[0] == self.food_position[0]:
+            self.possible_move_left = self.left_allowed()
+        if self.possible_move_left:
+            return Directions.LEFT
+        
+        if self.my_position[0] == self.food_position[0]:
+            self.possible_move_right = self.right_allowed
+        if self.possible_move_right:
+            return Directions.RIGHT
+        
+        if self.my_position[1] == self.food_position[1]:
+            self.possible_move_up = self.up_allowed 
+        if self.possible_move_up:
+            return Directions.UP
+        
+        if self.my_position[1] == self.food_position[1]:
+            self.possible_move_down = self.down_allowed 
+        if self.possible_move_down:
+            return Directions.DOWN
+"""
 
 
     def left_allowed(self):
         check = 1
-        for segment in self.next_position_snake:
+        for segment in self.next_position_adversary:
             if (self.my_position[0] - self.block_size, self.my_position[1]) == segment:
                 check = 0
         for segment in self.my_body:
@@ -72,20 +122,20 @@ class Bot(Player):
 
     def right_allowed(self):
         check = 1
-        for segment in self.next_position_snake:
+        for segment in self.next_position_adversary:
             if (self.my_position[0] + self.block_size, self.my_position[1]) == segment:
                 check = 0
         for segment in self.my_body:
             if (self.my_position[0] + self.block_size, self.my_position[1]) == segment:
                 check = 0
-        if self.my_position[0] + self.block_size > self.x_matrix - self.block_size:
+        if self.my_position[0] + self.block_size > (self.x_matrix - 1) *self.block_size:
             check = 0
         return check
 
 
     def up_allowed(self):
         check = 1
-        for segment in self.next_position_snake:
+        for segment in self.next_position_adversary:
             if (self.my_position[0], self.my_position[1] - self.block_size) == segment:
                 check = 0
         for segment in self.my_body:
@@ -98,36 +148,49 @@ class Bot(Player):
 
     def down_allowed(self):
         check = 1
-        for segment in self.next_position_snake:
+        for segment in self.next_position_adversary:
             if (self.my_position[0], self.my_position[1] + self.block_size) == segment:
                 check = 0
         for segment in self.my_body:
             if (self.my_position[0], self.my_position[1] + self.block_size) == segment:
                 check = 0
-        if self.my_position[1] + self.block_size > self.y_matrix - self.block_size:
+        if self.my_position[1] + self.block_size > (self.y_matrix - 1) *self.block_size:
             check = 0
         return check
 
 
     def next_adversary_position(self):
-        self.next_position_snake = self.adversary_body[1:]
+        #TODO: aggiungere un check che non vengano salvate due volte la stessa posizione
+        # ho provato mettendo :
+        """ if self.adversary_direction != Directions.RIGHT or \
+                self.adversary_position[0] + self.block_size > self.x_matrix - self.block_size:
+                    check = 1
+                    for segment in self.next_adversary_position:
+                        if segment == (self.adversary_position[0] + self.block_size, self.adversary_position[1]):
+                            check = 0
+                            break
+                    if check == 1:
+                        self.next_position_snake.append(
+                            (self.adversary_position[0] + self.block_size, self.adversary_position[1]))"""
+        # ma non funzionava più niente e i due bot continuavano ad andare dritti
+        self.next_position_adversary = self.adversary_body[1:]
 
-        if self.adversary_direction != Directions.RIGHT or \
-            self.adversary_position[0] + self.block_size > self.x_matrix - self.block_size:
-                self.next_position_snake.append(
-                    (self.adversary_position[0] + self.block_size, self.adversary_position[1]))
-        
         if self.adversary_direction != Directions.LEFT or \
+            self.adversary_position[0] + self.block_size > (self.x_matrix - 1) *self.block_size:
+                    self.next_position_adversary.append(
+                        (self.adversary_position[0] + self.block_size, self.adversary_position[1]))
+            
+        if self.adversary_direction != Directions.RIGHT or \
             self.adversary_position[0] - self.block_size < 0:
-                self.next_position_snake.append(
+                self.next_position_adversary.append(
                     (self.adversary_position[0] - self.block_size, self.adversary_position[1]))
         
         if self.adversary_direction != Directions.UP or \
-            self.adversary_position[1] - self.block_size > self.y_matrix - self.block_size:
-                self.next_position_snake.append(
-                    (self.adversary_position[0], self.adversary_position[1] - self.block_size))
+            self.adversary_position[1] + self.block_size > (self.y_matrix - 1) *self.block_size:
+                self.next_position_adversary.append(
+                    (self.adversary_position[0], self.adversary_position[1] + self.block_size))
         
         if self.adversary_direction != Directions.DOWN or \
-            self.adversary_position[1] + self.block_size < 0:
-                self.next_position_snake.append(
-                    (self.adversary_position[0], self.adversary_position[1] + self.block_size))
+            self.adversary_position[1] - self.block_size < 0:
+                self.next_position_adversary.append(
+                    (self.adversary_position[0], self.adversary_position[1] - self.block_size))

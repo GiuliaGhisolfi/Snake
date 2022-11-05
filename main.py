@@ -12,7 +12,7 @@ GREEN = (0, 190, 80)
 BLUE = (0, 0, 255)
 PINK = (255, 0, 100)
 
-FRAME_DELAY = 200
+FRAME_DELAY = 100
 X_BLOCKS = 28
 Y_BLOCKS = 25
 
@@ -29,7 +29,7 @@ Y_BLOCKS = 25
 
 players_info = [
     {
-        "type": "human", 
+        "type": "bot", 
         "color": GREEN, 
         "start_location": "top-left", 
         "keys": {
