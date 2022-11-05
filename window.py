@@ -42,8 +42,8 @@ def VarMultiplayer():
         mb1 = Menubutton(root, text="Choose here")
         mb1.menu = Menu(mb1)
         mb1["menu"] = mb1.menu
-        mb1.menu.add_command(label="1", command= lambda: print("1"))#gioco contro bot
-        mb1.menu.add_command(label="2", command= lambda: print("2"))#giocano solo bot
+        mb1.menu.add_command(label="1", command= lambda: print("gioco contro il bot"))#fare qualcosa per giocare contro bot
+        mb1.menu.add_command(label="2", command= lambda: print("giocono solo i bot"))#fare qualcosa per giocare solo bot
         mb1.pack()
 
 root = Tk(className='Snake')
