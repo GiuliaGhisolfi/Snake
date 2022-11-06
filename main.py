@@ -136,13 +136,17 @@ while run:
             logfiles[0].write("DRAW,")
             logfiles[1].write("DRAW,")
         elif lost[0]:
-            text = font.render('GAME OVER', True, PINK) # TODO: display something like player0 lost, player1 won
-            window.blit(text, (180, 270))
+            text = font.render('GAME OVER', True, PINK)
+            window.blit(text, (180, 230))
+            text = font.render('PLAYER 1 WON', True, PINK)
+            window.blit(text, (140, 310))
             logfiles[0].write("LOST,")
             logfiles[1].write("WIN,")
         elif lost[1]:
-            text = font.render('WIN', True, PINK) # TODO: display something like player0 won, player1 lost
-            window.blit(text, (270, 270))
+            text = font.render('GAME OVER', True, PINK)
+            window.blit(text, (180, 230))
+            text = font.render('PLAYER 0 WON', True, PINK)
+            window.blit(text, (140, 310))
             logfiles[0].write("WIN,")
             logfiles[1].write("LOST,")
     else:
@@ -153,7 +157,7 @@ while run:
 
     if end:
         pygame.display.update()
-        pygame.time.delay(700)
+        pygame.time.delay(1000)
         for i in range(len(snakes)):
             logfiles[i].write("%s,%s\n"%(snakes[i].length, steps))
             snakes[i].respawn(chessboard)

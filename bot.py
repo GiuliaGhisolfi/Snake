@@ -160,37 +160,28 @@ class Bot(Player):
 
 
     def next_adversary_position(self):
-        #TODO: aggiungere un check che non vengano salvate due volte la stessa posizione
-        # ho provato mettendo :
-        """ if self.adversary_direction != Directions.RIGHT or \
-                self.adversary_position[0] + self.block_size > self.x_matrix - self.block_size:
-                    check = 1
-                    for segment in self.next_adversary_position:
-                        if segment == (self.adversary_position[0] + self.block_size, self.adversary_position[1]):
-                            check = 0
-                            break
-                    if check == 1:
-                        self.next_position_snake.append(
-                            (self.adversary_position[0] + self.block_size, self.adversary_position[1]))"""
-        # ma non funzionava più niente e i due bot continuavano ad andare dritti
         self.next_position_adversary = self.adversary_body[1:]
-
-        if self.adversary_direction != Directions.LEFT or \
-            self.adversary_position[0] + self.block_size > (self.x_matrix - 1) *self.block_size:
+        
+        if (self.adversary_position[0] + self.block_size, self.adversary_position[1]) not in self.next_position_adversary:
+            if self.adversary_direction != Directions.LEFT or \
+                self.adversary_position[0] + self.block_size > (self.x_matrix - 1) *self.block_size:
+                        self.next_position_adversary.append(
+                            (self.adversary_position[0] + self.block_size, self.adversary_position[1]))
+        
+        if (self.adversary_position[0] - self.block_size, self.adversary_position[1]) not in self.next_position_adversary:  
+            if self.adversary_direction != Directions.RIGHT or \
+                self.adversary_position[0] - self.block_size < 0:
                     self.next_position_adversary.append(
-                        (self.adversary_position[0] + self.block_size, self.adversary_position[1]))
-            
-        if self.adversary_direction != Directions.RIGHT or \
-            self.adversary_position[0] - self.block_size < 0:
-                self.next_position_adversary.append(
-                    (self.adversary_position[0] - self.block_size, self.adversary_position[1]))
+                        (self.adversary_position[0] - self.block_size, self.adversary_position[1]))
         
-        if self.adversary_direction != Directions.UP or \
-            self.adversary_position[1] + self.block_size > (self.y_matrix - 1) *self.block_size:
-                self.next_position_adversary.append(
-                    (self.adversary_position[0], self.adversary_position[1] + self.block_size))
+        if (self.adversary_position[0], self.adversary_position[1] + self.block_size) not in self.next_position_adversary:     
+            if self.adversary_direction != Directions.UP or \
+                self.adversary_position[1] + self.block_size > (self.y_matrix - 1) *self.block_size:
+                    self.next_position_adversary.append(
+                        (self.adversary_position[0], self.adversary_position[1] + self.block_size))
         
-        if self.adversary_direction != Directions.DOWN or \
-            self.adversary_position[1] - self.block_size < 0:
-                self.next_position_adversary.append(
-                    (self.adversary_position[0], self.adversary_position[1] - self.block_size))
+        if (self.adversary_position[0], self.adversary_position[1] - self.block_size) not in self.next_position_adversary:    
+            if self.adversary_direction != Directions.DOWN or \
+                self.adversary_position[1] - self.block_size < 0:
+                    self.next_position_adversary.append(
+                        (self.adversary_position[0], self.adversary_position[1] - self.block_size))
