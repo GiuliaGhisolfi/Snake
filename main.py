@@ -2,7 +2,7 @@ import pygame
 from concurrent.futures import ThreadPoolExecutor
 from chessboard import ChessBoard
 from human_player import HumanPlayer
-from bot import Bot
+from bot import Bot_two_players
 from snake import Snake
 from food import Food
 
@@ -72,7 +72,7 @@ for i in range(len(players_info)):
             right_key=players_info[i]["keys"]["right"], 
             left_key=players_info[i]["keys"]["left"])
     else:
-        player = Bot(chessboard)
+        player = Bot_two_players(chessboard)
         num_threads = num_threads + 1
     players.append(player)
 
@@ -99,7 +99,7 @@ while run:
 
     tasks = []
     for i in range(len(players)):
-        if isinstance(players[i], Bot):
+        if isinstance(players[i], Bot_two_players):
             task = pool.submit(players[i].compute_next_move, snakes, i, food)
             tasks.append(task)
 

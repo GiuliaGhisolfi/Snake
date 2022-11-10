@@ -74,7 +74,7 @@ def cell2direction(grid_position, x_curr, y_curr, bsize):
         else:
             return Directions.DOWN
 
-class Bot(Player):
+class Bot_two_players(Player):
     def __init__(self, chessboard):
         self.next_move = None
         self.lock = threading.Lock()
