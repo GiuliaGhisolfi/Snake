@@ -1,20 +1,123 @@
 import threading
 import random
+import copy
 from directions import Directions
 from player import Player
+from search import *
+
+# TODO: define a subclass of Problem e.g. GridProblem with an appropriate h
+
+def build_grid(r, c):
+    grid = {}
+    grid["(0,0)"]={"(0,1)":1, "(1,0)":1}
+    grid["(0,%d)"%(c-1)]={"(1,%d)"%(c-1):1, "(0,%d)"%(c-2):1}
+    grid["(%d,0)"%(r-1)]={"(%d,0)"%(r-2):1, "(%d,1)"%(r-1):1}
+    grid["(%d,%d)"%((r-1),(c-1))]={
+        "(%d,%d)"%((r-2),(c-1)):1, 
+        "(%d,%d)"%((r-1),(c-2)):1}
+
+    for i in range(c-2):
+        grid["(0,%d)"%(i+1)]={
+            "(0,%d)"%(i+2):1, 
+            "(1,%d)"%(i+1):1, 
+            "(0,%d)"%i:1}
+        grid["(%d,%d)"%((r-1),(i+1))]={
+            "(%d,%d)"%((r-2),(i+1)):1, 
+            "(%d,%d)"%((r-1),(i+2)):1, 
+            "(%d,%d)"%((r-1),i):1}
+
+    for i in range(r-2):
+        grid["(%d,0)"%(i+1)]={
+            "(%d,0)"%i:1, 
+            "(%d,1)"%(i+1):1, 
+            "(%d,0)"%(i+2):1}
+        grid["(%d,%d)"%((i+1),(c-1))]={
+            "(%d,%d)"%(i,(c-1)):1, 
+            "(%d,%d)"%((i+2),(c-1)):1, 
+            "(%d,%d)"%((i+1),(c-2)):1}
+
+    for i in range(r-2):
+        for j in range(c-2):
+            grid["(%d,%d)"%((i+1),(j+1))]={
+                "(%d,%d)"%((i),(j+1)):1, 
+                "(%d,%d)"%((i+1),(j+2)):1,
+                "(%d,%d)"%((i+2),(j+1)):1, 
+                "(%d,%d)"%((i+1),(j)):1
+            }
+    return grid
+
+def build_locations(r, c):
+    locations = {}
+    for i in range(r):
+        for j in range(c):
+            locations["(%d,%d)"%(i,j)]=(i,j)
+    return locations
+
+def delete_cell(grid, del_key):
+    grid.pop(del_key, None)
+    for key in grid.keys():
+        grid[key].pop(del_key, None)
+
+def coordinates2cell(x, y, bsize):
+    return "(%d,%d)"%(x/bsize, y/bsize)
+
+def cell2direction(grid_position, x_curr, y_curr, bsize):
+        positions = grid_position[1:-1].split(',')
+        x_new = int(positions[0])*bsize
+        y_new = int(positions[1])*bsize
+        if x_new > x_curr:
+            return Directions.RIGHT
+        elif x_new < x_curr:
+            return Directions.LEFT
+        elif y_new < y_curr:
+            return Directions.UP
+        else:
+            return Directions.DOWN
 
 class Bot(Player):
-    def __init__(self):
+    def __init__(self, chessboard):
         self.next_move = None
         self.lock = threading.Lock()
+        self.chessboard = chessboard
+        self.grid = build_grid(chessboard.x_blocks, chessboard.y_blocks)
+        self.locations = build_locations(chessboard.x_blocks, chessboard.y_blocks)
 
-    def compute_next_move(self, snakes, my_index, food, chessboard):
-        # move = Directions(random.randint(0, 3))
+    def compute_next_move(self, snakes, my_index, food):
+        my_snake = snakes[my_index]
+        my_head = my_snake.body[-1]
+        bsize = self.chessboard.block_size
+        grid = copy.deepcopy(self.grid)
+        two_players = False
         if len(snakes) > 1:
+            two_players = True
             adv_index = 1 if my_index == 0 else 0
-            move = self.binary_search(snakes[my_index], snakes[adv_index], food, chessboard)
-        else: # per adesso se non c'è un avversario si muove in modo casuale
-            move = Directions(random.randint(0, 3))
+            adv_snake = snakes[adv_index]
+        
+        # Update the grid
+        for i in range(len(my_snake.body)-1):
+            segment = my_snake.body[i]
+            key = coordinates2cell(segment[0], segment[1], bsize)
+            delete_cell(grid, key)
+        if two_players:
+            for i in range(len(adv_snake.body)):
+                segment = adv_snake.body[i]
+                key = coordinates2cell(segment[0], segment[1], bsize)
+                delete_cell(grid, key)
+        
+        # Compute the optimal path to the food
+        # TODO: avoid computing it each time from scratch
+        graph = Graph(grid)
+        graph.locations = self.locations
+        start = coordinates2cell(my_head[0], my_head[1], bsize)
+        goal = coordinates2cell(food.x, food.y, bsize)
+        grid_problem = GraphProblem(start, goal, graph)
+        node = astar_search(grid_problem) # default h = euclidean distance, Manhattan distance is better...
+        move = None
+        if node != None:
+            move = cell2direction(node.solution()[0], my_head[0], my_head[1], bsize)
+        # else: TODO:
+        #   move = non fatal move
+
         self.lock.acquire()
         self.next_move = move
         self.lock.release()
@@ -24,164 +127,3 @@ class Bot(Player):
         move = self.next_move
         self.lock.release()
         return move
-
-
-    def binary_search(self, my_snake, adversary_snake, food, chessboard):
-        self.my_position = my_snake.body[-1]
-        self.my_body = my_snake.body
-        self.adversary_position = adversary_snake.body[-1]
-        self.adversary_body = adversary_snake.body
-        self.food_position = (food.x, food.y)
-        self.block_size = chessboard.block_size
-        self.x_matrix = chessboard.x_blocks
-        self.y_matrix = chessboard.y_blocks
-        self.adversary_direction = adversary_snake.direction
-        self.next_adversary_position()
-
-        # TODO: bisognerebbe mettere i controlli affinché se non posso muovermi 
-        # in una direzione ottima, mi muovo in una consentita
-        if self.my_position[0] > self.food_position[0]:
-            if self.left_allowed():
-                return Directions.LEFT
-
-        if self.my_position[0] < self.food_position[0]:
-            if self.right_allowed():
-                return Directions.RIGHT
-
-        if self.my_position[1] > self.food_position[1]:
-            if self.up_allowed():
-                return Directions.UP
-
-        if self.my_position[1] < self.food_position[1]:
-            if self.down_allowed():
-                return Directions.DOWN
-        # line 43 -> 57 ho provato a mettere questi controlli ma mi sembra che funzioni peggio
-        """if self.my_position[0] > self.food_position[0]:
-            self.possible_move_left = self.left_allowed()
-            if self.possible_move_left:
-                return Directions.LEFT
-            else:
-                self.possible_move_right = self.right_allowed
-
-        if self.my_position[0] < self.food_position[0]:
-            self.possible_move_right = self.right_allowed           
-            if self.possible_move_right:
-                return Directions.RIGHT
-            else:
-                self.possible_move_left = self.left_allowed()
-
-        if self.my_position[1] > self.food_position[1]:
-            self.possible_move_up = self.up_allowed 
-            if self.possible_move_up:
-                return Directions.UP
-            else:
-                self.possible_move_down = self.down_allowed 
-
-        if self.my_position[1] < self.food_position[1]:
-            self.possible_move_down = self.down_allowed 
-            if self.possible_move_down:
-                return Directions.DOWN
-            else:
-                self.possible_move_up = self.up_allowed 
-        
-        # se non posso muovermi in una direzione ottimale mi muovo in una direzione in cui non muoio se possibile
-        if self.my_position[0] == self.food_position[0]:
-            self.possible_move_left = self.left_allowed()
-        if self.possible_move_left:
-            return Directions.LEFT
-        
-        if self.my_position[0] == self.food_position[0]:
-            self.possible_move_right = self.right_allowed
-        if self.possible_move_right:
-            return Directions.RIGHT
-        
-        if self.my_position[1] == self.food_position[1]:
-            self.possible_move_up = self.up_allowed 
-        if self.possible_move_up:
-            return Directions.UP
-        
-        if self.my_position[1] == self.food_position[1]:
-            self.possible_move_down = self.down_allowed 
-        if self.possible_move_down:
-            return Directions.DOWN
-"""
-
-
-    def left_allowed(self):
-        check = 1
-        for segment in self.next_position_adversary:
-            if (self.my_position[0] - self.block_size, self.my_position[1]) == segment:
-                check = 0
-        for segment in self.my_body:
-            if (self.my_position[0] - self.block_size, self.my_position[1]) == segment:
-                check = 0
-        if self.my_position[0] - self.block_size < 0:
-            check = 0
-        return check
-
-
-    def right_allowed(self):
-        check = 1
-        for segment in self.next_position_adversary:
-            if (self.my_position[0] + self.block_size, self.my_position[1]) == segment:
-                check = 0
-        for segment in self.my_body:
-            if (self.my_position[0] + self.block_size, self.my_position[1]) == segment:
-                check = 0
-        if self.my_position[0] + self.block_size > (self.x_matrix - 1) *self.block_size:
-            check = 0
-        return check
-
-
-    def up_allowed(self):
-        check = 1
-        for segment in self.next_position_adversary:
-            if (self.my_position[0], self.my_position[1] - self.block_size) == segment:
-                check = 0
-        for segment in self.my_body:
-            if (self.my_position[0], self.my_position[1] - self.block_size) == segment:
-                check = 0
-        if self.my_position[1] - self.block_size < 0:
-            check = 0
-        return check
-
-
-    def down_allowed(self):
-        check = 1
-        for segment in self.next_position_adversary:
-            if (self.my_position[0], self.my_position[1] + self.block_size) == segment:
-                check = 0
-        for segment in self.my_body:
-            if (self.my_position[0], self.my_position[1] + self.block_size) == segment:
-                check = 0
-        if self.my_position[1] + self.block_size > (self.y_matrix - 1) *self.block_size:
-            check = 0
-        return check
-
-
-    def next_adversary_position(self):
-        self.next_position_adversary = self.adversary_body[1:]
-        
-        if (self.adversary_position[0] + self.block_size, self.adversary_position[1]) not in self.next_position_adversary:
-            if self.adversary_direction != Directions.LEFT or \
-                self.adversary_position[0] + self.block_size > (self.x_matrix - 1) *self.block_size:
-                        self.next_position_adversary.append(
-                            (self.adversary_position[0] + self.block_size, self.adversary_position[1]))
-        
-        if (self.adversary_position[0] - self.block_size, self.adversary_position[1]) not in self.next_position_adversary:  
-            if self.adversary_direction != Directions.RIGHT or \
-                self.adversary_position[0] - self.block_size < 0:
-                    self.next_position_adversary.append(
-                        (self.adversary_position[0] - self.block_size, self.adversary_position[1]))
-        
-        if (self.adversary_position[0], self.adversary_position[1] + self.block_size) not in self.next_position_adversary:     
-            if self.adversary_direction != Directions.UP or \
-                self.adversary_position[1] + self.block_size > (self.y_matrix - 1) *self.block_size:
-                    self.next_position_adversary.append(
-                        (self.adversary_position[0], self.adversary_position[1] + self.block_size))
-        
-        if (self.adversary_position[0], self.adversary_position[1] - self.block_size) not in self.next_position_adversary:    
-            if self.adversary_direction != Directions.DOWN or \
-                self.adversary_position[1] - self.block_size < 0:
-                    self.next_position_adversary.append(
-                        (self.adversary_position[0], self.adversary_position[1] - self.block_size))
