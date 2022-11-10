@@ -12,9 +12,9 @@ GREEN = (0, 190, 80)
 BLUE = (0, 0, 255)
 PINK = (255, 0, 100)
 
-FRAME_DELAY = 500
-X_BLOCKS = 7 #28
-Y_BLOCKS = 7 #25
+FRAME_DELAY = 200
+X_BLOCKS = 28
+Y_BLOCKS = 25
 
 # TODO:
 # All'avvio del gioco bisognerebbe creare una finestra e richiedere se si vuole 
@@ -38,10 +38,8 @@ players_info = [
             "right": pygame.K_RIGHT, 
             "left": pygame.K_LEFT
             }
-    }
-]
-
-""",{
+    },
+    {
         "type": "bot", 
         "color": BLUE, 
         "start_location": "bottom-right", 
@@ -51,7 +49,8 @@ players_info = [
             "right": pygame.K_RIGHT, 
             "left": pygame.K_LEFT
             }
-    }"""
+    }
+]
 
 pygame.init()
 chessboard = ChessBoard(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
@@ -146,13 +145,17 @@ while run:
             logfiles[0].write("DRAW,")
             logfiles[1].write("DRAW,")
         elif lost[0]:
-            text = font.render('GAME OVER', True, PINK) # TODO: display something like player0 lost, player1 won
-            window.blit(text, (180, 270))
+            text = font.render('GAME OVER', True, PINK)
+            window.blit(text, (180, 230))
+            text = font.render('PLAYER 1 WON', True, PINK)
+            window.blit(text, (140, 310))
             logfiles[0].write("LOST,")
             logfiles[1].write("WIN,")
         elif lost[1]:
-            text = font.render('WIN', True, PINK) # TODO: display something like player0 won, player1 lost
-            window.blit(text, (270, 270))
+            text = font.render('GAME OVER', True, PINK)
+            window.blit(text, (180, 230))
+            text = font.render('PLAYER 1 WON', True, PINK)
+            window.blit(text, (140, 310))
             logfiles[0].write("WIN,")
             logfiles[1].write("LOST,")
     else:
