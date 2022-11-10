@@ -10,39 +10,20 @@ class Food:
         game.draw.rect(
             window,
             self.color,
-            (self.x, self.y, chessboard.block_size, chessboard.block_size))
+            (self.x+1, self.y+1, chessboard.block_size-2, chessboard.block_size-2))
 
-    def respawn(self, snake_body, bot_body, chessboard):
+    def is_overlapped(self, x, y, snakes):
+        for i in range(len(snakes)):
+            for segment in snakes[i].body:
+                if segment[0] == x and segment[1] == y:
+                    return True
+        return False
+
+    def respawn(self, snakes, chessboard):
         while True:
-            overlap = False
             x_new = randint(1, chessboard.x_blocks-2)*chessboard.block_size
-            for segment in snake_body:
-                if segment[0] == x_new:
-                    overlap = True
-                    break
-            if overlap:
-                continue
-            for segment in bot_body:
-                if segment[0] == x_new:
-                    overlap = True
-                    break
-            if x_new != self.x and not overlap:
-                break
-        self.x = x_new
-
-        while True:
-            overlap = False
             y_new = randint(1, chessboard.y_blocks-2)*chessboard.block_size
-            for segment in snake_body:
-                if segment[1] == y_new:
-                    overlap = True
-                    break
-            if overlap:
-                continue
-            for segment in bot_body:
-                if segment[1] == y_new:
-                    overlap = True
-                    break
-            if y_new != self.y and not overlap:
+            if y_new != self.y and x_new != self.x and not self.is_overlapped(x_new, y_new, snakes):
+                self.x = x_new
+                self.y = y_new
                 break
-        self.y = y_new
