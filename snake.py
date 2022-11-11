@@ -4,6 +4,10 @@ class Snake:
     def __init__(self, color=(0, 190, 80), start_location="top-left"):
         self.color = color
         self.start_location = start_location
+
+
+        # TODO: use this variable to memorize the body
+        self.body = list() # first tail, last head
     
     def respawn(self, chessboard):
         self.length = 3

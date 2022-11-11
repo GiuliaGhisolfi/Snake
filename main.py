@@ -12,7 +12,7 @@ GREEN = (0, 190, 80)
 BLUE = (0, 0, 255)
 PINK = (255, 0, 100)
 
-FRAME_DELAY = 200
+FRAME_DELAY = 25
 X_BLOCKS = 28
 Y_BLOCKS = 25
 
@@ -32,17 +32,6 @@ players_info = [
         "type": "bot", 
         "color": GREEN, 
         "start_location": "top-left", 
-        "keys": {
-            "up": pygame.K_UP, 
-            "down": pygame.K_DOWN, 
-            "right": pygame.K_RIGHT, 
-            "left": pygame.K_LEFT
-            }
-    },
-    {
-        "type": "bot", 
-        "color": BLUE, 
-        "start_location": "bottom-right", 
         "keys": {
             "up": pygame.K_UP, 
             "down": pygame.K_DOWN, 
