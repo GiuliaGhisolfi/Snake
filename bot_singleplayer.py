@@ -3,7 +3,7 @@ from directions import Directions
 from player import Player
 from search import *
 
-import chessboard
+import grid
 import snake
 
 def delete_cell(grid, del_key):
@@ -41,15 +41,15 @@ def graphDir_to_gameDir(head_pos, target_pos):
 
 class Bot_singleplayer(Player):
     # input anche lo snake
-    def __init__(self, chessboard: chessboard.ChessBoard, snake:snake.Snake):
+    def __init__(self, grid: grid.Grid, snake:snake.Snake):
         self.lock = threading.Lock()
 
-        self.chessboard = chessboard
+        self.grid = grid
         self.snake = snake
 
 
-        graph = Graph(self.chessboard.grid) 
-        graph.locations = self.chessboard.locations
+        graph = Graph(self.grid.grid) 
+        graph.locations = self.grid.locations
 
         # definiamo il percorso default da seguire come un ciclo testa-coda-testa (siamo piccini non ci schiantiamo)
         start = snake.body[-1] # errore fino a quando snake non viene aggiornato
@@ -67,7 +67,7 @@ class Bot_singleplayer(Player):
     def compute_next_move(self, snakes, my_index, food):
         my_snake = snakes[my_index]
         my_head = my_snake.body[-1]
-        bsize = self.chessboard.block_size
+        bsize = self.grid.block_size
         grid = copy.deepcopy(self.grid)
         two_players = False
         if len(snakes) > 1:
