@@ -2,6 +2,9 @@ from random import randint
 
 class Food:
     def __init__(self, color):
+
+        # nodo corrispondente alla posizione della mela, da implementare!!!
+        self.position = '(-1,-1)'
         self.color = color
         self.x = -1
         self.y = -1
