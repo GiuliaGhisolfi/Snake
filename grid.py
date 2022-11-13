@@ -10,7 +10,7 @@ class Grid:
         self.build_grid()
 
     def build_grid(self):
-        self.grid = {}
+        self.grid = {} #immutabile
         self.grid["(0,0)"] = {"(0,1)": 1, "(1,0)": 1}
         self.grid["(0,%d)" % (self.y_blocks-1)] = {"(1,%d)" % (self.y_blocks-1): 1, "(0,%d)" % (self.y_blocks-2): 1}
         self.grid["(%d,0)" % (self.x_blocks-1)] = {"(%d,0)" % (self.x_blocks-2): 1, "(%d,1)" % (self.x_blocks-1): 1}
