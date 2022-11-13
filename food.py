@@ -1,29 +1,44 @@
 from random import randint
-
+import threading
 class Food:
     def __init__(self, color):
         self.color = color
-        self.x = -1
-        self.y = -1
+        self.position = []
 
-    def draw(self, game, window, chessboard):
+    def draw(self, game, window, grid):
+        [x,y] = self.integer_from_string(grid)
         game.draw.rect(
             window,
             self.color,
-            (self.x+1, self.y+1, chessboard.block_size-2, chessboard.block_size-2))
+            (x+1, y+1, grid.block_size-2, grid.block_size-2))
+        
+    def integer_from_string(self, grid):
+        node = self.position[0]
+        chars = ['(', ')']
+        node = node.translate(str.maketrans({ord(char): '' for char in chars}))
+        node = node.split(',')
+        for i in range(2):
+            node[i] = int(node[i])
+        return [int(node[0])*grid.block_size, int(node[1])*grid.block_size]
 
-    def is_overlapped(self, x, y, snakes):
+    def is_overlapped(self, position, snakes):
         for i in range(len(snakes)):
             for segment in snakes[i].body:
-                if segment[0] == x and segment[1] == y:
+                if segment == position:
                     return True
         return False
 
-    def respawn(self, snakes, chessboard):
+    def respawn(self, snakes, grid):
         while True:
-            x_new = randint(1, chessboard.x_blocks-2)*chessboard.block_size
-            y_new = randint(1, chessboard.y_blocks-2)*chessboard.block_size
-            if y_new != self.y and x_new != self.x and not self.is_overlapped(x_new, y_new, snakes):
-                self.x = x_new
-                self.y = y_new
+            x_new = randint(1, grid.x_blocks-2)
+            y_new = randint(1, grid.y_blocks-2)
+            
+            new_position = "(%d,%d)" % (x_new, y_new)
+            if [new_position] != self.position and not self.is_overlapped(new_position, snakes):
+                self.position = [new_position]
                 break
+
+    def get_positions(self):
+
+        pos = self.position
+        return pos
