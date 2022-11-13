@@ -1,9 +1,11 @@
 from random import randint
-
+import threading
 class Food:
     def __init__(self, color):
         self.color = color
         self.position = []
+
+        self.lock = threading.Lock()
 
     def draw(self, game, window, grid):
         [x,y] = self.integer_from_string(grid)
@@ -32,7 +34,18 @@ class Food:
         while True:
             x_new = randint(1, grid.x_blocks-2)
             y_new = randint(1, grid.y_blocks-2)
-            new_position = ["(%d,%d)" % (x_new, y_new)]
-            if new_position != self.position and not self.is_overlapped(new_position, snakes):
-                self.position = new_position
-                break
+            
+            self.lock.acquire()
+            try:
+                new_position = ["(%d,%d)" % (x_new, y_new)]
+                if new_position != self.position and not self.is_overlapped(new_position, snakes):
+                    self.position = new_position
+                    break
+            finally: self.lock.release()
+
+    def get_positions(self):
+        self.lock.acquire()
+        try:
+            pos = self.position
+        finally: self.lock.release()
+        return pos
