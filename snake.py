@@ -4,47 +4,69 @@ class Snake:
     def __init__(self, color=(0, 190, 80), start_location="top-left"):
         self.color = color
         self.start_location = start_location
-    
-    def respawn(self, chessboard):
+
+    def respawn(self, grid):
         self.length = 3
         if self.start_location == "top-left":
-            self.body = [
-                (3*chessboard.block_size, 2*chessboard.block_size), \
-                (3*chessboard.block_size, 3*chessboard.block_size), \
-                (3*chessboard.block_size, 4*chessboard.block_size)]
+            self.body = ["(3,2)",
+                         "(3,3)",
+                         "(3,4)"]
             self.direction = Directions.DOWN
         if self.start_location == "bottom-right":
-            self.body = [
-                ((chessboard.x_blocks-4)*chessboard.block_size, \
-                (chessboard.y_blocks-4)*chessboard.block_size), \
-                ((chessboard.x_blocks-4)*chessboard.block_size, \
-                    (chessboard.y_blocks-5)*chessboard.block_size), \
-                ((chessboard.x_blocks-4)*chessboard.block_size, \
-                    (chessboard.y_blocks-6)*chessboard.block_size)]
+            self.body = ["(%d,%d)" % ((grid.x_blocks-4), (grid.y_blocks-4)),
+                         "(%d,%d)" % ((grid.x_blocks-4),
+                                      (grid.y_blocks-5)),
+                         "(%d,%d)" % ((grid.x_blocks-4), (grid.y_blocks-6))]
             self.direction = Directions.UP
 
-    def draw(self, game, window, chessboard):
-        bsize = chessboard.block_size
-        head = self.body[-1]
-        tail = self.body[0]
+    def coordinate_from_nodes(self, node_list, grid):
+        chars = ['(', ')']
+        body_coord = []
+        for node in node_list:
+            node = node.translate(str.maketrans({ord(char): '' for char in chars}))
+            node = node.split(',')
+            for i in range(2):
+                node[i] = int(node[i])
+            body_coord[len(body_coord):] = [( int(node[0])*grid.block_size, int(node[1])*grid.block_size )]
+        return body_coord
+
+    def integer_from_string(self, node):
+        chars = ['(', ')']
+        node = node.translate(str.maketrans({ord(char): '' for char in chars}))
+        node = node.split(',')
+        for i in range(2):
+            node[i] = int(node[i])
+        return [int(node[0]), int(node[1])]
+
+    def draw(self, game, window, grid):
+        body_coord = self.coordinate_from_nodes(self.body, grid)
+        bsize = grid.block_size
+        head = body_coord[-1]
+        tail = body_coord[0]
+        
         # Draw tail
-        game.draw.rect(window, self.color, (tail[0]+1, tail[1]+1, bsize-2, bsize-2))
-        prev = (self.body[0][0], self.body[0][1])
+        game.draw.rect(window, self.color,
+                       (tail[0]+1, tail[1]+1, bsize-2, bsize-2))
+        prev = (body_coord[0][0], body_coord[0][1])
         # Draw the rest of the body
-        for segment in self.body[1:]:
+        for segment in body_coord[1:]:
             if segment[0] > prev[0]:
-                game.draw.rect(window, self.color, (segment[0]-1, segment[1]+1, bsize, bsize-2))
+                game.draw.rect(window, self.color,
+                               (segment[0]-1, segment[1]+1, bsize, bsize-2))
             elif segment[0] < prev[0]:
-                game.draw.rect(window, self.color, (segment[0]+1, segment[1]+1, bsize, bsize-2))
+                game.draw.rect(window, self.color,
+                               (segment[0]+1, segment[1]+1, bsize, bsize-2))
             elif segment[1] > prev[1]:
-                game.draw.rect(window, self.color, (segment[0]+1, segment[1]-1, bsize-2, bsize))
+                game.draw.rect(window, self.color,
+                               (segment[0]+1, segment[1]-1, bsize-2, bsize))
             elif segment[1] < prev[1]:
-                game.draw.rect(window, self.color, (segment[0]+1, segment[1]+1, bsize-2, bsize))
+                game.draw.rect(window, self.color,
+                               (segment[0]+1, segment[1]+1, bsize-2, bsize))
             prev = (segment[0], segment[1])
         # Draw eyes
         black = (0, 0, 0)
         eye_size = bsize/6
-        if self.direction == Directions.UP or self.direction == Directions.DOWN :
+        if self.direction == Directions.UP or self.direction == Directions.DOWN:
             eye1_x = head[0]+1/3*bsize-eye_size/2
             eye2_x = head[0]+2/3*bsize-eye_size/2
             eye1_y = eye2_y = head[1]+1/2*bsize-eye_size/2
@@ -54,23 +76,23 @@ class Snake:
             eye2_y = head[1]+2/3*bsize-eye_size/2
         game.draw.rect(window, black, (eye1_x, eye1_y, eye_size, eye_size))
         game.draw.rect(window, black, (eye2_x, eye2_y, eye_size, eye_size))
-    
-    def move(self, direction, chessboard):
-        self.__steer(direction)
 
+    def move(self, direction):
+        self.__steer(direction)
         curr_head = self.body[-1]
+        [x, y] = self.integer_from_string(curr_head)
+
         if self.direction == Directions.DOWN:
-            next_head = (curr_head[0], curr_head[1] + chessboard.block_size)
-            self.body.append(next_head)
+            y = y + 1
         elif self.direction == Directions.UP:
-            next_head = (curr_head[0], curr_head[1] - chessboard.block_size)
-            self.body.append(next_head)
+            y = y - 1
         elif self.direction == Directions.RIGHT:
-            next_head = (curr_head[0] + chessboard.block_size, curr_head[1])
-            self.body.append(next_head)
+            x = x + 1
         elif self.direction == Directions.LEFT:
-            next_head = (curr_head[0] - chessboard.block_size, curr_head[1])
-            self.body.append(next_head)
+            x = x - 1
+
+        next_head = "(%d,%d)" % (x, y)
+        self.body.append(next_head)
 
         if self.length < len(self.body):
             self.body.pop(0)
@@ -92,13 +114,13 @@ class Snake:
 
     def can_eat(self, food):
         head = self.body[-1]
-        return head[0] == food.x and head[1] == food.y
+        return head == food.position[0]  # confronto tra nodi
 
     def check_tail_collision(self):
         head = self.body[-1]
         for i in range(len(self.body) - 1):
             segment = self.body[i]
-            if head[0] == segment[0] and head[1] == segment[1]:
+            if head == segment:
                 return True
         return False
 
@@ -106,15 +128,12 @@ class Snake:
         head = self.body[-1]
         for i in range(len(adversarial_body)):
             segment = adversarial_body[i]
-            if head[0] == segment[0] and head[1] == segment[1]:
+            if head == segment:
                 return True
         return False
 
-    def check_bounds(self, chessboard):
+    def check_bounds(self, grid):
         head = self.body[-1]
-        if head[0] >= chessboard.bounds[0] or \
-            head[1] >= chessboard.bounds[1] or \
-            head[0] < 0 or \
-            head[1] < 0:
+        if head not in grid.grid:
             return True
         return False

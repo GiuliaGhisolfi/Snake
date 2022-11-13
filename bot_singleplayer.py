@@ -1,57 +1,10 @@
 import threading
-import random
-import copy
 from directions import Directions
 from player import Player
 from search import *
 
-# TODO: define a subclass of Problem e.g. GridProblem with an appropriate h
-
-def build_grid(r, c):
-    grid = {}
-    grid["(0,0)"]={"(0,1)":1, "(1,0)":1}
-    grid["(0,%d)"%(c-1)]={"(1,%d)"%(c-1):1, "(0,%d)"%(c-2):1}
-    grid["(%d,0)"%(r-1)]={"(%d,0)"%(r-2):1, "(%d,1)"%(r-1):1}
-    grid["(%d,%d)"%((r-1),(c-1))]={
-        "(%d,%d)"%((r-2),(c-1)):1, 
-        "(%d,%d)"%((r-1),(c-2)):1}
-
-    for i in range(c-2):
-        grid["(0,%d)"%(i+1)]={
-            "(0,%d)"%(i+2):1, 
-            "(1,%d)"%(i+1):1, 
-            "(0,%d)"%i:1}
-        grid["(%d,%d)"%((r-1),(i+1))]={
-            "(%d,%d)"%((r-2),(i+1)):1, 
-            "(%d,%d)"%((r-1),(i+2)):1, 
-            "(%d,%d)"%((r-1),i):1}
-
-    for i in range(r-2):
-        grid["(%d,0)"%(i+1)]={
-            "(%d,0)"%i:1, 
-            "(%d,1)"%(i+1):1, 
-            "(%d,0)"%(i+2):1}
-        grid["(%d,%d)"%((i+1),(c-1))]={
-            "(%d,%d)"%(i,(c-1)):1, 
-            "(%d,%d)"%((i+2),(c-1)):1, 
-            "(%d,%d)"%((i+1),(c-2)):1}
-
-    for i in range(r-2):
-        for j in range(c-2):
-            grid["(%d,%d)"%((i+1),(j+1))]={
-                "(%d,%d)"%((i),(j+1)):1, 
-                "(%d,%d)"%((i+1),(j+2)):1,
-                "(%d,%d)"%((i+2),(j+1)):1, 
-                "(%d,%d)"%((i+1),(j)):1
-            }
-    return grid
-
-def build_locations(r, c):
-    locations = {}
-    for i in range(r):
-        for j in range(c):
-            locations["(%d,%d)"%(i,j)]=(i,j)
-    return locations
+import grid
+import snake
 
 def delete_cell(grid, del_key):
     grid.pop(del_key, None)
@@ -74,18 +27,47 @@ def cell2direction(grid_position, x_curr, y_curr, bsize):
         else:
             return Directions.DOWN
 
-class Bot_two_players(Player):
-    def __init__(self, chessboard):
-        self.next_move = None
-        self.lock = threading.Lock()
-        self.chessboard = chessboard
-        self.grid = build_grid(chessboard.x_blocks, chessboard.y_blocks)
-        self.locations = build_locations(chessboard.x_blocks, chessboard.y_blocks)
+# restituisce la posizione della cella targhet rispetto alla cella head
+def graphDir_to_gameDir(head_pos, target_pos):
+    headPosList = head_pos[1:-1].split(',')
+    tagerPosList = target_pos[1:-1].split(',')
 
+    if tagerPosList[0] != headPosList[0]: # x shift
+        if tagerPosList[0] < headPosList[0]: return Directions.LEFT
+        else: return Directions.RIGHT
+    else: # y shift
+        if tagerPosList[1] < headPosList[1]: return Directions.UP
+        else: return Directions.DOWN
+
+class Bot_singleplayer(Player):
+    # input anche lo snake
+    def __init__(self, grid: grid.Grid, snake:snake.Snake):
+        self.lock = threading.Lock()
+
+        self.grid = grid
+        self.snake = snake
+
+
+        graph = Graph(self.grid.grid) 
+        graph.locations = self.grid.locations
+
+        # definiamo il percorso default da seguire come un ciclo testa-coda-testa (siamo piccini non ci schiantiamo)
+        start = snake.body[-1] # errore fino a quando snake non viene aggiornato
+        goal = snake.bosy[0]
+        grid_problem = GraphProblem(start, goal, graph)
+        computed_path = astar_search(grid_problem) # modificare con la nuova euristica
+        computed_path += snake.body[1:]
+
+        self.default_path = computed_path
+
+        # se True termina il thread
+        self.termination = False
+
+    '''
     def compute_next_move(self, snakes, my_index, food):
         my_snake = snakes[my_index]
         my_head = my_snake.body[-1]
-        bsize = self.chessboard.block_size
+        bsize = self.grid.block_size
         grid = copy.deepcopy(self.grid)
         two_players = False
         if len(snakes) > 1:
@@ -120,10 +102,20 @@ class Bot_two_players(Player):
 
         self.lock.acquire()
         self.next_move = move
-        self.lock.release()
+        self.lock.release()'''
+
+
+    # IMPLEMENTARE
+    def start(self):
+        return
+    def stop(self):
+        self.termination = True
 
     def get_next_move(self):
         self.lock.acquire()
-        move = self.next_move
+
+        move = self.default_path[0]
+        self.default_path.pop()
+        self.default_path.append(move)
         self.lock.release()
-        return move
+        return graphDir_to_gameDir(move)
