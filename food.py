@@ -5,8 +5,6 @@ class Food:
         self.color = color
         self.position = []
 
-        self.lock = threading.Lock()
-
     def draw(self, game, window, grid):
         [x,y] = self.integer_from_string(grid)
         game.draw.rect(
@@ -35,17 +33,12 @@ class Food:
             x_new = randint(1, grid.x_blocks-2)
             y_new = randint(1, grid.y_blocks-2)
             
-            self.lock.acquire()
-            try:
-                new_position = ["(%d,%d)" % (x_new, y_new)]
-                if new_position != self.position and not self.is_overlapped(new_position, snakes):
-                    self.position = new_position
-                    break
-            finally: self.lock.release()
+            new_position = "(%d,%d)" % (x_new, y_new)
+            if [new_position] != self.position and not self.is_overlapped(new_position, snakes):
+                self.position = [new_position]
+                break
 
     def get_positions(self):
-        self.lock.acquire()
-        try:
-            pos = self.position
-        finally: self.lock.release()
+
+        pos = self.position
         return pos

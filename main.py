@@ -16,9 +16,9 @@ FUXIA = (255, 0, 100)
 PINK = (255,105,180)
 
 #stat gioco
-FRAME_DELAY = 250
-X_BLOCKS = 10
-Y_BLOCKS = 10
+FRAME_DELAY = 100
+X_BLOCKS = 20
+Y_BLOCKS = 20
 
 # TODO:
 # All'avvio del gioco bisognerebbe creare una finestra e richiedere se si vuole 
@@ -358,7 +358,6 @@ def new_start():
                     players[i] = Bot_singleplayer(grid, snakes[i], food)
 
                     task = pool.submit(players[i].start)
-                    tasks.append(task)
 
             steps = 0
 
