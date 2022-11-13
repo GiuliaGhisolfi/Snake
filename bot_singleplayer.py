@@ -7,7 +7,7 @@ import copy
 import grid
 import snake
 import food
-
+from grid_problem import GridProblem
 
 def delete_cell(grid, del_key):
     grid.pop(del_key, None)
@@ -85,7 +85,7 @@ class Bot_singleplayer(Player):
         graph = Graph(dummy_g) 
         graph.locations = self.locations
 
-        grid_problem = GraphProblem(start, goal, graph)
+        grid_problem = GridProblem(start, goal, graph)
         computed_path_toFood = astar_search(grid_problem).solution() #esiste il primo, per forza
 
         #ora calcoliamo dalla mela alla coda
@@ -97,7 +97,7 @@ class Bot_singleplayer(Player):
         dummy_g = self.get_true_graph(next_pos)
         graph = Graph(dummy_g) 
         graph.locations = self.locations
-        grid_problem = GraphProblem(start, goal, graph)
+        grid_problem = GridProblem(start, goal, graph)
         computed_cicle = astar_search(grid_problem).solution() #esiste il primo, per forza
 
         self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
@@ -137,7 +137,7 @@ class Bot_singleplayer(Player):
 
                 graph = Graph(self.get_true_graph(self.snake.body))
                 graph.locations = self.locations
-                grid_problem = GraphProblem(start, goal, graph)
+                grid_problem = GridProblem(start, goal, graph)
                 search_tree = astar_search(grid_problem) #esiste il primo, per forza
                 if search_tree != None: #trovato il primo
                     computed_path_toFood = search_tree.solution() #path
@@ -151,7 +151,7 @@ class Bot_singleplayer(Player):
                     dummy_g = self.get_true_graph(next_pos)
                     graph = Graph(dummy_g) 
                     graph.locations = self.locations
-                    grid_problem = GraphProblem(start, goal, graph)
+                    grid_problem = GridProblem(start, goal, graph)
                     search_tree = astar_search(grid_problem) #esiste il primo, per forza
                     if search_tree != None: #incredibile !!! trovato anche il secondo, abbiamo finito allora
                         computed_cicle = search_tree.solution()
