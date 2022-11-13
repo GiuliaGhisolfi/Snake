@@ -23,16 +23,15 @@ def graphDir_to_gameDir(head_pos, target_pos):
     headPosList = head_pos[1:-1].split(',')
     targetPosList = target_pos[1:-1].split(',')
 
-    if targetPosList[0] < headPosList[0]:  # x shift
+    if int(targetPosList[0]) < int(headPosList[0]):  # x shift
         ret = Directions.LEFT
-    elif targetPosList[0] > headPosList[0]:
+    elif int(targetPosList[0]) > int(headPosList[0]):
         ret = Directions.RIGHT
-    elif targetPosList[1] < headPosList[1]:  # y shift
+    elif int(targetPosList[1]) < int(headPosList[1]):  # y shift
         ret = Directions.UP
     else:
         ret = Directions.DOWN
 
-    print(headPosList, targetPosList, ret, '|||', head_pos, target_pos, ret)
     return ret
 
 def build_location(grid):
@@ -43,13 +42,12 @@ def build_location(grid):
     return locations
 
 
-
 class Bot_singleplayer(Player):
     # input anche lo snake
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food):
         self.lock = threading.Lock() #per default path
         self.condition = threading.Condition(self.lock) #variabile di condizione
-        self.next_move = Directions.LEFT #random
+        self.next_move = Directions.DOWN #random
         self.grid = grid
         self.locations = build_location(self.grid.grid)
         self.snake = snake
@@ -83,9 +81,6 @@ class Bot_singleplayer(Player):
         goal = self.get_best_food()
         start = self.snake.body[-1]
 
-        print('mela ->', goal)
-        print('testa ->', start)
-
         dummy_g = self.get_true_graph(self.snake.body)
         graph = Graph(dummy_g) 
         graph.locations = self.locations
@@ -107,7 +102,7 @@ class Bot_singleplayer(Player):
 
         self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
         self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
-        
+
         move = graphDir_to_gameDir(self.snake.body[-1], self.path_to_food[0]) # la mossa è stata presa, aggiorniamo
         self.path_to_food.pop(0)
         self.lock.acquire()
@@ -140,10 +135,8 @@ class Bot_singleplayer(Player):
                 goal = self.get_best_food()
                 start = self.snake.body[-1]
 
-                print('mela ->', goal)
-                print('testa ->', start)
-
                 graph = Graph(self.get_true_graph(self.snake.body))
+                graph.locations = self.locations
                 grid_problem = GraphProblem(start, goal, graph)
                 search_tree = astar_search(grid_problem) #esiste il primo, per forza
                 if search_tree != None: #trovato il primo
@@ -165,7 +158,7 @@ class Bot_singleplayer(Player):
 
                         self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
                         self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
-                        
+
                     else: #non siamo sicuri del persorso futuro, non facciamo nulla
                         continue
                 else:
@@ -177,7 +170,6 @@ class Bot_singleplayer(Player):
                     if self.next_move != None: #abbiamo fatto in tempo !!!
                         move = self.path_to_food.pop(0)
                         self.next_move = graphDir_to_gameDir(self.snake.body[-1], move)
-                        print('fatto')
                         #TODO: aggiungere un meccanismo di recupero, magari aspettando un giro intero???
                     else: #siamo stati lenti, aiai
                         print('STRADA TROVATA, BOT TROPPO LENTO!!!')
