@@ -7,7 +7,7 @@ import copy
 import grid
 import snake
 import food
-from grid_problem import GridProblem
+from grid_problem import *
 
 def delete_cell(grid, del_key):
     grid.pop(del_key, None)
@@ -88,8 +88,8 @@ class Bot_singleplayer(Player):
         graph = Graph(dummy_g) 
         graph.locations = self.locations
 
-        grid_problem = GridProblem(start, goal, graph)
-        computed_path_toFood = astar_search(grid_problem).solution() #esiste il primo, per forza
+        grid_problem = GridProblem(start, False, goal, graph)
+        computed_path_toFood = astar_search_min_turns(grid_problem).solution() #esiste il primo, per forza
 
         #ora calcoliamo dalla mela alla coda
         #aggiornando il grafo con la posizione futura
@@ -100,8 +100,8 @@ class Bot_singleplayer(Player):
         dummy_g = self.get_true_graph(next_pos)
         graph = Graph(dummy_g) 
         graph.locations = self.locations
-        grid_problem = GridProblem(start, goal, graph)
-        computed_cicle = astar_search(grid_problem).solution() #esiste il primo, per forza
+        grid_problem = GridProblem(start, False, goal, graph)
+        computed_cicle = astar_search_min_turns(grid_problem).solution() #esiste il primo, per forza
 
         self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
         self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
@@ -141,8 +141,8 @@ class Bot_singleplayer(Player):
 
                 graph = Graph(self.get_true_graph(self.prec_snake_body))
                 graph.locations = self.locations
-                grid_problem = GridProblem(start, goal, graph)
-                search_tree = astar_search(grid_problem) #esiste il primo, per forza
+                grid_problem = GridProblem(start, False, goal, graph)
+                search_tree = astar_search_min_turns(grid_problem) #esiste il primo, per forza
                 if search_tree != None: #trovato il primo
                     computed_path_toFood = search_tree.solution() #path
 
@@ -155,8 +155,8 @@ class Bot_singleplayer(Player):
                     dummy_g = self.get_true_graph(next_pos)
                     graph = Graph(dummy_g) 
                     graph.locations = self.locations
-                    grid_problem = GridProblem(start, goal, graph)
-                    search_tree = astar_search(grid_problem) #esiste il primo, per forza
+                    grid_problem = GridProblem(start, False, goal, graph)
+                    search_tree = astar_search_min_turns(grid_problem) #esiste il primo, per forza
                     if search_tree != None: #incredibile !!! trovato anche il secondo, abbiamo finito allora
                         computed_cicle = search_tree.solution()
 
