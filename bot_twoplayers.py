@@ -2,6 +2,7 @@ import threading
 import random
 import copy
 from directions import Directions
+from my_a_star import My_a_star
 from player import Player
 from search import *
 
@@ -70,7 +71,8 @@ class Bot_twoplayers(Player):
         start = my_head
         goal = food.position[0]
         grid_problem = GraphProblem(start, goal, graph)
-        node = astar_search(grid_problem) # default h = euclidean distance, Manhattan distance is better...
+        my_a_star = My_a_star(grid_problem)
+        node = my_a_star.start() # A* con Manhattan Distance
         move = None
         if node != None:
             move = cell2direction(node.solution()[0], my_head)
