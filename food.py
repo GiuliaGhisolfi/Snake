@@ -1,6 +1,6 @@
 from random import randint
 import threading
-
+import copy
 
 #threadsafe
 class Food:
@@ -41,8 +41,8 @@ class Food:
         self.lock.acquire()
         try:
             while True:
-                x_new = randint(1, grid.x_blocks-2)
-                y_new = randint(1, grid.y_blocks-2)
+                x_new = randint(0, grid.x_blocks-1)
+                y_new = randint(0, grid.y_blocks-1)
                 
                 new_position = "(%d,%d)" % (x_new, y_new)
                 if [new_position] != self.position and not self.is_overlapped(new_position, snakes):
@@ -52,6 +52,7 @@ class Food:
 
     def get_positions(self):
         self.lock.acquire()
-        pos = self.position
-        self.lock.release()
+        try:
+            pos = copy.deepcopy(self.position)
+        finally: self.lock.release()
         return pos

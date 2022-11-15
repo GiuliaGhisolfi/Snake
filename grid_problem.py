@@ -10,6 +10,9 @@ GridProblem(start, False, goal, graph) con GridProblem(start, goal, graph) e
 astar_search_min_turns(grid_problem) con astar_search(grid_problem).
 """
 
+'''Magari modificare la chaiamta di inizializzazione GridProblem, spostando False alla fine dell'elenco degli
+argomenti, che mi ammazza da vedere.'''
+
 # L'euristica utilizza dai problemi istanze della classe GridProblem è la distanza di Manhattan
 class GridProblem(GraphProblem):
 
