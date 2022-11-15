@@ -5,6 +5,7 @@ from directions import Directions
 from my_a_star import My_a_star
 from player import Player
 from search import *
+from grid_problem import *
 
 # TODO: define a subclass of Problem e.g. GridProblem with an appropriate h
 
@@ -70,9 +71,8 @@ class Bot_twoplayers(Player):
         graph.locations = self.locations
         start = my_head
         goal = food.position[0]
-        grid_problem = GraphProblem(start, goal, graph)
-        my_a_star = My_a_star(grid_problem)
-        node = my_a_star.start() # A* con Manhattan Distance
+        grid_problem = GridProblem(start, False, goal, graph)
+        node = astar_search(grid_problem) # A* con Manhattan Distance
         move = None
         if node != None:
             move = cell2direction(node.solution()[0], my_head)
