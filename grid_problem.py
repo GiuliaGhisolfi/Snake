@@ -95,6 +95,9 @@ class OrientedNode(Node):
         super().__init__(state, parent, action, path_cost)
         self.horizontal_orientation = horizontal_orientation # True se il serpente lo visita muovendosi in orizzontale
         self.turn = turn # True se ha richiesto al serpente di svoltare per raggiungerlo
+    
+    def set_neighbours(self, neighbours):
+        self.neighbours = neighbours
 
     def child_node(self, problem, action):
         """[Figure 3.10]"""
@@ -129,7 +132,8 @@ def best_first_graph_search_min_turns(problem, f, t, display=False):
         return None
     f = memoize(f, 'f')
     node = OrientedNode(problem.initial, problem.horizontal_orientation)
-    frontier = PriorityQueueTies(forder='min', f=f, torder='max', t=t)
+    node.set_neighbours(len(problem.actions(node.state)))
+    frontier = PriorityQueueTies(forder='min', f=f, torder='min', t=t)
     frontier.append(node)
     explored = set()
     while frontier:
@@ -140,6 +144,7 @@ def best_first_graph_search_min_turns(problem, f, t, display=False):
             return node
         explored.add(node.state)
         for child in node.expand(problem):
+            child.set_neighbours(len(problem.actions(child.state)))
             if child.state not in explored and child not in frontier:
                 frontier.append(child)
             elif child in frontier:
@@ -155,3 +160,6 @@ def astar_search_min_turns(problem):
         lambda n: n.path_cost + h(n) + n.turn, # la f da minimizzare 
         lambda n: n.path_cost # la funzione da massimizzare nel caso in cui ci siano più nodi con pari valore di f
     )
+# Se nella f che passiamo a best_first_graph_search_min_turns sommiamo n.neighbours non individua più il cammino più breve ma quello che rimane più vicino al corpo
+# TODO: nella prima fase del gioco bisognerebbe utilizzare l'a_star classico
+# quando il serpente diventa lungo possiamo sommare alla f n.neighbours
