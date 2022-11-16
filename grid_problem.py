@@ -160,9 +160,10 @@ def astar_search_min_turns(problem):
     h = memoize(problem.h, 'h')
     return best_first_graph_search_min_turns(
         problem, 
-        lambda n: n.path_cost + h(n) + n.turn, # la f da minimizzare 
+        lambda n: n.path_cost + h(n) + n.turn + n.neighbours , # la f da minimizzare 
         lambda n: n.path_cost # la funzione da massimizzare nel caso in cui ci siano più nodi con pari valore di f
     )
-# Se nella f che passiamo a best_first_graph_search_min_turns sommiamo n.neighbours non individua più il cammino più breve ma quello che rimane più vicino al corpo
+# Se nella f che passiamo a best_first_graph_search_min_turns sommiamo n.neighbours
+#  non individua più il cammino più breve ma quello che rimane più vicino al corpo.
 # TODO: nella prima fase del gioco bisognerebbe utilizzare l'a_star classico
-# quando il serpente diventa lungo possiamo sommare alla f n.neighbours
+# quando il serpente diventa lungo possiamo sommare alla f n.neighbours.
