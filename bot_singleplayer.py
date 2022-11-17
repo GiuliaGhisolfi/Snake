@@ -91,7 +91,8 @@ class Bot_singleplayer(Player):
         
         
         grid_problem = GridProblem(start, False, goal, graph)
-        computed_path_toFood = astar_search_min_turns(grid_problem).solution() #esiste il primo, per forza
+        grid_area = self.grid.x_blocks * self.grid.y_blocks
+        computed_path_toFood = astar_search_opportunistic(grid_problem, self.snake, grid_area).solution() #esiste il primo, per forza
 
         #ora calcoliamo dalla mela alla coda
         #aggiornando il grafo con la posizione futura
@@ -103,7 +104,7 @@ class Bot_singleplayer(Player):
         graph = Graph(dummy_g) 
         graph.locations = self.locations
         grid_problem = GridProblem(start, False, goal, graph)
-        computed_cicle = astar_search_min_turns(grid_problem).solution() #esiste il primo, per forza
+        computed_cicle = astar_search_opportunistic(grid_problem, self.snake, grid_area).solution() #esiste il primo, per forza
 
         self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
         self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
@@ -123,7 +124,8 @@ class Bot_singleplayer(Player):
                 calcola = True
                 try:
                     self.condition.wait() # soltanto per capire quando controllare se default path ancora buono
-                    if self.next_move != None: print('QUALCOSA DI STRANO E\' ACCADUTO') #???? non dovrebbe
+                    if self.next_move != None:
+                        print('QUALCOSA DI STRANO E\' ACCADUTO') #???? non dovrebbe
 
                     self.prec_snake_body = self.snake.get_body()
                     
@@ -149,7 +151,7 @@ class Bot_singleplayer(Player):
                 graph = Graph(self.get_true_graph(self.prec_snake_body[:-1]))
                 graph.locations = self.locations
                 grid_problem = GridProblem(start, False, goal, graph)
-                search_tree = astar_search_min_turns(grid_problem) #esiste il primo, per forza
+                search_tree = astar_search_opportunistic(grid_problem, self.snake, grid_area) #esiste il primo, per forza
                 if search_tree != None: #trovato il primo
                     computed_path_toFood = search_tree.solution() #path
 
@@ -163,7 +165,7 @@ class Bot_singleplayer(Player):
                     graph = Graph(dummy_g) 
                     graph.locations = self.locations
                     grid_problem = GridProblem(start, False, goal, graph)
-                    search_tree = astar_search_min_turns(grid_problem) #esiste il primo, per forza
+                    search_tree = astar_search_opportunistic(grid_problem, self.snake, grid_area) #esiste il primo, per forza
                     if search_tree != None: #incredibile !!! trovato anche il secondo, abbiamo finito allora
                         computed_cicle = search_tree.solution()
 
@@ -184,7 +186,6 @@ class Bot_singleplayer(Player):
                         self.next_move = graphDir_to_gameDir(self.prec_snake_body[-1], move)
                         #TODO: aggiungere un meccanismo di recupero, magari aspettando un giro intero???
                     else: #siamo stati lenti, aiai
-                        print('STRADA TROVATA, BOT TROPPO LENTO!!!')
                         move = self.default_path.pop(0)
                         self.next_move = graphDir_to_gameDir(self.prec_snake_body[-1], move) # è un ciclo
                         self.default_path.append(move)

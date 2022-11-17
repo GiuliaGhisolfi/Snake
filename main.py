@@ -17,8 +17,8 @@ PINK = (255, 105, 180)
 
 # stat gioco
 FRAME_DELAY = 55
-X_BLOCKS = 5
-Y_BLOCKS = 5
+X_BLOCKS = 11
+Y_BLOCKS = 9
 
 # TODO:
 # All'avvio del gioco bisognerebbe creare una finestra e richiedere se si vuole
