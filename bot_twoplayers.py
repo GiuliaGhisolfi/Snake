@@ -4,6 +4,7 @@ import copy
 from directions import Directions
 from player import Player
 from search import *
+from grid_problem import *
 
 # TODO: define a subclass of Problem e.g. GridProblem with an appropriate h
 
@@ -69,8 +70,8 @@ class Bot_twoplayers(Player):
         graph.locations = self.locations
         start = my_head
         goal = food.position[0]
-        grid_problem = GraphProblem(start, goal, graph)
-        node = astar_search(grid_problem) # default h = euclidean distance, Manhattan distance is better...
+        grid_problem = GridProblem(start, False, goal, graph)
+        node = astar_search(grid_problem) # A* con Manhattan Distance
         move = None
         if node != None:
             move = cell2direction(node.solution()[0], my_head)

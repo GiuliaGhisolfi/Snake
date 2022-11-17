@@ -7,54 +7,55 @@ from bot_singleplayer import Bot_singleplayer
 from snake import Snake
 from food import Food
 
-#colori migliori trovati nel mondo
+
+# colori migliori trovati nel mondo
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 190, 80)
 BLUE = (0, 0, 255)
 FUXIA = (255, 0, 100)
-PINK = (255,105,180)
+PINK = (255, 105, 180)
 
-#stat gioco
-FRAME_DELAY = 40
-X_BLOCKS = 20
-Y_BLOCKS = 20
+# stat gioco
+FRAME_DELAY = 55
+X_BLOCKS = 11
+Y_BLOCKS = 9
 
 # TODO:
-# All'avvio del gioco bisognerebbe creare una finestra e richiedere se si vuole 
+# All'avvio del gioco bisognerebbe creare una finestra e richiedere se si vuole
 # giocare in modalità multiplayer o meno.
-# Nel primo caso bisogna richiedere se si vogliono scontrare due bot, giocare 
+# Nel primo caso bisogna richiedere se si vogliono scontrare due bot, giocare
 # controun bot o giocare contro un altro "HumanPlayer".
-# Nel secondo caso  bisogna richiedere se si vuole vedere giocare il bot 
+# Nel secondo caso  bisogna richiedere se si vuole vedere giocare il bot
 # (evetualmente specificando la strategia da fargli adottare, nel caso in cui
 # decidiamo di implementarne più di una) o se si vuole giocare dalla tastiera.
-# Bisognerebbe anche far scegliere il colore del serpente e i tasti per 
+# Bisognerebbe anche far scegliere il colore del serpente e i tasti per
 # comandarlo.
 # E GLI OSTACOLIIIIIIII!!!! importanti :)
 
 def old_start():
     players_info = [
         {
-            "type": "bot", 
-            "color": GREEN, 
-            "start_location": "top-left", 
+            "type": "bot",
+            "color": GREEN,
+            "start_location": "top-left",
             "keys": {
-                "up": pygame.K_UP, 
-                "down": pygame.K_DOWN, 
-                "right": pygame.K_RIGHT, 
+                "up": pygame.K_UP,
+                "down": pygame.K_DOWN,
+                "right": pygame.K_RIGHT,
                 "left": pygame.K_LEFT
-                }
+            }
         },
         {
-            "type": "bot", 
-            "color": BLUE, 
-            "start_location": "bottom-right", 
+            "type": "bot",
+            "color": BLUE,
+            "start_location": "bottom-right",
             "keys": {
-                "up": pygame.K_UP, 
-                "down": pygame.K_DOWN, 
-                "right": pygame.K_RIGHT, 
+                "up": pygame.K_UP,
+                "down": pygame.K_DOWN,
+                "right": pygame.K_RIGHT,
                 "left": pygame.K_LEFT
-                }
+            }
         }
     ]
 
@@ -72,10 +73,10 @@ def old_start():
     for i in range(len(players_info)):
         if players_info[i]["type"] == "human":
             player = HumanPlayer(
-                game=pygame, 
-                up_key=players_info[i]["keys"]["up"], 
-                down_key=players_info[i]["keys"]["down"], 
-                right_key=players_info[i]["keys"]["right"], 
+                game=pygame,
+                up_key=players_info[i]["keys"]["up"],
+                down_key=players_info[i]["keys"]["down"],
+                right_key=players_info[i]["keys"]["right"],
                 left_key=players_info[i]["keys"]["left"])
         else:
             player = Bot_twoplayers(grid)
@@ -85,9 +86,9 @@ def old_start():
         file = open("player"+str(i)+"_logfile.csv", "w")
         file.write("OUTCOME,LENGTH,STEPS\n")
         logfiles.append(file)
-        
+
         snake = Snake(
-            color=players_info[i]["color"], 
+            color=players_info[i]["color"],
             start_location=players_info[i]["start_location"])
         snake.respawn(grid)
         snakes.append(snake)
@@ -100,17 +101,19 @@ def old_start():
 
     steps = 0
     run = True
+
     while run:
         steps = steps + 1
 
         tasks = []
         for i in range(len(players)):
             if isinstance(players[i], Bot_twoplayers):
-                task = pool.submit(players[i].compute_next_move, snakes, i, food)
+                task = pool.submit(
+                    players[i].compute_next_move, snakes, i, food)
                 tasks.append(task)
 
         pygame.time.delay(FRAME_DELAY)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -127,16 +130,18 @@ def old_start():
 
         lost = []
         for i in range(len(snakes)):
-            lost.append(snakes[i].check_bounds(grid) or \
-                snakes[i].check_tail_collision())
+            lost.append(snakes[i].check_bounds(grid) or
+                        snakes[i].check_tail_collision())
 
         if two_players:
             collisions = []
-            collisions.append(snakes[0].check_adversarial_collision(snakes[1].body))
-            collisions.append(snakes[1].check_adversarial_collision(snakes[0].body))
+            collisions.append(
+                snakes[0].check_adversarial_collision(snakes[1].body))
+            collisions.append(
+                snakes[1].check_adversarial_collision(snakes[0].body))
             lost[0] = lost[0] or collisions[0]
             lost[1] = lost[1] or collisions[1]
-            if collisions[0] or collisions[1]: # redraw to see which snake collided
+            if collisions[0] or collisions[1]:  # redraw to see which snake collided
                 window.fill(BLACK)
                 snakes[0].draw(pygame, window, grid)
                 snakes[1].draw(pygame, window, grid)
@@ -174,7 +179,7 @@ def old_start():
             pygame.display.update()
             pygame.time.delay(700)
             for i in range(len(snakes)):
-                logfiles[i].write("%s,%s\n"%(snakes[i].length, steps))
+                logfiles[i].write("%s,%s\n" % (snakes[i].length, steps))
                 snakes[i].respawn(grid)
             food.respawn(snakes, grid)
             steps = 0
@@ -189,16 +194,16 @@ def old_start():
 def new_start():
     players_info = [
         {
-            "type": "sbot", #human - sbot - mbot
-            "color": PINK, 
-            "start_location": "top-left", 
-            
+            "type": "sbot",  # human - sbot - mbot
+            "color": PINK,
+            "start_location": "top-left",
+
             "keys": {
-                "up": pygame.K_UP, 
-                "down": pygame.K_DOWN, 
-                "right": pygame.K_RIGHT, 
+                "up": pygame.K_UP,
+                "down": pygame.K_DOWN,
+                "right": pygame.K_RIGHT,
                 "left": pygame.K_LEFT
-                }
+            }
         },
     ]
 
@@ -214,10 +219,10 @@ def new_start():
     snakes = []
     logfiles = []
 
-    #creo gli snake, poi il cibo e poi il o i bot, necessario per il bot sigleplayer
+    # creo gli snake, poi il cibo e poi il o i bot, necessario per il bot sigleplayer
     for p in players_info:
         snake = Snake(
-            color=p["color"], 
+            color=p["color"],
             start_location=p["start_location"])
 
         snake.respawn(grid)
@@ -226,33 +231,32 @@ def new_start():
     food = Food(RED)
     food.respawn(snakes, grid)
 
-    for i, p in enumerate(players_info): #indice e iteratore nella lista (piccina)
-        #logs
+    for i, p in enumerate(players_info):  # indice e iteratore nella lista (piccina)
+        # logs
         file = open("player"+str(i)+"_logfile.csv", "w")
         file.write("OUTCOME,LENGTH,STEPS\n")
         logfiles.append(file)
-        
-        #bots
+
+        # bots
         if p["type"] == "human":
             player = HumanPlayer(
-                game=pygame, 
-                up_key= p["keys"]["up"], 
-                down_key= p["keys"]["down"], 
-                right_key= p["keys"]["right"], 
-                left_key= p["keys"]["left"])
+                game=pygame,
+                up_key=p["keys"]["up"],
+                down_key=p["keys"]["down"],
+                right_key=p["keys"]["right"],
+                left_key=p["keys"]["left"])
         elif p["type"] == "mbot":
             player = Bot_twoplayers(grid)
             num_threads = num_threads + 1
-        elif p["type"] == "sbot": 
+        elif p["type"] == "sbot":
             player = Bot_singleplayer(grid, snakes[i], food)
             num_threads = num_threads + 1
-        else: 
+        else:
             print('PLAYERS INFO ERROR: player type not recognized')
 
             exit(1)
         players.append(player)
 
-    
     pool = None
     if num_threads > 0:
         pool = ThreadPoolExecutor(max_workers=num_threads)
@@ -260,58 +264,63 @@ def new_start():
     steps = 0
     run = True
 
-    #controlli vari
-    if players_info[0]['type'] and len(players_info) > 1: print('PLAYERS INFO WARNING: using sbot in multiplayer mode')
-    if len(players_info) > 1 and players_info[1]['type']: print('PLAYERS INFO ERROR: using sbot as second player')
+    # controlli vari
+    if players_info[0]['type'] and len(players_info) > 1:
+        print('PLAYERS INFO WARNING: using sbot in multiplayer mode')
+    if len(players_info) > 1 and players_info[1]['type']:
+        print('PLAYERS INFO ERROR: using sbot as second player')
 
-    
-    #avvia il bot corretto
+    # avvia il bot corretto
     tasks = []
-    for i, p in enumerate(players_info): 
+    for i, p in enumerate(players_info):
         if p['type'] == 'sbot':
             task = pool.submit(players[i].start)
-        
+
+    GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
+    GAMEOVER_FILE.write('CORPO,CIBO\n')
 
     while run:
         steps = steps + 1
 
         tasks = []
         for i in range(len(players)):
-            if isinstance(players[i], Bot_twoplayers): #corretto anche con sbot :)
-                task = pool.submit(players[i].compute_next_move, snakes, i, food)
+            if isinstance(players[i], Bot_twoplayers):  # corretto anche con sbot :)
+                task = pool.submit(
+                    players[i].compute_next_move, snakes, i, food)
                 tasks.append(task)
 
         pygame.time.delay(FRAME_DELAY)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 for i in range(len(logfiles)):
                     logfiles[i].close()
+                    GAMEOVER_FILE.close()
 
         for i in range(len(players)):
             dir = players[i].get_next_move()
             snakes[i].move(dir)
             if snakes[i].can_eat(food):
-                    snakes[i].eat()
-                    food.respawn(snakes, grid)
-            if( players_info[i]['type'] != 'sbot'):
+                snakes[i].eat()
+                food.respawn(snakes, grid)
+            if (players_info[i]['type'] != 'sbot'):
                 tasks[i].cancel()
-                
-                
 
         lost = []
         for i in range(len(snakes)):
-            lost.append(snakes[i].check_bounds(grid) or \
-                snakes[i].check_tail_collision())
+            lost.append(snakes[i].check_bounds(grid) or
+                        snakes[i].check_tail_collision())
 
         if two_players:
             collisions = []
-            collisions.append(snakes[0].check_adversarial_collision(snakes[1].body))
-            collisions.append(snakes[1].check_adversarial_collision(snakes[0].body))
+            collisions.append(
+                snakes[0].check_adversarial_collision(snakes[1].body))
+            collisions.append(
+                snakes[1].check_adversarial_collision(snakes[0].body))
             lost[0] = lost[0] or collisions[0]
             lost[1] = lost[1] or collisions[1]
-            if collisions[0] or collisions[1]: # redraw to see which snake collided
+            if collisions[0] or collisions[1]:  # redraw to see which snake collided
                 window.fill(BLACK)
                 snakes[0].draw(pygame, window, grid)
                 snakes[1].draw(pygame, window, grid)
@@ -349,7 +358,13 @@ def new_start():
             pygame.display.update()
             pygame.time.delay(700)
             for i in range(len(snakes)):
-                logfiles[i].write("%s,%s\n"%(snakes[i].length, steps))
+                logfiles[i].write("%s,%s\n" % (snakes[i].length, steps))
+
+                GAMEOVER_FILE.write(str(snakes[0].body))
+                GAMEOVER_FILE.write(',')
+                GAMEOVER_FILE.write(str(food.position))
+                GAMEOVER_FILE.write('\n')
+                
                 snakes[i].respawn(grid)
             food.respawn(snakes, grid)
             for i in range(len(snakes)):
@@ -361,18 +376,14 @@ def new_start():
 
             steps = 0
 
-
         window.fill(BLACK)
         for i in range(len(snakes)):
             snakes[i].draw(pygame, window, grid)
         food.draw(pygame, window, grid)
         pygame.display.update()
-    
 
     for i in range(len(players)):
         if players_info[i]['type'] == 'sbot':
             players[i].stop()
-
-
 
 new_start()
