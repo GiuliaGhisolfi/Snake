@@ -2,11 +2,12 @@ from search import *
 import re
 
 
-class A_star:
-    def __init__(self, problem, goal_state):
+class My_a_star:
+    def __init__(self, problem):
         self.problem = problem
-        self.goal_state = goal_state
+        self.goal_state = problem.goal
     
+    # alternativa, in caso personalizzabile
     def start(self):
         return astar_search(self.problem, self.heuristic)
 
