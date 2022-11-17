@@ -7,6 +7,7 @@ from bot_singleplayer import Bot_singleplayer
 from snake import Snake
 from food import Food
 
+
 # colori migliori trovati nel mondo
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -31,7 +32,6 @@ Y_BLOCKS = 9
 # Bisognerebbe anche far scegliere il colore del serpente e i tasti per
 # comandarlo.
 # E GLI OSTACOLIIIIIIII!!!! importanti :)
-
 
 def old_start():
     players_info = [
@@ -101,6 +101,7 @@ def old_start():
 
     steps = 0
     run = True
+
     while run:
         steps = steps + 1
 
@@ -384,6 +385,5 @@ def new_start():
     for i in range(len(players)):
         if players_info[i]['type'] == 'sbot':
             players[i].stop()
-
 
 new_start()

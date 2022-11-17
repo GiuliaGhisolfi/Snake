@@ -19,13 +19,12 @@ class GridProblem(GraphProblem):
     def __init__(self, initial, horizontal_orientation, goal, graph):
         super().__init__(initial, goal, graph)
         self.horizontal_orientation = horizontal_orientation
-    
+
     def h(self, node):
         locs = getattr(self.graph, 'locations', None)
         if locs:
             if type(node) is str:
                 return manhattan_distance(locs[node], locs[self.goal])
-            
             return manhattan_distance(locs[node.state], locs[self.goal])
         else:
             return np.inf
