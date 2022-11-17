@@ -2,6 +2,7 @@ import threading
 import random
 import copy
 from directions import Directions
+from my_a_star import My_a_star
 from player import Player
 from search import *
 from grid_problem import *

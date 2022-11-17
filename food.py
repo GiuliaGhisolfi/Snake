@@ -3,7 +3,6 @@ import threading
 import copy
 
 #threadsafe
-
 class Food:
     def __init__(self, color):
         self.color = color #immutabile

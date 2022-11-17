@@ -19,12 +19,13 @@ class GridProblem(GraphProblem):
     def __init__(self, initial, horizontal_orientation, goal, graph):
         super().__init__(initial, goal, graph)
         self.horizontal_orientation = horizontal_orientation
-
+    
     def h(self, node):
         locs = getattr(self.graph, 'locations', None)
         if locs:
             if type(node) is str:
                 return manhattan_distance(locs[node], locs[self.goal])
+            
             return manhattan_distance(locs[node.state], locs[self.goal])
         else:
             return np.inf
@@ -155,13 +156,6 @@ def best_first_graph_search_min_turns(problem, f, t, display=False):
                     frontier.append(child)
     return None
 
-def astar_search_opportunistic(problem, snake, grid_area):
-    # prima approssimazione: la strategia cambia quando lo snake è lungo almeno un quarto dell'area della grid
-    if(snake.length >= (grid_area / 4)):
-        return astar_search_saving_spaces(problem)
-    else:
-        return astar_search_min_turns(problem)
-
 def astar_search_min_turns(problem):
     h = memoize(problem.h, 'h')
     return best_first_graph_search_min_turns(
@@ -169,12 +163,6 @@ def astar_search_min_turns(problem):
         lambda n: n.path_cost + h(n) + n.turn, # la f da minimizzare 
         lambda n: n.path_cost # la funzione da massimizzare nel caso in cui ci siano più nodi con pari valore di f
     )
-
-# individua il cammino che rimane più vicino al corpo
-def astar_search_saving_spaces(problem):
-    h = memoize(problem.h, 'h')
-    return best_first_graph_search_min_turns(
-        problem, 
-        lambda n: n.path_cost + h(n) + n.neighbours, # la f da minimizzare 
-        lambda n: n.path_cost # la funzione da massimizzare nel caso in cui ci siano più nodi con pari valore di f
-    )
+# Se nella f che passiamo a best_first_graph_search_min_turns sommiamo n.neighbours non individua più il cammino più breve ma quello che rimane più vicino al corpo
+# TODO: nella prima fase del gioco bisognerebbe utilizzare l'a_star classico
+# quando il serpente diventa lungo possiamo sommare alla f n.neighbours
