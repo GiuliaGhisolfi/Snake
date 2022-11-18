@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 from concurrent.futures import ThreadPoolExecutor
 from grid import Grid
 from human_player import HumanPlayer
@@ -6,14 +6,8 @@ from bot_twoplayers import Bot_twoplayers
 from bot_singleplayer import Bot_singleplayer
 from snake import Snake
 from food import Food
-
-# colori migliori trovati nel mondo
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 190, 80)
-BLUE = (0, 0, 255)
-FUXIA = (255, 0, 100)
-PINK = (255, 105, 180)
+from bottoni import *
+import copy
 
 # stat gioco
 FRAME_DELAY = 55
@@ -31,40 +25,32 @@ Y_BLOCKS = 15
 # Bisognerebbe anche far scegliere il colore del serpente e i tasti per
 # comandarlo.
 # E GLI OSTACOLIIIIIIII!!!! importanti :)
+   
+pygame.init()
+grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
+window = pygame.display.set_mode(grid.bounds)
+pygame.display.set_caption("Snake")
+font = pygame.font.SysFont('Arial', 40, True)
+clock = pygame.time.Clock()
 
+#creo i bottoni che mi servono
+button1 = Button('Single Player',300,70,(50,300),5)
+button2 = Button('Multiplayer',300,70,(360,300),5)
+
+#ciclo in cui aspetto che l'utente abbia scelto
+while not scelta:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    window.fill('#DCDDD8')
+    buttons_draw()
+    pygame.display.update()
+    clock.tick(60)
 
 def old_start():
-    players_info = [
-        {
-            "type": "bot",
-            "color": GREEN,
-            "start_location": "top-left",
-            "keys": {
-                "up": pygame.K_UP,
-                "down": pygame.K_DOWN,
-                "right": pygame.K_RIGHT,
-                "left": pygame.K_LEFT
-            }
-        },
-        {
-            "type": "bot",
-            "color": BLUE,
-            "start_location": "bottom-right",
-            "keys": {
-                "up": pygame.K_UP,
-                "down": pygame.K_DOWN,
-                "right": pygame.K_RIGHT,
-                "left": pygame.K_LEFT
-            }
-        }
-    ]
-
-    pygame.init()
-    grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
-    window = pygame.display.set_mode(grid.bounds)
-    pygame.display.set_caption("Snake")
-    font = pygame.font.SysFont('Arial', 60, True)
-
+    players_info = dict_info
     two_players = (len(players_info) == 2)
     num_threads = 0
     players = []
@@ -191,26 +177,7 @@ def old_start():
 
 
 def new_start():
-    players_info = [
-        {
-            "type": "sbot",  # human - sbot - mbot
-            "color": PINK,
-            "start_location": "top-left",
-
-            "keys": {
-                "up": pygame.K_UP,
-                "down": pygame.K_DOWN,
-                "right": pygame.K_RIGHT,
-                "left": pygame.K_LEFT
-            }
-        },
-    ]
-
-    pygame.init()
-    grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
-    window = pygame.display.set_mode(grid.bounds)
-    pygame.display.set_caption("Snake")
-    font = pygame.font.SysFont('Arial', 60, True)
+    players_info = dict_info
 
     two_players = (len(players_info) == 2)
     num_threads = 0
@@ -385,5 +352,8 @@ def new_start():
         if players_info[i]['type'] == 'sbot':
             players[i].stop()
 
-
-new_start()
+if scelta:
+  if scelta == 'singleplayer':
+    new_start()
+  else:
+    old_start()
