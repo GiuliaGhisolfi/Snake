@@ -46,7 +46,6 @@ class Button:
         pygame.draw.rect(window,self.bottom_color, self.bottom_rect,border_radius = 12)
         pygame.draw.rect(window,self.top_color, self.top_rect,border_radius = 12)
         window.blit(self.text_surf, self.text_rect)
-        #self.check_click()
 
     def check_click(self):
         global scelta 
@@ -121,7 +120,6 @@ def buttons_draw():
                 d2 = copy.deepcopy(li)
                 dict_info.append(d2)
             
-
 ### inizio il gioco come in main ###
 pygame.init()
 window = pygame.display.set_mode((700,700))
