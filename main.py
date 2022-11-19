@@ -9,9 +9,9 @@ from food import Food
 from bottoni import *
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
-FRAME_DELAY = 55
-X_BLOCKS = 15
-Y_BLOCKS = 15
+FRAME_DELAY = 60
+X_BLOCKS = 10
+Y_BLOCKS = 10
    
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
@@ -162,6 +162,11 @@ def old_start():
         food.draw(pygame, window, grid)
         pygame.display.update()
 
+# TODO: separare per bene singleplayer da multiplayer, in modo che:
+    #  multiplayer - tenga la threadpool, utilizzi le classi LockedFood e LockedSnake
+    #  singleplayer - diventi singlethrea, niente threadpool o cose simili, e che venga gestito
+    #               meglio il delay di attesa tra un frame e l'altro perchè sia il max
+    #               tra quello scelto e il tempo di esecuzione di get_next_move
 
 def new_start():
     players_info = dict_info
@@ -202,8 +207,7 @@ def new_start():
             player = Bot_twoplayers(grid)
             num_threads = num_threads + 1
         elif p["type"] == "sbot":
-            player = Bot_singleplayer(grid, snakes[i], food)
-            num_threads = num_threads + 1
+            player = Bot_singleplayer(grid, snakes[i], food, True)
         else:
             print('PLAYERS INFO ERROR: player type not recognized')
 
@@ -224,13 +228,11 @@ def new_start():
         print('PLAYERS INFO ERROR: using sbot as second player')"""
     # avvia il bot corretto
     tasks = []
-    for i, p in enumerate(players_info):
-        if p['type'] == 'sbot':
-            task = pool.submit(players[i].start)
-
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
 
+
+    
     while run:
         steps = steps + 1
 
@@ -319,12 +321,6 @@ def new_start():
                 
                 snakes[i].respawn(grid)
             food.respawn(snakes, grid)
-            for i in range(len(snakes)):
-                if players_info[i]['type'] == 'sbot':
-                    players[i].stop()
-                    players[i] = Bot_singleplayer(grid, snakes[i], food)
-
-                    task = pool.submit(players[i].start)
 
             steps = 0
 
@@ -334,9 +330,6 @@ def new_start():
         food.draw(pygame, window, grid)
         pygame.display.update()
 
-    for i in range(len(players)):
-        if players_info[i]['type'] == 'sbot':
-            players[i].stop()
 
 """if scelta:
   if scelta == 'singleplayer':"""
