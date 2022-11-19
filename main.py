@@ -7,24 +7,11 @@ from bot_singleplayer import Bot_singleplayer
 from snake import Snake
 from food import Food
 from bottoni import *
-import copy
 
 # stat gioco
 FRAME_DELAY = 55
 X_BLOCKS = 15
 Y_BLOCKS = 15
-
-# TODO:
-# All'avvio del gioco bisognerebbe creare una finestra e richiedere se si vuole
-# giocare in modalità multiplayer o meno.
-# Nel primo caso bisogna richiedere se si vogliono scontrare due bot, giocare
-# controun bot o giocare contro un altro "HumanPlayer".
-# Nel secondo caso  bisogna richiedere se si vuole vedere giocare il bot
-# (evetualmente specificando la strategia da fargli adottare, nel caso in cui
-# decidiamo di implementarne più di una) o se si vuole giocare dalla tastiera.
-# Bisognerebbe anche far scegliere il colore del serpente e i tasti per
-# comandarlo.
-# E GLI OSTACOLIIIIIIII!!!! importanti :)
    
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)

@@ -115,7 +115,7 @@ class Button:
 def buttons_draw():
     for b in buttons:
         b.draw()
-        if b.check_click() is not 0 :
+        if b.check_click() != 0 :
             for li in b.check_click():
                 d2 = copy.deepcopy(li)
                 dict_info.append(d2)
