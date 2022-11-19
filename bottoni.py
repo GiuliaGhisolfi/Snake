@@ -144,3 +144,6 @@ while not scelta:
     buttons_draw()
     pygame.display.update()
     clock.tick(60)
+for b in buttons:
+        b.draw()
+pygame.display.update()
