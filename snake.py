@@ -7,24 +7,19 @@ class Snake:
         self.color = color #immutabile
         self.start_location = start_location #da lockare!
 
-        self.lock = threading.RLock()
- 
     def respawn(self, grid):
-        self.lock.acquire()
-        try:
-            self.length = 3
-            if self.start_location == "top-left":
-                self.body = ["(3,2)",
-                            "(3,3)",
-                            "(3,4)"]
-                self.direction = Directions.DOWN
-            if self.start_location == "bottom-right":
-                self.body = ["(%d,%d)" % ((grid.x_blocks-4), (grid.y_blocks-4)),
-                            "(%d,%d)" % ((grid.x_blocks-4),
-                                        (grid.y_blocks-5)),
-                            "(%d,%d)" % ((grid.x_blocks-4), (grid.y_blocks-6))]
-                self.direction = Directions.UP
-        finally: self.lock.release()
+        self.length = 3
+        if self.start_location == "top-left":
+            self.body = ["(3,2)",
+                        "(3,3)",
+                        "(3,4)"]
+            self.direction = Directions.DOWN
+        if self.start_location == "bottom-right":
+            self.body = ["(%d,%d)" % ((grid.x_blocks-4), (grid.y_blocks-4)),
+                        "(%d,%d)" % ((grid.x_blocks-4),
+                                    (grid.y_blocks-5)),
+                        "(%d,%d)" % ((grid.x_blocks-4), (grid.y_blocks-6))]
+            self.direction = Directions.UP
 
     def coordinate_from_nodes(self, node_list, grid):
         chars = ['(', ')']
@@ -47,9 +42,7 @@ class Snake:
 
     def draw(self, game, window, grid):
         #riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
-        self.lock.acquire()
-        try: body_coord = self.coordinate_from_nodes(self.body, grid)
-        finally: self.lock.release()
+        body_coord = self.coordinate_from_nodes(self.body, grid)
 
         bsize = grid.block_size
         head = body_coord[-1]
@@ -78,110 +71,173 @@ class Snake:
         black = (0, 0, 0)
         eye_size = bsize/6
 
-        self.lock.acquire()
-        try:
-            if self.direction == Directions.UP or self.direction == Directions.DOWN:
-                eye1_x = head[0]+1/3*bsize-eye_size/2
-                eye2_x = head[0]+2/3*bsize-eye_size/2
-                eye1_y = eye2_y = head[1]+1/2*bsize-eye_size/2
-            else:
-                eye1_x = eye2_x = head[0]+1/2*bsize-eye_size/2
-                eye1_y = head[1]+1/3*bsize-eye_size/2
-                eye2_y = head[1]+2/3*bsize-eye_size/2
-        finally: self.lock.release()
+        if self.direction == Directions.UP or self.direction == Directions.DOWN:
+            eye1_x = head[0]+1/3*bsize-eye_size/2
+            eye2_x = head[0]+2/3*bsize-eye_size/2
+            eye1_y = eye2_y = head[1]+1/2*bsize-eye_size/2
+        else:
+            eye1_x = eye2_x = head[0]+1/2*bsize-eye_size/2
+            eye1_y = head[1]+1/3*bsize-eye_size/2
+            eye2_y = head[1]+2/3*bsize-eye_size/2
+
         game.draw.rect(window, black, (eye1_x, eye1_y, eye_size, eye_size))
         game.draw.rect(window, black, (eye2_x, eye2_y, eye_size, eye_size))
 
     def move(self, direction):
+
+        self.__steer(direction)
+        curr_head = self.body[-1]
+        [x, y] = self.integer_from_string(curr_head)
+
+        if self.direction == Directions.DOWN:
+            y = y + 1
+        elif self.direction == Directions.UP:
+            y = y - 1
+        elif self.direction == Directions.RIGHT:
+            x = x + 1
+        elif self.direction == Directions.LEFT:
+            x = x - 1
+
+        next_head = "(%d,%d)" % (x, y)
+        self.body.append(next_head)
+
+        if self.length < len(self.body):
+            self.body.pop(0)
+
+    def __steer(self, direction):
+
+        if direction == None:
+            return
+        if self.direction == Directions.DOWN and direction != Directions.UP:
+            self.direction = direction
+        elif self.direction == Directions.UP and direction != Directions.DOWN:
+            self.direction = direction
+        elif self.direction == Directions.LEFT and direction != Directions.RIGHT:
+            self.direction = direction
+        elif self.direction == Directions.RIGHT and direction != Directions.LEFT:
+            self.direction = direction
+
+
+    def eat(self):
+        self.length += 1
+
+        
+
+    def can_eat(self, food):
+        return self.body[-1] == food.position[0]  # confronto tra nodi
+
+    def check_tail_collision(self):
+        condition = False
+        head = self.body[-1]
+        for i in range(len(self.body) - 1):
+            segment = self.body[i]
+            if head == segment:
+                condition = True
+        return condition
+
+    def check_adversarial_collision(self, adversarial_body):
+        condition = False
+
+        head = self.body[-1]
+        for i in range(len(adversarial_body)):
+            segment = adversarial_body[i]
+            if head == segment:
+                condition = True
+        return condition
+
+    def check_bounds(self, grid):
+        condition = False
+
+        head = self.body[-1]
+        if head not in grid.grid:
+            condition = True
+
+        return condition
+    
+    def get_body(self):
+        return copy.deepcopy(self.body)
+    
+    def fast_get_body(self):#attenzione, rompe i principi di Barbara :(
+        return self.body
+
+class LockedSnake(Snake):
+    def __init__(self, color=(0, 190, 80), start_location="top-left"):
+        
+        super().__init__(color, start_location)
+        self.lock = threading.RLock()
+ 
+    def respawn(self, grid):
         self.lock.acquire()
         try:
-            self.__steer(direction)
-            curr_head = self.body[-1]
-            [x, y] = self.integer_from_string(curr_head)
+            super().respawn(grid)
+        finally: self.lock.release()
 
-            if self.direction == Directions.DOWN:
-                y = y + 1
-            elif self.direction == Directions.UP:
-                y = y - 1
-            elif self.direction == Directions.RIGHT:
-                x = x + 1
-            elif self.direction == Directions.LEFT:
-                x = x - 1
+    def draw(self, game, window, grid):
+        #riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
+        self.lock.acquire()
+        try: 
+            super().draw(game, window, grid)
+        finally: self.lock.release()
 
-            next_head = "(%d,%d)" % (x, y)
-            self.body.append(next_head)
-
-            if self.length < len(self.body):
-                self.body.pop(0)
+    def move(self, direction):
+        self.lock.acquire()
+        try:
+            super().move(direction)
         finally: self.lock.release()
 
     def __steer(self, direction):
         self.lock.acquire()
         try:
-            if direction == None:
-                return
-            if self.direction == Directions.DOWN and direction != Directions.UP:
-                self.direction = direction
-            elif self.direction == Directions.UP and direction != Directions.DOWN:
-                self.direction = direction
-            elif self.direction == Directions.LEFT and direction != Directions.RIGHT:
-                self.direction = direction
-            elif self.direction == Directions.RIGHT and direction != Directions.LEFT:
-                self.direction = direction
+            super().__steer(direction)
         finally: self.lock.release()
 
     def eat(self):
         self.lock.acquire()
         try:
-            self.length += 1
+            super().eat()
         finally: self.lock.release()
         
-
     def can_eat(self, food):
         self.lock.acquire()
         try:
-            head = self.body[-1]
+            ret = super().can_eat(food)
         finally: self.lock.release()
-        return head == food.position[0]  # confronto tra nodi
+        return ret  # confronto tra nodi
 
     def check_tail_collision(self):
         self.lock.acquire()
         try:
-            condition = False
-            head = self.body[-1]
-            for i in range(len(self.body) - 1):
-                segment = self.body[i]
-                if head == segment:
-                    condition = True
+            ret = super().check_tail_collision()
         finally: self.lock.release()
-        return condition
+        return ret
 
     def check_adversarial_collision(self, adversarial_body):
         condition = False
 
         self.lock.acquire()
         try:
-            head = self.body[-1]
-            for i in range(len(adversarial_body)):
-                segment = adversarial_body[i]
-                if head == segment:
-                    condition = True
+            ret = super().check_adversarial_collision(adversarial_body)
         finally: self.lock.release()
-        return condition
+        return ret
 
     def check_bounds(self, grid):
         condition = False
         self.lock.acquire()
         try:
-            head = self.body[-1]
-            if head not in grid.grid:
-                condition = True
+            ret = super().check_bounds(grid)
         finally: self.lock.release()    
-        return condition
+        return ret
     
     def get_body(self):
         self.lock.acquire()
         try:
-            ret = copy.deepcopy(self.body)
+            ret = super().get_body()
+        finally: self.lock.release()    
+        return ret
+    
+    def fast_get_body(self):
+        self.lock.acquire()
+        try:
+            ret = copy.deepcopy(super().fast_get_body())
         finally: self.lock.release()    
         return ret
