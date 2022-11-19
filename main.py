@@ -8,7 +8,7 @@ from snake import Snake
 from food import Food
 from bottoni import *
 
-# stat gioco
+# stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 FRAME_DELAY = 55
 X_BLOCKS = 15
 Y_BLOCKS = 15
@@ -217,12 +217,11 @@ def new_start():
     steps = 0
     run = True
 
-    # controlli vari
+    """ # controlli vari
     if players_info[0]['type'] and len(players_info) > 1:
         print('PLAYERS INFO WARNING: using sbot in multiplayer mode')
     if len(players_info) > 1 and players_info[1]['type']:
-        print('PLAYERS INFO ERROR: using sbot as second player')
-
+        print('PLAYERS INFO ERROR: using sbot as second player')"""
     # avvia il bot corretto
     tasks = []
     for i, p in enumerate(players_info):
@@ -257,7 +256,7 @@ def new_start():
             if snakes[i].can_eat(food):
                 snakes[i].eat()
                 food.respawn(snakes, grid)
-            if (players_info[i]['type'] != 'sbot'):
+            if (players_info[i]['type'] != 'sbot' and players_info[i]['type'] != 'human'): #modifica per fa funzionare sbot o human
                 tasks[i].cancel()
 
         lost = []
@@ -339,8 +338,8 @@ def new_start():
         if players_info[i]['type'] == 'sbot':
             players[i].stop()
 
-if scelta:
-  if scelta == 'singleplayer':
-    new_start()
-  else:
-    old_start()
+"""if scelta:
+  if scelta == 'singleplayer':"""
+new_start()
+"""  else:
+    old_start()"""

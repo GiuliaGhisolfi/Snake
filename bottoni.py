@@ -56,26 +56,14 @@ class Button:
                 self.dynamic_elecation = 0
                 self.pressed = True
                 if self.text == 'Single Player':
-                    info = [
-                        {
-                            "type": "sbot",  # human - sbot - mbot
-                            "color": PINK,
-                            "start_location": "top-left",
-                            "keys": {
-                                "up": pygame.K_UP,
-                                "down": pygame.K_DOWN,
-                                "right": pygame.K_RIGHT,
-                                "left": pygame.K_LEFT
-                                    } 
-                        },
-                        ]
+                    info = []
                    # print(len(dict_info))
                     scelta = 'singleplayer'
                     return info
-                else:
+                elif self.text == 'Multiplayer':
                     info = [
                             {   
-                                "type": "bot",
+                                "type": "mbot",
                                 "color": GREEN,
                                 "scelta":"singleplayer",
                                 "start_location": "top-left",
@@ -87,7 +75,7 @@ class Button:
                                 }
                             },
                             {
-                                "type": "bot",
+                                "type": "mbot",
                                 "color": BLUE,
                                 "start_location": "bottom-right",
                                 "keys": {
@@ -100,6 +88,38 @@ class Button:
                         ]
                     scelta = 'multiplayer'
                     return info 
+                elif self.text == 'Human Player':
+                    info = [
+                                {
+                                    "type": "human",  # human - sbot - mbot
+                                    "color": 'orange',
+                                    "start_location": "top-left",
+                                    "keys": {
+                                        "up": pygame.K_UP,
+                                        "down": pygame.K_DOWN,
+                                        "right": pygame.K_RIGHT,
+                                        "left": pygame.K_LEFT
+                                            } 
+                                },
+                            ]
+                    scelta = 'fatto'
+                    return info
+                elif self.text == 'Bot Player':
+                    info = [
+                                {
+                                    "type": "sbot",  # human - sbot - mbot
+                                    "color": PINK,
+                                    "start_location": "top-left",
+                                    "keys": {
+                                        "up": pygame.K_UP,
+                                        "down": pygame.K_DOWN,
+                                        "right": pygame.K_RIGHT,
+                                        "left": pygame.K_LEFT
+                                            } 
+                                },
+                                ]
+                    scelta = 'fatto'
+                    return info                
                 #probabilmente questo else non serve
             else:
                 self.dynamic_elecation = self.elevation
@@ -127,7 +147,6 @@ pygame.display.set_caption('Snake')
 clock = pygame.time.Clock()
 font = pygame.font.SysFont('Arial', 40, True)
 ###
-#parte da aggiungere
 #creo i bottoni che mi servono
 button1 = Button('Single Player',300,70,(50,300),5)
 button2 = Button('Multiplayer',300,70,(360,300),5)
@@ -145,3 +164,24 @@ while not scelta:
 for b in buttons:
         b.draw()
 pygame.display.update()
+pygame.time.delay(200)
+
+buttons.pop(0)
+buttons.pop(0)
+
+button3 = Button('Human Player',300,70,(50,300),5)
+button4 = Button('Bot Player',300,70,(360,300),5)
+
+while scelta == "singleplayer":
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    window.fill('#DCDDD8')
+    buttons_draw()
+    pygame.display.update()
+    clock.tick(60)
+
+"""for b in buttons:
+        b.draw()
+pygame.display.update()"""
