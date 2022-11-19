@@ -19,23 +19,7 @@ window = pygame.display.set_mode(grid.bounds)
 pygame.display.set_caption("Snake")
 font = pygame.font.SysFont('Arial', 40, True)
 clock = pygame.time.Clock()
-
-#creo i bottoni che mi servono
-button1 = Button('Single Player',300,70,(50,300),5)
-button2 = Button('Multiplayer',300,70,(360,300),5)
-
-#ciclo in cui aspetto che l'utente abbia scelto
-while not scelta:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    window.fill('#DCDDD8')
-    buttons_draw()
-    pygame.display.update()
-    clock.tick(60)
-
+""" funzione deprecata
 def old_start():
     players_info = dict_info
     two_players = (len(players_info) == 2)
@@ -161,7 +145,7 @@ def old_start():
             snakes[i].draw(pygame, window, grid)
         food.draw(pygame, window, grid)
         pygame.display.update()
-
+"""
 # TODO: separare per bene singleplayer da multiplayer, in modo che:
     #  multiplayer - tenga la threadpool, utilizzi le classi LockedFood e LockedSnake
     #  singleplayer - diventi singlethrea, niente threadpool o cose simili, e che venga gestito
@@ -210,7 +194,6 @@ def new_start():
             player = Bot_singleplayer(grid, snakes[i], food, True)
         else:
             print('PLAYERS INFO ERROR: player type not recognized')
-
             exit(1)
         players.append(player)
 
@@ -221,24 +204,17 @@ def new_start():
     steps = 0
     run = True
 
-    """ # controlli vari
-    if players_info[0]['type'] and len(players_info) > 1:
-        print('PLAYERS INFO WARNING: using sbot in multiplayer mode')
-    if len(players_info) > 1 and players_info[1]['type']:
-        print('PLAYERS INFO ERROR: using sbot as second player')"""
     # avvia il bot corretto
     tasks = []
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
-
-
     
     while run:
         steps = steps + 1
 
         tasks = []
         for i in range(len(players)):
-            if isinstance(players[i], Bot_twoplayers):  # corretto anche con sbot :)
+            if isinstance(players[i], Bot_twoplayers):  
                 task = pool.submit(
                     players[i].compute_next_move, snakes, i, food)
                 tasks.append(task)
@@ -330,9 +306,5 @@ def new_start():
         food.draw(pygame, window, grid)
         pygame.display.update()
 
-
-"""if scelta:
-  if scelta == 'singleplayer':"""
+### avvio il gioco ###
 new_start()
-"""  else:
-    old_start()"""

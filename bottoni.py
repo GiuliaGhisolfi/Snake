@@ -182,7 +182,7 @@ while scelta == "singleplayer":
     buttons_draw()
     pygame.display.update()
     clock.tick(60)
-
-"""for b in buttons:
-        b.draw()
-pygame.display.update()"""
+if scelta == 'fatto':
+    for b in buttons:
+            b.draw()
+    pygame.display.update()
