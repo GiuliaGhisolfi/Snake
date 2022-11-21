@@ -4,7 +4,8 @@ import copy
 
 scelta = False
 buttons = []
-dict_info=[]
+dict_info = []
+dict_info_single = {}
 
 # colori migliori trovati nel mondo
 BLACK = (0, 0, 0)
@@ -90,37 +91,35 @@ class Button:
                     scelta = 'multiplayer'
                     return info 
                 elif self.text == 'Human Player':
-                    info = [
-                                {
-                                    "type": "human",  # human - sbot - mbot
-                                    "color": 'orange',
-                                    "start_location": "top-left",
-                                    "keys": {
-                                        "up": pygame.K_UP,
-                                        "down": pygame.K_DOWN,
-                                        "right": pygame.K_RIGHT,
-                                        "left": pygame.K_LEFT
-                                            } 
-                                },
-                            ]
+                    info_human =  {
+                                "type": "human",  # human - sbot - mbot
+                                "color": 'orange',
+                                "start_location": "top-left",
+                                "keys": {
+                                    "up": pygame.K_UP,
+                                    "down": pygame.K_DOWN,
+                                    "right": pygame.K_RIGHT,
+                                    "left": pygame.K_LEFT
+                                        } 
+                            }
+                            
                     scelta = 'fatto'
-                    return info
+                    return info_human
                 elif self.text == 'Bot Player':
-                    info = [
-                                {
-                                    "type": "sbot",  # human - sbot - mbot
-                                    "color": PINK,
-                                    "start_location": "top-left",
-                                    "keys": {
-                                        "up": pygame.K_UP,
-                                        "down": pygame.K_DOWN,
-                                        "right": pygame.K_RIGHT,
-                                        "left": pygame.K_LEFT
-                                            } 
-                                },
-                                ]
+                    info_bot =  {
+                                "type": "sbot",  # human - sbot - mbot
+                                "color": PINK,
+                                "start_location": "top-left",
+                                "keys": {
+                                    "up": pygame.K_UP,
+                                    "down": pygame.K_DOWN,
+                                    "right": pygame.K_RIGHT,
+                                    "left": pygame.K_LEFT
+                                        } 
+                            }
+                                
                     scelta = 'fatto'
-                    return info                
+                    return info_bot               
                 #probabilmente questo else non serve
             else:
                 self.dynamic_elecation = self.elevation
@@ -134,12 +133,16 @@ class Button:
 
 #disegno i bottoni
 def buttons_draw():
+    global dict_info_single
     for b in buttons:
         b.draw()
         if b.check_click() != 0 :
-            for li in b.check_click():
-                d2 = copy.deepcopy(li)
-                dict_info.append(d2)
+            if scelta == 'multiplayer':
+                for li in b.check_click():
+                    d2 = copy.deepcopy(li)
+                    dict_info.append(d2)
+            else:
+                dict_info_single = b.check_click()
             
 ### inizio il gioco come in main ###
 pygame.init()
