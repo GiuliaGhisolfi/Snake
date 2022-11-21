@@ -7,6 +7,7 @@ from bot_singleplayer import Bot_singleplayer
 from snake import Snake
 from food import Food
 from bottoni import *
+from obstacles import *
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 FRAME_DELAY = 60
@@ -169,9 +170,13 @@ def new_start():
 
         snake.respawn(grid)
         snakes.append(snake)
+    
+    # creo ostacoli
+    obstacles = Obstacles('gray')
+    obstacles.spawn(snakes, grid)
 
     food = Food(RED)
-    food.respawn(snakes, grid)
+    food.respawn(snakes, grid, obstacles)
 
     for i, p in enumerate(players_info):  # indice e iteratore nella lista (piccina)
         # logs
@@ -191,7 +196,7 @@ def new_start():
             player = Bot_twoplayers(grid)
             num_threads = num_threads + 1
         elif p["type"] == "sbot":
-            player = Bot_singleplayer(grid, snakes[i], food, True)
+            player = Bot_singleplayer(grid, snakes[i], food, obstacles, True)
         else:
             print('PLAYERS INFO ERROR: player type not recognized')
             exit(1)
@@ -233,14 +238,15 @@ def new_start():
             snakes[i].move(dir)
             if snakes[i].can_eat(food):
                 snakes[i].eat()
-                food.respawn(snakes, grid)
+                food.respawn(snakes, grid, obstacles)
             if (players_info[i]['type'] != 'sbot' and players_info[i]['type'] != 'human'): #modifica per fa funzionare sbot o human
                 tasks[i].cancel()
 
         lost = []
         for i in range(len(snakes)):
             lost.append(snakes[i].check_bounds(grid) or
-                        snakes[i].check_tail_collision())
+                        snakes[i].check_tail_collision() or
+                        snakes[i].check_obstacles_collision(obstacles))
 
         if two_players:
             collisions = []
@@ -296,13 +302,15 @@ def new_start():
                 GAMEOVER_FILE.write('\n')
                 
                 snakes[i].respawn(grid)
-            food.respawn(snakes, grid)
+            obstacles.spawn(snakes, grid)
+            food.respawn(snakes, grid,obstacles)
 
             steps = 0
 
         window.fill(BLACK)
         for i in range(len(snakes)):
             snakes[i].draw(pygame, window, grid)
+        obstacles.draw(pygame, window, grid)
         food.draw(pygame, window, grid)
         pygame.display.update()
 

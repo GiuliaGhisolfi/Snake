@@ -7,6 +7,7 @@ import copy
 import grid
 import snake
 import food
+import obstacles
 from grid_problem import *
 from bottoni import *
 
@@ -48,12 +49,12 @@ def build_location(grid):
 
 class Bot_singleplayer(Player):
     # input anche lo snake
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, obstacles:obstacles.Obstacles, debug=False):
 
         self.grid = grid
         self.locations = build_location(self.grid.grid) #immutabile
         self.debug = debug
-        
+        self.obstacles = obstacles
         self.snake = snake
         #self.snake_body = self.snake.get_body()
         
@@ -119,7 +120,7 @@ class Bot_singleplayer(Player):
         if not tg:
             tg = self.get_true_graph(self.snake.fast_get_body()[:-1])
 
-        if self.nnto == self.snake.fast_get_body()[-1]:
+        if self.nnto == self.snake.fast_get_body()[-1]: #next node to optimize
             if is_optimizable(self.snake.fast_get_body()[-1], tg):
                 tg = self.get_true_graph([self.snake.fast_get_body()[-1]], tg)
                 #cerchiamo il prossimo choke point
@@ -278,14 +279,16 @@ class Bot_singleplayer(Player):
     
     def get_true_graph(self, snake_false_body, grid={}):
         if not grid:
-            grid = self.grid.grid
+            grid = self.grid.grid # da controllare
 
         #eliminiamo dal grafo le celle occupate da noi
-        new_grid = copy.deepcopy(self.grid.grid)
+        new_grid = copy.deepcopy(self.grid.grid) #forse ci va messo grid?
 
-        for segment in snake_false_body:
+        for segment in snake_false_body: #manca la testa
             delete_cell(new_grid, segment)
-
+        for pos in self.obstacles.positions:
+            str_pos = "(%d,%d)" % (pos[0], pos[1])
+            delete_cell(new_grid, str_pos)
         return new_grid
 
     def change_color(self):

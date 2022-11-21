@@ -25,20 +25,24 @@ class Food:
             node[i] = int(node[i])
         return [int(node[0])*grid.block_size, int(node[1])*grid.block_size]
 
-    def is_overlapped(self, position, snakes):
+    def is_overlapped(self, position, snakes, obstacles):
         for i in range(len(snakes)):
             for segment in snakes[i].body:
                 if segment == position:
                     return True
+        for i in range(len(obstacles.positions)): #dopo facciamo la deepcopy
+            str_position = "(%d,%d)" % (obstacles.positions[i][0], obstacles.positions[i][1])
+            if position == str_position:
+                return True
         return False
 
-    def respawn(self, snakes, grid):
+    def respawn(self, snakes, grid, obstacles):
         while True:
             x_new = rand.randrange(0, grid.x_blocks)
             y_new = rand.randrange(0, grid.y_blocks)
             
             new_position = "(%d,%d)" % (x_new, y_new)
-            if [new_position] != self.position and not self.is_overlapped(new_position, snakes):
+            if [new_position] != self.position and not self.is_overlapped(new_position, snakes, obstacles):
                 self.position = [new_position]
                 break
 
