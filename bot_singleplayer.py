@@ -140,9 +140,10 @@ class Bot_singleplayer(Player):
 
                     #senza testa
                     patch = get_ham_path(self.snake.fast_get_body()[-1], chokepoint, true_g)
-                    self.default_path = patch + self.default_path[choke_ind + 1:]
+                    if patch != None:
+                        self.default_path = patch + self.default_path[choke_ind + 1:]
 
-                    print('Ottimizzato')
+                        print('Ottimizzato')
             else:
                 tg = self.get_true_graph(self.snake.fast_get_body()[-1:], tg) #solo ultima posizione
                 #calcoliamo il prossimo nodo che è ottimizzabile
