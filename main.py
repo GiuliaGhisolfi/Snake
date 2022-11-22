@@ -11,9 +11,11 @@ from bottoni import *
 from obstacles import *
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
+
 FRAME_DELAY = 30
 X_BLOCKS = 8
 Y_BLOCKS = 8
+
    
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
