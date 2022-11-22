@@ -117,7 +117,7 @@ class Bot_hamilton(Player):
         head_coord = self.coordinate_from_node(head)
         head_ham_pos = ham_cycle[head_coord] # head idx
         for i in ham_cycle.keys():
-            if ham_cycle[i]==(head_ham_pos+1)%64:
+            if ham_cycle[i]==(head_ham_pos+1)%grid_area:
                 move = node2string(i[0], i[1])
                 break
         if len(self.snake.get_body()) < 0.5 * grid_area:
