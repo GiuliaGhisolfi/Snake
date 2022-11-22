@@ -4,6 +4,7 @@ from grid import Grid
 from human_player import HumanPlayer
 from bot_twoplayers import Bot_twoplayers
 from bot_singleplayer import Bot_singleplayer
+from bot_hamilton import Bot_hamilton
 from snake import Snake
 from food import Food
 from bottoni import *
@@ -249,6 +250,101 @@ def singleplayer_start():
         food.draw(pygame, window, grid)
         pygame.display.update()
 
+def hamilton_start():
+    players_info = dict_info_single
+
+    snakes = []
+
+    # creo gli snake, poi il cibo e poi il o i bot, necessario per il bot sigleplayer
+    snake = Snake(
+            color=players_info["color"],
+            start_location=players_info["start_location"])
+
+    snake.respawn(grid)
+    snakes.append(snake)
+    
+    # creo ostacoli
+    obstacles = Obstacles('gray')
+    #obstacles.spawn(snakes, grid)
+
+    food = Food(RED)
+    food.respawn(snakes, grid, obstacles)
+
+    # logs
+    file = open("player0"+"_logfile.csv", "w")
+    file.write("OUTCOME,LENGTH,STEPS\n")
+
+    # bots
+    if players_info["type"] == "human":
+        player = HumanPlayer(
+            game=pygame,
+            up_key=players_info["keys"]["up"],
+            down_key=players_info["keys"]["down"],
+            right_key=players_info["keys"]["right"],
+            left_key=players_info["keys"]["left"])
+    elif players_info["type"] == "sbot":
+        player = Bot_hamilton(grid, snakes[0], food)
+    else:
+        print('PLAYERS INFO ERROR: player type not recognized')
+        exit(1)
+
+    steps = 0
+    run = True
+
+    # avvia il bot corretto
+    GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
+    GAMEOVER_FILE.write('CORPO,CIBO\n')
+    
+    while run:
+        steps = steps + 1
+
+        pygame.time.delay(FRAME_DELAY)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                file.close()
+                GAMEOVER_FILE.close()
+
+        
+        dir = player.get_next_move()
+        snake.move(dir)
+        if snake.can_eat(food):
+            snake.eat()
+            food.respawn(snakes, grid, obstacles)
+
+        lost = snake.check_bounds(grid) or \
+            snake.check_tail_collision() or \
+            snake.check_obstacles_collision(obstacles)
+
+
+        end = False
+        if lost:
+            end = True
+            text = font.render('GAME OVER', True, FUXIA)
+            window.blit(text, (180, 270))
+
+        if end:
+            pygame.display.update()
+            pygame.time.delay(700)
+            file.write("%s,%s\n" % (snake.length, steps))
+
+            GAMEOVER_FILE.write(str(snake.body))
+            GAMEOVER_FILE.write(',')
+            GAMEOVER_FILE.write(str(food.position))
+            GAMEOVER_FILE.write('\n')
+            
+            snake.respawn(grid)
+            #obstacles.spawn(snakes, grid)
+            food.respawn(snakes, grid,obstacles)
+
+            steps = 0
+
+        window.fill(BLACK)
+        snake.draw(pygame, window, grid)
+        #obstacles.draw(pygame, window, grid)
+        food.draw(pygame, window, grid)
+        pygame.display.update()
 
 def multiplayer_start():
     players_info = dict_info
@@ -407,4 +503,4 @@ def multiplayer_start():
 if scelta == 'multiplayer':
     multiplayer_start()
 else:
-    singleplayer_start()
+    hamilton_start()
