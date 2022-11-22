@@ -167,7 +167,7 @@ def astar_search_min_turns(problem):
     h = memoize(problem.h, 'h')
     return best_first_graph_search_min_turns(
         problem, 
-        lambda n: n.path_cost + h(n) + n.turn, # la f da minimizzare 
+        lambda n: n.path_cost + h(n) + n.turn + n.neighbours , # la f da minimizzare 
         lambda n: n.path_cost # la funzione da massimizzare nel caso in cui ci siano più nodi con pari valore di f
     )
 
@@ -179,3 +179,4 @@ def astar_search_saving_spaces(problem):
         lambda n: n.path_cost + h(n) + n.neighbours, # la f da minimizzare 
         lambda n: n.path_cost # la funzione da massimizzare nel caso in cui ci siano più nodi con pari valore di f
     )
+
