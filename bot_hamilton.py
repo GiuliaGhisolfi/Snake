@@ -95,6 +95,7 @@ class Bot_hamilton(Player):
         return (int(coordinates[0]), int(coordinates[1]))
 
     def _relative_dist(self, ori, x, size):
+        
         if ori > x:
             x += size
         return x - ori
@@ -116,26 +117,28 @@ class Bot_hamilton(Player):
         head_coord = self.coordinate_from_node(head)
         head_ham_pos = ham_cycle[head_coord] # head idx
         for i in ham_cycle.keys():
-            if ham_cycle[i]==(head_ham_pos+1):
+            if ham_cycle[i]==(head_ham_pos+1)%64:
                 move = node2string(i[0], i[1])
+                break
         if len(self.snake.get_body()) < 0.5 * grid_area:
             node = astar_search(grid_problem)
             if node != None:
                 path_str = node.solution()
                 path_coord = self.coordinate_from_node(path_str[0])
-                path_ham_pos = ham_cycle[path_coord] # next idx
+                path_ham_pos = ham_cycle[path_coord] # next idx (seguendo il path dell'a*)
                 tail_coord = self.coordinate_from_node(self.prec_snake_body[0])
                 tail_ham_pos = ham_cycle[tail_coord] # tail idx
                 food_coord = self.coordinate_from_node(goal)
                 food_ham_pos = ham_cycle[food_coord] # food idx
                 if not(len(path_str) == 1 and abs(food_ham_pos-tail_ham_pos)):
                     head_rel = self._relative_dist(tail_ham_pos, head_ham_pos, grid_area)
-                    path_rel = self._relative_dist(tail_ham_pos, path_ham_pos, grid_area)
+                    path_rel = self._relative_dist(tail_ham_pos, path_ham_pos, grid_area) # path a*
                     food_rel = self._relative_dist(tail_ham_pos, food_ham_pos, grid_area)
                     if path_rel > head_rel and path_rel <= food_rel:
                         move = path_str[0]
 
         self.next_move = graphDir_to_gameDir(head, move)
+        return self.next_move
 
     ########## funzioni default del bot ###################
     def get_best_food(self):
