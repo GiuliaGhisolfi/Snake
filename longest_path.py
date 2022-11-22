@@ -1,12 +1,13 @@
 from search import *
 
-def Grid(width, height, obstacles={}):
+def Grid(width, height, obstacles=[]):
     def neighbors(x, y):
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         for (dx, dy) in directions:
             (nx, ny) = (x + dx, y + dy)
             if (nx, ny) not in obstacles and 0 <= nx < width and 0 <= ny < height:
                 yield (nx, ny)
+                
     grid = {}
     for x in range(width):
         for y in range(height):
@@ -107,5 +108,5 @@ print(longest_path(grid, (2,0), (0,0)))
 grid = Grid(4, 4)
 print(longest_path(grid, (2,2), (0,0)))
 
-grid = Grid(4, 4, obstacles={(2,1)})
+grid = Grid(4, 4, obstacles=[(2,1)])
 print(longest_path(grid, (2,2), (0,0)))

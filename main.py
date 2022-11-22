@@ -10,7 +10,7 @@ from bottoni import *
 from obstacles import *
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
-FRAME_DELAY = 100
+FRAME_DELAY = 15
 X_BLOCKS = 10
 Y_BLOCKS = 10
    
