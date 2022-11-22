@@ -10,6 +10,7 @@ import food
 from grid_problem import *
 
 def get_cycle(n): # n must be even (grid must be square)
+    # TODO: rendere utilizzabile per tutte le griglie con almeno una dimensione pari e ciclo più bello
     hamcycle = {}
     for i in range(n-1):
         hamcycle[(i, 0)] = i
@@ -22,7 +23,6 @@ def get_cycle(n): # n must be even (grid must be square)
     hamcycle[(n-1, n-1)] = (n-1)*2
     return hamcycle
 
-
 def delete_cell(grid, del_key):
     grid.pop(del_key, None)
     for key in grid:
@@ -34,10 +34,8 @@ def coordinates2cell(x, y, bsize):
 def node2string(x, y):
     return "(%d,%d)" % (x, y)
 
-# restituisce la posizione della cella targhet rispetto alla cella head
-
-
 def graphDir_to_gameDir(head_pos, target_pos):
+    # restituisce la posizione della cella target rispetto alla cella head
     headPosList = head_pos[1:-1].split(',')
     targetPosList = target_pos[1:-1].split(',')
 
@@ -52,7 +50,6 @@ def graphDir_to_gameDir(head_pos, target_pos):
 
     return ret
 
-
 def build_location(grid):
     locations = {}
     for key in grid:
@@ -62,7 +59,6 @@ def build_location(grid):
 
 
 class Bot_hamilton(Player):
-    # input anche lo snake
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
         self.next_move = Directions.DOWN  # random
         self.grid = grid
@@ -72,8 +68,6 @@ class Bot_hamilton(Player):
         self.prec_snake_body = self.snake.get_body()
 
         self.food = food
-        # vuota così che dopo start calcola subito
-        #self.prec_food_position = self.food.get_positions()
 
         if len(self.prec_snake_body) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
@@ -94,8 +88,7 @@ class Bot_hamilton(Player):
         coordinates = node[1:-1].split(',')
         return (int(coordinates[0]), int(coordinates[1]))
 
-    def _relative_dist(self, ori, x, size):
-        
+    def _relative_dist(self, ori, x, size):    
         if ori > x:
             x += size
         return x - ori
@@ -118,24 +111,30 @@ class Bot_hamilton(Player):
         head_ham_pos = ham_cycle[head_coord] # head idx
         for i in ham_cycle.keys():
             if ham_cycle[i]==(head_ham_pos+1)%grid_area:
-                move = node2string(i[0], i[1])
+                move = node2string(i[0], i[1]) # seguo ciclo hamiltoniano
                 break
         if len(self.snake.get_body()) < 0.5 * grid_area:
             node = astar_search(grid_problem)
             if node != None:
+                # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
                 path_str = node.solution()
                 path_coord = self.coordinate_from_node(path_str[0])
-                path_ham_pos = ham_cycle[path_coord] # next idx (seguendo il path dell'a*)
+                path_ham_pos = ham_cycle[path_coord] # netx idx (seguendo path a*)
                 tail_coord = self.coordinate_from_node(self.prec_snake_body[0])
                 tail_ham_pos = ham_cycle[tail_coord] # tail idx
                 food_coord = self.coordinate_from_node(goal)
                 food_ham_pos = ham_cycle[food_coord] # food idx
                 if not(len(path_str) == 1 and abs(food_ham_pos-tail_ham_pos)):
                     head_rel = self._relative_dist(tail_ham_pos, head_ham_pos, grid_area)
-                    path_rel = self._relative_dist(tail_ham_pos, path_ham_pos, grid_area) # path a*
+                    # distanza tra tail e head, seguendo ciclo ham ( == len(snake.body) )
+                    path_rel = self._relative_dist(tail_ham_pos, path_ham_pos, grid_area)
+                    # distanza tra tail e prossima cella ocuupata dal path a*, seguendo ciclo ham
                     food_rel = self._relative_dist(tail_ham_pos, food_ham_pos, grid_area)
+                    # distanza tra tail e food position, seguendo ciclo ham
                     if path_rel > head_rel and path_rel <= food_rel:
-                        move = path_str[0]
+                        # dist da tail snake a cella a* > len snake (i.e. non mi mangio) and
+                        # dist da tail snake a cella a* <= dist food a tail (i.e. faccio un taglio utile)
+                        move = path_str[0] # seguo path a*
 
         self.next_move = graphDir_to_gameDir(head, move)
         return self.next_move
@@ -144,10 +143,8 @@ class Bot_hamilton(Player):
     def get_best_food(self):
         return self.prec_food_position[0]  # una mela a caso, per ora
 
-    # funzione usata per chiedere la prossima mossa dello snake
-
     def get_true_graph(self, snake_false_body):
-        # eliminiamo dal grafo le celle occupate da noi
+        # eliminiamo dal grafo le celle occupate dal corpo dello snake
         new_grid = copy.deepcopy(self.grid.grid)
 
         for segment in snake_false_body:
