@@ -73,7 +73,7 @@ class Bot_hamilton(Player):
 
         self.food = food
         # vuota così che dopo start calcola subito
-        self.prec_food_position = self.food.get_positions()
+        #self.prec_food_position = self.food.get_positions()
 
         if len(self.prec_snake_body) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
@@ -83,7 +83,7 @@ class Bot_hamilton(Player):
         self.path_to_food = []
 
         # strategia attuale
-        self.chosen_strat = self.hamilton_cicle_start()
+        self.chosen_strat = self.hamilton_cicle_start
 
     def start(self):
         self.chosen_strat()
@@ -100,11 +100,9 @@ class Bot_hamilton(Player):
         return x - ori
 
     def hamilton_cicle_start(self):
-        # prima iterazione va fatta sempre ed è safe, non succedono cose strane
-        self.prec_food_position = self.food.get_positions()
         self.prec_snake_body = self.snake.get_body()
 
-        goal = self.get_best_food()
+        goal = self.food.position[0]
         head = self.prec_snake_body[-1]
 
         dummy_g = self.get_true_graph(self.prec_snake_body[:-1])
@@ -138,13 +136,6 @@ class Bot_hamilton(Player):
                         move = path_str[0]
 
         self.next_move = graphDir_to_gameDir(head, move)
-        """
-        self.lock.acquire()
-        try:
-            self.next_move = graphDir_to_gameDir(head, move)
-        finally:
-            self.lock.release()
-            """
 
     ########## funzioni default del bot ###################
     def get_best_food(self):
@@ -160,3 +151,6 @@ class Bot_hamilton(Player):
             delete_cell(new_grid, segment)
 
         return new_grid
+    
+    def get_next_move(self):
+        return self.chosen_strat()
