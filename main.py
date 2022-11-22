@@ -24,6 +24,7 @@ pygame.display.set_caption("Snake")
 font = pygame.font.SysFont('Arial', 40, True)
 clock = pygame.time.Clock()
 """ funzione DEPRECATA
+
 def old_start():
     players_info = dict_info
     two_players = (len(players_info) == 2)

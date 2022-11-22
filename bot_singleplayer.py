@@ -140,7 +140,7 @@ class Bot_singleplayer(Player):
         def get_ham_path(start, goal, graph):
             return None
         
-        
+
         #definiamo tg se non già fatto
         if not tg:
             tg = self.get_true_graph(self.snake.fast_get_body()[:-1])
