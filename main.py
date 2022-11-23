@@ -120,11 +120,27 @@ def singleplayer_start():
 
             steps = 0
 
-        window.fill(BLACK)
-        snake.draw(pygame, window, grid)
-        obstacles.draw(pygame, window, grid)
-        food.draw(pygame, window, grid)
-        pygame.display.update()
+        grid_area = X_BLOCKS * Y_BLOCKS
+        if (snake.length == grid_area - 1):
+            snake.draw(pygame, window, grid)
+            obstacles.draw(pygame, window, grid)
+            food.draw(pygame, window, grid)
+            
+            text = font.render('COMPLETE', True, FUXIA)
+            window.blit(text, (180, 270))
+            
+            pygame.display.update()
+            pygame.time.delay(700)
+            
+            snake.respawn(grid)
+            obstacles.spawn(snakes, grid)
+            food.respawn(snakes, grid,obstacles)
+        else:
+            window.fill(BLACK)
+            snake.draw(pygame, window, grid)
+            obstacles.draw(pygame, window, grid)
+            food.draw(pygame, window, grid)
+            pygame.display.update()
 
 def hamilton_start():
     players_info = dict_info_single
@@ -215,12 +231,28 @@ def hamilton_start():
             food.respawn(snakes, grid,obstacles)
 
             steps = 0
-
-        window.fill(BLACK)
-        snake.draw(pygame, window, grid)
-        #obstacles.draw(pygame, window, grid)
-        food.draw(pygame, window, grid)
-        pygame.display.update()
+            
+        grid_area = X_BLOCKS * Y_BLOCKS
+        if (snake.length == grid_area - 1):
+            snake.draw(pygame, window, grid)
+            #obstacles.draw(pygame, window, grid)
+            food.draw(pygame, window, grid)
+            
+            text = font.render('COMPLETE', True, FUXIA)
+            window.blit(text, (180, 270))
+            
+            pygame.display.update()
+            pygame.time.delay(700)
+            
+            snake.respawn(grid)
+            #obstacles.spawn(snakes, grid)
+            food.respawn(snakes, grid,obstacles)
+        else:
+            window.fill(BLACK)
+            snake.draw(pygame, window, grid)
+            #obstacles.draw(pygame, window, grid)
+            food.draw(pygame, window, grid)
+            pygame.display.update()
 
 def multiplayer_start():
     players_info = dict_info
