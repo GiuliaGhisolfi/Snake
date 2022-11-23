@@ -134,7 +134,7 @@ class Button:
                 elif self.text == 'Hamilton search':
                     info_bot = {
                                "type": "sbot",  # human - sbot - mbot
-                                "color": PINK,
+                                "color": GREEN,
                                 "start_location": "top-left",
                                 "keys": {
                                     "up": pygame.K_UP,
