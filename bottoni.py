@@ -185,7 +185,7 @@ while not scelta:
             pygame.quit()
             sys.exit()
 
-    window.fill('#DCDDD8')
+    window.fill('#000000')
     buttons_draw()
     pygame.display.update()
     clock.tick(60)
@@ -205,7 +205,7 @@ while scelta == "singleplayer":
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    window.fill('#DCDDD8')
+    window.fill('#000000')
     buttons_draw()
     pygame.display.update()
     clock.tick(60)
@@ -226,7 +226,7 @@ while scelta == 'bot':
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    window.fill('#DCDDD8')
+    window.fill('#000000')
     buttons_draw()
     pygame.display.update()
     clock.tick(60)
