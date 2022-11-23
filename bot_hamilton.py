@@ -37,19 +37,24 @@ def get_cycle(grid):
             value += 1
 
     else: # x_blocks DISPARI   
-        for i in range(y_blocks-1): #i scorro le righe            
+        for i in range(y_blocks): #i scorro le righe            
             for j in range(x_blocks-1):
                 if i % 2 == 0: # righe pari
-                    hamcycle[(i, j+1)] = value
+                    hamcycle[(j+1, i)] = value
                 else: # righe dispari       
-                    hamcycle[(i, x_blocks-1-j)] = value
+                    hamcycle[(x_blocks-1-j, i)] = value
                 value += 1
+        for i in range(y_blocks-1):
+            hamcycle[(0, y_blocks-1-i)] = value
+            value += 1
+        """
         for i in range(y_blocks):
             hamcycle[(x_blocks-1, y_blocks-1-i)] = value
             value += 1
         for j in range(x_blocks-2):
             hamcycle[(x_blocks-2-j, 0)] = value
             value += 1
+            """
     return hamcycle
 
 def cycle8():
