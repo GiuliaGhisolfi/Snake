@@ -59,7 +59,6 @@ class Button:
                 self.pressed = True
                 if self.text == 'Single Player':
                     info = []
-                   # print(len(dict_info))
                     scelta = 'singleplayer'
                     return info
                 elif self.text == 'Multiplayer':
@@ -101,9 +100,8 @@ class Button:
                                     "right": pygame.K_RIGHT,
                                     "left": pygame.K_LEFT
                                         } 
-                            }
-                            
-                    scelta = 'fatto'
+                            }       
+                    scelta = 'human'
                     return info_human
                 elif self.text == 'Bot Player':
                     info_bot =  {
@@ -116,11 +114,37 @@ class Button:
                                     "right": pygame.K_RIGHT,
                                     "left": pygame.K_LEFT
                                         } 
-                            }
-                                
-                    scelta = 'fatto'
-                    return info_bot               
-                #probabilmente questo else non serve
+                            }            
+                    scelta = 'bot'
+                    return info_bot  
+                elif self.text == 'A* search':             
+                    info_bot = {
+                              "type": "sbot",  # human - sbot - mbot
+                                "color": PINK,
+                                "start_location": "top-left",
+                                "keys": {
+                                    "up": pygame.K_UP,
+                                    "down": pygame.K_DOWN,
+                                    "right": pygame.K_RIGHT,
+                                    "left": pygame.K_LEFT
+                                        } 
+                    }
+                    scelta = 'astar'
+                    return info_bot
+                elif self.text == 'Hamilton search':
+                    info_bot = {
+                               "type": "sbot",  # human - sbot - mbot
+                                "color": PINK,
+                                "start_location": "top-left",
+                                "keys": {
+                                    "up": pygame.K_UP,
+                                    "down": pygame.K_DOWN,
+                                    "right": pygame.K_RIGHT,
+                                    "left": pygame.K_LEFT
+                                        } 
+                    }
+                    scelta = 'hamilton'
+                    return info_bot
             else:
                 self.dynamic_elecation = self.elevation
                 if self.pressed == True:
@@ -185,7 +209,28 @@ while scelta == "singleplayer":
     buttons_draw()
     pygame.display.update()
     clock.tick(60)
-if scelta == 'fatto':
+if scelta == 'bot' or scelta == 'human':
+    for b in buttons:
+            b.draw()
+    pygame.display.update()
+    pygame.time.delay(200)
+
+buttons.pop(0)
+buttons.pop(0)
+
+button3 = Button('A* search',310,70,(40,300),5)
+button4 = Button('Hamilton search',310,70,(370,300),5)
+
+while scelta == 'bot':
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    window.fill('#DCDDD8')
+    buttons_draw()
+    pygame.display.update()
+    clock.tick(60)
+if scelta == 'astart' or scelta == 'hamilton':
     for b in buttons:
             b.draw()
     pygame.display.update()
