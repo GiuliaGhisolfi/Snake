@@ -12,9 +12,9 @@ from obstacles import *
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
-FRAME_DELAY = 30
-X_BLOCKS = 8
-Y_BLOCKS = 8
+FRAME_DELAY = 10
+X_BLOCKS = 11
+Y_BLOCKS = 10
 
    
 pygame.init()
