@@ -208,3 +208,6 @@ class Bot_hamilton(Player):
             delete_cell(new_grid, segment)
 
         return new_grid
+    
+    def get_next_move(self):
+        return self.chosen_strat()
