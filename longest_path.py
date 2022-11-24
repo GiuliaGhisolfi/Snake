@@ -100,7 +100,8 @@ def longest_path(grid, start, goal):
     path.pop(0)
     return path
 
-# TESTS
+# TODO: qua stampa, togliereeee!!!
+# #TESTS
 
 grid = Grid(4, 4)
 print(longest_path(grid, (2,0), (0,0)))
