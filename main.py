@@ -13,8 +13,8 @@ from obstacles import *
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
 FRAME_DELAY = 10
-X_BLOCKS = 11
-Y_BLOCKS = 10
+X_BLOCKS = 17
+Y_BLOCKS = 16
 
    
 pygame.init()
@@ -121,10 +121,9 @@ def singleplayer_start():
             steps = 0
 
         grid_area = X_BLOCKS * Y_BLOCKS
-        if (snake.length == grid_area - 1):
+        if (snake.length == grid_area):
             snake.draw(pygame, window, grid)
             obstacles.draw(pygame, window, grid)
-            food.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, FUXIA)
             window.blit(text, (180, 270))
@@ -233,10 +232,10 @@ def hamilton_start():
             steps = 0
             
         grid_area = X_BLOCKS * Y_BLOCKS
-        if (snake.length == grid_area - 1):
+        if (snake.length == grid_area):
             snake.draw(pygame, window, grid)
             #obstacles.draw(pygame, window, grid)
-            food.draw(pygame, window, grid)
+            #food.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, FUXIA)
             window.blit(text, (180, 270))
