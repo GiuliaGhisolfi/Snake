@@ -63,12 +63,15 @@ class Grid:
                     yield (nx, ny)
                     
         grid = {}
+        """for x in range(self.x_blocks):
+            for y in range(self.y_blocks):
+                #value = {}
+                for neigh in list(neighbors(x, y)):
+                    #value[neigh] = 1
+                grid[(x, y)] = value"""
         for x in range(self.x_blocks):
             for y in range(self.y_blocks):
-                value = {}
-                for neigh in list(neighbors(x, y)):
-                    value[neigh] = 1
-                grid[(x, y)] = value
+                grid[(x, y)] = list(neighbors(x, y))
         return grid
 
     def spawn_obstacles(self, snakes):
@@ -123,7 +126,9 @@ class Grid:
     def delete_cell(self, del_key):
         self.grid.pop(del_key, None)
         for key in self.grid:
-            self.grid[key].pop(del_key, None)
+            #self.grid[key].pop(del_key, None)
+            if del_key in self.grid[key]:
+                self.grid[key].remove(del_key)
 
     def get_obstacles(self):
         return copy.deepcopy(self.obstacles)

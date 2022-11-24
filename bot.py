@@ -5,12 +5,13 @@ class BotS(Player):
     def delete_cell(self, grid, del_key):
         grid.pop(del_key, None)
         for key in grid:
-            grid[key].pop(del_key, None)
+            if del_key in grid[key]:
+                grid[key].remove(del_key)
 
     # restituisce la posizione della cella targhet rispetto alla cella head
     def graphDir_to_gameDir(self, head_pos, target_pos):
 
-        if head_pos[0] < target_pos[0]:  # x shift
+        if target_pos[0] < head_pos[0]:  # x shift
             return Directions.LEFT
         elif target_pos[0] > head_pos[0]:
             return Directions.RIGHT

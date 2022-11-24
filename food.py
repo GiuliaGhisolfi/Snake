@@ -6,7 +6,7 @@ import copy
 class Food:
     def __init__(self, color):
         self.color = color #immutabile
-        self.position = (-1, -1) #da lockare!
+        self.position = [] #da lockare!
 
     def draw(self, game, window, grid):
 
@@ -17,7 +17,12 @@ class Food:
             (x+1, y+1, grid.block_size-2, grid.block_size-2))
         
     def coord_from_graph(self, grid):
-        node = self.get_positions()
+        node = self.position[0]
+
+        #chars = ['(', ')']
+        #node = node.translate(str.maketrans({ord(char): '' for char in chars}))
+        #node = node.split(',')
+        #for i in range(2): node[i] = int(node[i])
         return (node[0]*grid.block_size, node[1]*grid.block_size)
 
     def is_overlapped(self, position, snakes, grid):
@@ -35,9 +40,9 @@ class Food:
             x_new = rand.randrange(0, grid.x_blocks)
             y_new = rand.randrange(0, grid.y_blocks)
             
-            new_position = (x_new, y_new)
-            if new_position != self.get_positions and not self.is_overlapped(new_position, snakes, grid):
-                self.position = new_position
+            new_position = x_new, y_new
+            if [new_position] != self.position and not self.is_overlapped(new_position, snakes, grid):
+                self.position = [new_position]
                 break
 
     def get_positions(self):

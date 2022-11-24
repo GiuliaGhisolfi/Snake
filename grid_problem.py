@@ -14,7 +14,7 @@ astar_search_min_turns(grid_problem) con astar_search(grid_problem).
 argomenti, che mi ammazza da vedere.'''
 
 # L'euristica utilizza dai problemi istanze della classe GridProblem è la distanza di Manhattan
-class GridProblem(GraphProblem):
+"""class GridProblem(GraphProblem):
 
     def __init__(self, initial, horizontal_orientation, goal, graph):
         super().__init__(initial, goal, graph)
@@ -34,7 +34,30 @@ class GridProblem(GraphProblem):
             return manhattan_distance(locs[node.state], locs[self.goal]) #TODO: qua non funziona mai, ma da due problemi diversi se 
             # si debugga con le due strategie
         else:
-            return np.inf
+            return np.inf"""
+
+class GridProblem(Problem):
+    def __init__(self, initial, goal, grid):
+        super().__init__(initial, goal)
+        self.grid = grid
+    
+    def actions(self, state): 
+        return self.grid[state]
+
+    def result(self, state, action):
+        return action
+    
+    def h(self, state): # Manhattan distance
+        if isinstance(self.goal, list):
+            min = np.inf
+            for goal in self.goal:
+                d = abs(state.state[0]-goal[0]) + abs(state.state[1]-goal[1])
+                if d < min:
+                    min = d
+            d = min
+        else:
+            d = abs(state.state[0]-self.goal[0]) + abs(state.state[1]-self.goal[1])
+        return d
 
 # Gli elementi della coda vengono ordinati in base a f e in caso di pareggi in base a t
 class PriorityQueueTies:
