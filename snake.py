@@ -129,29 +129,24 @@ class Snake:
     def check_tail_collision(self):
         condition = False
         head = self.body[-1]
-        for i in range(len(self.body) - 1):
-            segment = self.body[i]
+        for segment in self.body[:-1]:
             if head == segment:
                 condition = True
         return condition
 
     def check_adversarial_collision(self, adversarial_body):
         condition = False
-
         head = self.body[-1]
-        for i in range(len(adversarial_body)):
-            segment = adversarial_body[i]
+        for segment in adversarial_body:
             if head == segment:
                 condition = True
         return condition
 
     def check_bounds(self, grid):
         condition = False
-
         head = self.body[-1]
         if head not in grid.grid:
             condition = True
-
         return condition
 
     def get_body(self):
