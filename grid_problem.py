@@ -20,6 +20,11 @@ class GridProblem(GraphProblem):
         super().__init__(initial, goal, graph)
         self.horizontal_orientation = horizontal_orientation
     
+    def node2string(self, node):
+        x = node[0]
+        y = node[1]
+        return "(%d,%d)" % (x, y)
+    
     def h(self, node):
         locs = getattr(self.graph, 'locations', None)
         if locs:
