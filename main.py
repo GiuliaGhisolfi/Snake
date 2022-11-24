@@ -288,10 +288,8 @@ def multiplayer_start():
                 right_key=p["keys"]["right"],
                 left_key=p["keys"]["left"])
         elif p["type"] == "mbot":
-            player = Bot_twoplayers(grid, obstacles)
+            player = Bot_twoplayers(grid)
             num_threads = num_threads + 1
-        elif p["type"] == "sbot":
-            player = Bot_singleplayer(grid, snakes[i], food, obstacles, True)
         else:
             print('PLAYERS INFO ERROR: player type not recognized')
             exit(1)
@@ -333,15 +331,14 @@ def multiplayer_start():
             snakes[i].move(dir)
             if snakes[i].can_eat(food):
                 snakes[i].eat()
-                food.respawn(snakes, grid, obstacles)
+                food.respawn(snakes, grid)
             if (players_info[i]['type'] != 'sbot' and players_info[i]['type'] != 'human'): #modifica per fa funzionare sbot o human
                 tasks[i].cancel()
 
         lost = []
         for i in range(len(snakes)):
             lost.append(snakes[i].check_bounds(grid) or
-                        snakes[i].check_tail_collision() or
-                        snakes[i].check_obstacles_collision(obstacles))
+                        snakes[i].check_tail_collision())
 
         collisions = []
         collisions.append(
@@ -390,15 +387,15 @@ def multiplayer_start():
                 GAMEOVER_FILE.write('\n')
                 
                 snakes[i].respawn(grid)
-            obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            grid.spawn_obstacles(snakes, grid)
+            food.respawn(snakes, grid)
 
             steps = 0
 
         window.fill(colors.BLACK)
         for i in range(len(snakes)):
             snakes[i].draw(pygame, window, grid)
-        obstacles.draw(pygame, window, grid)
+        grid.draw_obstacles(pygame, window)
         food.draw(pygame, window, grid)
         pygame.display.update()
 
