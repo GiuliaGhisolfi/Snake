@@ -26,7 +26,8 @@ class GridProblem(GraphProblem):
             if type(node) is str:
                 return manhattan_distance(locs[node], locs[self.goal])
             
-            return manhattan_distance(locs[node.state], locs[self.goal])
+            return manhattan_distance(locs[node.state], locs[self.goal]) #TODO: qua non funziona mai, ma da due problemi diversi se 
+            # si debugga con le due strategie
         else:
             return np.inf
 
