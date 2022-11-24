@@ -7,14 +7,15 @@ import copy
 import grid
 import snake
 import food
+from colors import Colors 
 import obstacles
 from grid_problem import *
 from bottoni import *
 import longest_path as lp
 
-FIRST_IT_C = RED
-TO_FOOD_C = ORANGE
-DEF_C = BLUE
+FIRST_IT_C = Colors.RED
+TO_FOOD_C = Colors.ORANGE
+DEF_C = Colors.BLUE
 
 def delete_cell(grid, del_key):
     grid.pop(del_key, None)
@@ -24,41 +25,23 @@ def delete_cell(grid, del_key):
 def coordinates2cell(x, y, bsize):
     return "(%d,%d)" % (x/bsize, y/bsize)
 
-def strN_to_intN(n):
-    a = n[1:-1].split(',')
-    return (int(a[0]), int(a[1]))
-
 # restituisce la posizione della cella targhet rispetto alla cella head
 def graphDir_to_gameDir(head_pos, target_pos):
-    headPosList = head_pos[1:-1].split(',')
-    targetPosList = target_pos[1:-1].split(',')
 
-    if int(targetPosList[0]) < int(headPosList[0]):  # x shift
-        ret = Directions.LEFT
-    elif int(targetPosList[0]) > int(headPosList[0]):
-        ret = Directions.RIGHT
-    elif int(targetPosList[1]) < int(headPosList[1]):  # y shift
-        ret = Directions.UP
+    if head_pos[0] < target_pos[0]:  # x shift
+        return Directions.LEFT
+    elif target_pos[0] > head_pos[0]:
+        return Directions.RIGHT
+    elif target_pos[1] < head_pos[1]:  # y shift
+        return Directions.UP
     else:
-        ret = Directions.DOWN
-
-    return ret
+        return Directions.DOWN
 
 def build_location(grid):
     locations = {}
     for key in grid:
-        sL = key.replace('(', '').replace(')','').split(',')
-        locations[key]=(int(sL[0]), int(sL[1]))
+        locations[key]=key
     return locations
-
-
-def stringGrid_to_intGrid(grid):
-    ret = {}
-    for key in grid:
-        ret[key] = []
-        for x in grid[key]:
-            ret[key].append(strN_to_intN(x))
-
 
 class Bot_singleplayer(Player):
     # input anche lo snake
@@ -67,13 +50,11 @@ class Bot_singleplayer(Player):
         self.grid = grid
         self.locations = build_location(self.grid.grid) #immutabile
         self.debug = debug
-        self.obstacles = obstacles
-        self.snake = snake
-        #self.snake_body = self.snake.get_body()
-        
-        self.food = food
-        #self.prec_food_position = self.food.get_positions() #vuota così che dopo start calcola subito
-        
+        #self.obstacles = obstacles
+
+        self.snake = snake       
+        self.food = food 
+
         if len(self.snake.get_body()) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
             exit() #boom
@@ -91,7 +72,6 @@ class Bot_singleplayer(Player):
     #PER CAMBIATE LA CHIAMATA DU FUNZIONE AD A* O COSE SIMILI CAMBIARE QUESTA FUNZIONE E self.chosen_search
     def graph_search(self, start, goal, graph):
         
-
         if self.chosen_search == 0:
             graph = Graph(graph) 
             graph.locations = self.locations
@@ -101,11 +81,12 @@ class Bot_singleplayer(Player):
             if dummy != None:
                 return dummy.solution()
             else: return dummy
+
         elif self.chosen_search == 1:
-            newG = stringGrid_to_intGrid(graph)
+            newG = graph
             newG.locations = self.locations
-            goal = strN_to_intN(goal)
-            start = strN_to_intN(start)
+            goal = goal
+            start = start
 
             retInt = lp.longest_path(newG, start, goal)
             retS = []
@@ -192,9 +173,7 @@ class Bot_singleplayer(Player):
 
         for segment in snake_false_body: #manca la testa
             delete_cell(new_grid, segment)
-        for pos in self.obstacles.positions:
-            str_pos = "(%d,%d)" % (pos[0], pos[1])
-            delete_cell(new_grid, str_pos)
+
         return new_grid
 
     def change_color(self):
@@ -209,7 +188,6 @@ class Bot_singleplayer(Player):
 
         # inizio e basta
         if self.default_path == None and self.path_to_food == None:
-
             if self.debug:
                 self.snake.color = FIRST_IT_C 
             
