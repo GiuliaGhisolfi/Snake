@@ -12,7 +12,7 @@ import colors
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
-FRAME_DELAY = 10
+FRAME_DELAY = 200
 X_BLOCKS = 17
 Y_BLOCKS = 16
 
@@ -270,7 +270,7 @@ def multiplayer_start():
     #obstacles = Obstacles('gray')
     #obstacles.spawn(snakes, grid)
 
-    food = Food(Colors.RED)
+    food = Food(colors.RED)
     food.respawn(snakes, grid)
 
     for i, p in enumerate(players_info):  # indice e iteratore nella lista (piccina)

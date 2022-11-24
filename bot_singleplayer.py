@@ -8,14 +8,14 @@ import grid
 import snake
 import food
 from bot import BotS
-from colors import Colors 
+import colors
 from grid_problem import *
 from bottoni import *
 import longest_path as lp
 
-FIRST_IT_C = Colors.RED
-TO_FOOD_C = Colors.ORANGE
-DEF_C = Colors.BLUE
+FIRST_IT_C = colors.RED
+TO_FOOD_C = colors.ORANGE
+DEF_C = colors.BLUE
 
 
 class Bot_singleplayer(BotS):

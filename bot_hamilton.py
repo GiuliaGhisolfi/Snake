@@ -105,7 +105,7 @@ class Bot_hamilton(BotS):
     def hamilton_cicle_start(self):
         self.prec_snake_body = self.snake.get_body()
 
-        goal = self.food.get_positions
+        goal = self.food.get_positions()
         head = self.prec_snake_body[-1]
 
         dummy_g = self.get_true_graph(self.prec_snake_body[:-1])
@@ -123,7 +123,7 @@ class Bot_hamilton(BotS):
                 move = (i[0], i[1]) # seguo ciclo hamiltoniano
                 break
         if len(self.snake.get_body()) < 0.5 * grid_area:
-            node = astar_search(grid_problem)
+            node = astar_search(grid_problem) #TODO: QUA SI ROMPEEE
             if node != None:
                 # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
                 path_coord = node.solution()

@@ -90,7 +90,7 @@ class Grid:
             game.draw.rect(
                 window,
                 self.obstacles[i].color,
-                ((self.obstacles[i][0]) * self.block_size +1 , (self.obstacles[i][1]) * self.block_size +1, self.block_size-2, self.block_size-2))
+                ((self.obstacles[i].x_position) * self.block_size +1 , (self.obstacles[i].y_position) * self.block_size +1, self.block_size-2, self.block_size-2))
 
     def is_ammissible(self, new_obstacle, snakes):
         for i in range(len(self.obstacles)):

@@ -1,6 +1,6 @@
 import pygame, sys
 import copy
-from colors import Colors
+import colors
 #from main import *
 
 scelta = False
@@ -57,7 +57,7 @@ class Button:
                     info = [
                             {   
                                 "type": "mbot",
-                                "color": Colors.GREEN,
+                                "color": colors.GREEN,
                                 "scelta":"singleplayer",
                                 "start_location": "top-left",
                                 "keys": {
@@ -69,7 +69,7 @@ class Button:
                             },
                             {
                                 "type": "mbot",
-                                "color": Colors.BLUE,
+                                "color": colors.BLUE,
                                 "start_location": "bottom-right",
                                 "keys": {
                                     "up": pygame.K_UP,
@@ -98,7 +98,7 @@ class Button:
                 elif self.text == 'Bot Player':
                     info_bot =  {
                                 "type": "sbot",  # human - sbot - mbot
-                                "color": Colors.PINK,
+                                "color": colors.PINK,
                                 "start_location": "top-left",
                                 "keys": {
                                     "up": pygame.K_UP,
@@ -112,7 +112,7 @@ class Button:
                 elif self.text == 'A* search':             
                     info_bot = {
                               "type": "sbot",  # human - sbot - mbot
-                                "color": Colors.PINK,
+                                "color": colors.PINK,
                                 "start_location": "top-left",
                                 "keys": {
                                     "up": pygame.K_UP,
@@ -126,7 +126,7 @@ class Button:
                 elif self.text == 'Hamilton search':
                     info_bot = {
                                "type": "sbot",  # human - sbot - mbot
-                                "color": Colors.GREEN,
+                                "color": colors.GREEN,
                                 "start_location": "top-left",
                                 "keys": {
                                     "up": pygame.K_UP,
