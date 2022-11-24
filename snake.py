@@ -133,15 +133,6 @@ class Snake:
     def can_eat(self, food):
         return self.body[-1] == food.position[0]  # confronto tra nodi
 
-    def check_obstacles_collision(self, obstacles):
-        condition = False
-        head = self.body[-1]
-        for i in range(len(obstacles.positions)):
-            str_position = (obstacles.positions[i][0], obstacles.positions[i][1])
-            if head == str_position:
-                condition = True
-        return condition
-
     def check_tail_collision(self):
         condition = False
         head = self.body[-1]
