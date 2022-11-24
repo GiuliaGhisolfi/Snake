@@ -2,7 +2,6 @@ import threading
 import random
 import copy
 from directions import Directions
-from my_a_star import My_a_star
 from player import Player
 from search import *
 from grid_problem import *
@@ -39,12 +38,13 @@ def cell2direction(grid_position, curr_position):
             return Directions.DOWN
 
 class Bot_twoplayers(Player):
-    def __init__(self, grid):
+    def __init__(self, grid, obstacles):
         self.next_move = None
         self.lock = threading.Lock()
         self.grid = grid
         self.grid = grid.grid
         self.locations = build_locations(grid.x_blocks, grid.y_blocks)
+        self.obstacles = obstacles
 
     def compute_next_move(self, snakes, my_index, food):
         my_snake = snakes[my_index]
@@ -64,6 +64,8 @@ class Bot_twoplayers(Player):
             for i in range(len(adv_snake.body)):
                 segment = adv_snake.body[i]
                 delete_cell(grid, segment)
+        
+        grid = self.get_true_graph(grid)
         
         # Compute the optimal path to the food
         # TODO: avoid computing it each time from scratch
@@ -88,3 +90,15 @@ class Bot_twoplayers(Player):
         move = self.next_move
         self.lock.release()
         return move
+
+    def get_true_graph(self, grid={}):
+        if not grid:
+            grid = self.grid.grid # da controllare
+
+        #eliminiamo dal grafo le celle occupate da noi
+        new_grid = copy.deepcopy(grid)
+
+        for pos in self.obstacles.positions:
+            str_pos = "(%d,%d)" % (pos[0], pos[1])
+            delete_cell(new_grid, str_pos)
+        return new_grid

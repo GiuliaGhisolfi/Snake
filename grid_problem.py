@@ -156,13 +156,27 @@ def best_first_graph_search_min_turns(problem, f, t, display=False):
                     frontier.append(child)
     return None
 
+def astar_search_opportunistic(problem, snake, grid_area):
+    # prima approssimazione: la strategia cambia quando lo snake è lungo almeno un quarto dell'area della grid
+    if(snake.length >= (grid_area / 4)):
+        return astar_search_saving_spaces(problem)
+    else:
+        return astar_search_min_turns(problem)
+
 def astar_search_min_turns(problem):
     h = memoize(problem.h, 'h')
     return best_first_graph_search_min_turns(
         problem, 
-        lambda n: n.path_cost + h(n) + n.turn, # la f da minimizzare 
+        lambda n: n.path_cost + h(n) + n.turn + n.neighbours , # la f da minimizzare 
         lambda n: n.path_cost # la funzione da massimizzare nel caso in cui ci siano più nodi con pari valore di f
     )
-# Se nella f che passiamo a best_first_graph_search_min_turns sommiamo n.neighbours non individua più il cammino più breve ma quello che rimane più vicino al corpo
-# TODO: nella prima fase del gioco bisognerebbe utilizzare l'a_star classico
-# quando il serpente diventa lungo possiamo sommare alla f n.neighbours
+
+# individua il cammino che rimane più vicino al corpo
+def astar_search_saving_spaces(problem):
+    h = memoize(problem.h, 'h')
+    return best_first_graph_search_min_turns(
+        problem, 
+        lambda n: n.path_cost + h(n) + n.neighbours, # la f da minimizzare 
+        lambda n: n.path_cost # la funzione da massimizzare nel caso in cui ci siano più nodi con pari valore di f
+    )
+
