@@ -32,19 +32,20 @@ class Snake:
                 node[i] = int(node[i])
             body_coord[len(body_coord):] = [
                 (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
-        return body_coord"""     
+        return body_coord"""
+       
            
     def coord_from_graph(self, node_list, grid):
         body_coord = []
         for node in node_list:
-            node = self.position[0]
+            #node = self.position[0]
             body_coord[len(body_coord):] = [
                 (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
         return body_coord
 
     def draw(self, game, window, grid):
         # riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
-        body_coord = self.coordinate_from_nodes(self.body, grid)
+        body_coord = self.coord_from_graph(self.body, grid)
 
         bsize = grid.block_size
         head = body_coord[-1] # tupla di interi
