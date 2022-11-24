@@ -83,11 +83,9 @@ def graphDir_to_gameDir(head_pos, target_pos):
     return ret
 
 def build_location(grid):
-    # TODO: togliere!!!!!!!!!!!!!!
     locations = {}
     for key in grid:
-        sL = key.replace('(', '').replace(')', '').split(',')
-        locations[key] = (int(sL[0]), int(sL[1]))
+        locations[key]=key
     return locations
 
 
@@ -95,7 +93,7 @@ class Bot_hamilton(Player):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
         self.next_move = Directions.DOWN  # random
         self.grid = grid
-        self.locations = build_location(self.grid.grid)  # immutabile
+        self.locations = build_location(self.grid.grid) #immutabile
         self.snake = snake
         self.prec_snake_body = self.snake.get_body()
         self.food = food
