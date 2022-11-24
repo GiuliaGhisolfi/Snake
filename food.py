@@ -10,29 +10,28 @@ class Food:
 
     def draw(self, game, window, grid):
 
-        [x,y] = self.integer_from_string(grid)
+        [x,y] = self.coord_from_graph(grid)
         game.draw.rect(
             window,
             self.color,
             (x+1, y+1, grid.block_size-2, grid.block_size-2))
         
-    def integer_from_string(self, grid):
+    def coord_from_graph(self, grid):
         node = self.position[0]
-        chars = ['(', ')']
-        node = node.translate(str.maketrans({ord(char): '' for char in chars}))
-        node = node.split(',')
-        for i in range(2):
-            node[i] = int(node[i])
-        return [int(node[0])*grid.block_size, int(node[1])*grid.block_size]
+
+        #chars = ['(', ')']
+        #node = node.translate(str.maketrans({ord(char): '' for char in chars}))
+        #node = node.split(',')
+        #for i in range(2): node[i] = int(node[i])
+        return (node[0]*grid.block_size, node[1]*grid.block_size)
 
     def is_overlapped(self, position, snakes, obstacles):
-        for i in range(len(snakes)):
-            for segment in snakes[i].body:
+        for s in snakes:
+            for segment in s.body:
                 if segment == position:
                     return True
-        for i in range(len(obstacles.positions)): #dopo facciamo la deepcopy
-            str_position = "(%d,%d)" % (obstacles.positions[i][0], obstacles.positions[i][1])
-            if position == str_position:
+        for p in obstacles.positions: #dopo facciamo la deepcopy
+            if position == p: #GETTER!!!!!!!!
                 return True
         return False
 
@@ -41,7 +40,7 @@ class Food:
             x_new = rand.randrange(0, grid.x_blocks)
             y_new = rand.randrange(0, grid.y_blocks)
             
-            new_position = "(%d,%d)" % (x_new, y_new)
+            new_position = x_new, y_new
             if [new_position] != self.position and not self.is_overlapped(new_position, snakes, obstacles):
                 self.position = [new_position]
                 break
