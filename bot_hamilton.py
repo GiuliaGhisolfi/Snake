@@ -66,7 +66,7 @@ class Bot_hamilton(Player):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
         self.next_move = Directions.DOWN  # random
         self.grid = grid
-        self.locations = build_location(self.grid.grid) #immutabile
+        self.locations = self.build_location(self.grid.grid) #immutabile
         self.snake = snake
         self.prec_snake_body = self.snake.get_body()
         self.food = food
@@ -148,7 +148,7 @@ class Bot_hamilton(Player):
         # MA HA SENSO???
         # se riusciamo a fare i tagli bene è meglio!!!!!!!!!!
         # anche partendo dai cicli ham più semplici                
-        self.next_move = graphDir_to_gameDir(head, move)
+        self.next_move = self.graphDir_to_gameDir(head, move)
         return self.next_move
 
     def get_true_graph(self, snake_false_body):
@@ -156,7 +156,7 @@ class Bot_hamilton(Player):
         new_grid = copy.deepcopy(self.grid.grid)
 
         for segment in snake_false_body:
-            delete_cell(new_grid, segment)
+            self.delete_cell(new_grid, segment)
 
         return new_grid
     
