@@ -1,4 +1,3 @@
-import threading
 from directions import Directions
 from player import Player
 from search import *
@@ -47,14 +46,6 @@ def get_cycle(grid):
         for i in range(y_blocks-1):
             hamcycle[(0, y_blocks-1-i)] = value
             value += 1
-        """
-        for i in range(y_blocks):
-            hamcycle[(x_blocks-1, y_blocks-1-i)] = value
-            value += 1
-        for j in range(x_blocks-2):
-            hamcycle[(x_blocks-2-j, 0)] = value
-            value += 1
-            """
     return hamcycle
 
 def cycle8():
@@ -75,16 +66,6 @@ def delete_cell(grid, del_key):
     for key in grid:
         grid[key].pop(del_key, None)
 
-def coordinates2cell(x, y, bsize):
-    return "(%d,%d)" % (x/bsize, y/bsize)
-
-def node2string(x, y):
-    return "(%d,%d)" % (x, y)
-
-def string2node(node):
-        coordinates = node[1:-1].split(',')
-        return (int(coordinates[0]), int(coordinates[1]))
-
 def graphDir_to_gameDir(head_pos, target_pos):
     # restituisce la posizione della cella target rispetto alla cella head
     headPosList = head_pos[1:-1].split(',')
@@ -102,6 +83,7 @@ def graphDir_to_gameDir(head_pos, target_pos):
     return ret
 
 def build_location(grid):
+    # TODO: togliere!!!!!!!!!!!!!!
     locations = {}
     for key in grid:
         sL = key.replace('(', '').replace(')', '').split(',')
@@ -139,15 +121,12 @@ class Bot_hamilton(Player):
     def snake_in_hamilton(self, ham_cycle):
         # TODO: trovare un modo intelligente per invertire per correnza di ham, altrimenti togliere
         prec_node = self.snake.body[0]
-        prec_node = string2node(prec_node)
         prec_value = ham_cycle[prec_node] # value of the node in hamilton cycle
         grid_area = self.grid.x_blocks * self.grid.y_blocks
         flag = 1 # default True
-        for i in range( len(self.snake.body) - 1 ):
-            node = self.snake.body[(i+1)]
-            node = string2node(node)
+        for node in self.snake.body[1:] :
             value = ham_cycle[node]
-            if (value != prec_value+1) and not (value == 0 and prec_value == (grid_area - 1) ):
+            if (value != prec_value + 1) and not (value == 0 and prec_value == (grid_area - 1) ):
                 flag = 0
             prec_value = value
         # flag = 1 sono tutta dentro ad ham -> posso girarmi
@@ -156,7 +135,7 @@ class Bot_hamilton(Player):
     def hamilton_cicle_start(self):
         self.prec_snake_body = self.snake.get_body()
 
-        goal = self.food.position[0] #TODO: usare get_position
+        goal = self.food.get_positions
         head = self.prec_snake_body[-1]
 
         dummy_g = self.get_true_graph(self.prec_snake_body[:-1])
@@ -168,24 +147,20 @@ class Bot_hamilton(Player):
 
         self.ham_cycle = get_cycle(self.grid)
         # self.ham_cycle = cycle8()  
-        head_coord = string2node(head)
-        head_ham_pos = self.ham_cycle[head_coord] # head idx
+        head_ham_pos = self.ham_cycle[head]
         for i in self.ham_cycle.keys():
-            if self.ham_cycle[i]==(head_ham_pos+1)%grid_area:
-                move = node2string(i[0], i[1]) # seguo ciclo hamiltoniano
+            if self.ham_cycle[i] == (head_ham_pos + 1) % grid_area:
+                move = (i[0], i[1]) # seguo ciclo hamiltoniano
                 break
         if len(self.snake.get_body()) < 0.5 * grid_area:
             node = astar_search(grid_problem)
             if node != None:
                 # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
-                path_str = node.solution()
-                path_coord = string2node(path_str[0])
-                path_ham_pos = self.ham_cycle[path_coord] # netx idx (seguendo path a*)
-                tail_coord = string2node(self.prec_snake_body[0])
-                tail_ham_pos = self.ham_cycle[tail_coord] # tail idx
-                food_coord = string2node(goal)
-                food_ham_pos = self.ham_cycle[food_coord] # food idx
-                if not(len(path_str) == 1 and abs(food_ham_pos-tail_ham_pos)):
+                path_coord = node.solution()
+                path_ham_pos = self.ham_cycle[path_coord[0]] # netx idx (seguendo path a*)
+                tail_ham_pos = self.ham_cycle[self.prec_snake_body[0]] # tail idx
+                food_ham_pos = self.ham_cycle[goal] # food idx
+                if not ( (path_coord) == 1 and abs( food_ham_pos - tail_ham_pos ) ):
                     head_rel = self._relative_dist(tail_ham_pos, head_ham_pos, grid_area) 
                     # distanza tra tail e head, seguendo ciclo ham ( == len(snake.body) )
                     path_rel = self._relative_dist(tail_ham_pos, path_ham_pos, grid_area)
@@ -195,7 +170,7 @@ class Bot_hamilton(Player):
                     if path_rel > head_rel and path_rel <= food_rel:
                         # dist da tail snake a cella a* > len snake (i.e. non mi mangio) and
                         # dist da tail snake a cella a* <= dist food a tail (i.e. faccio un taglio utile e non supero la mela)
-                        move = path_str[0] # seguo path a*
+                        move = path_coord[0] # seguo path a*
                         
         # TODO: check che mi posso mettere dentro al contrario
         # riscrivere tutte le funzioni per leggere dizionario da (grid_area-1) a 0
