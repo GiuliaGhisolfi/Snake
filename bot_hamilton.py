@@ -1,12 +1,13 @@
 from directions import Directions
 from player import Player
+from bot import BotS
 from search import *
+from grid_problem import *
 import copy
-
 import grid
 import snake
 import food
-from grid_problem import *
+
 
 def get_cycle(grid):
     x_blocks = grid.x_blocks
@@ -60,34 +61,6 @@ def cycle8():
         (6, 0): 58, (6, 1): 55, (6, 2): 54, (6, 3): 51, (6, 4): 50, (6, 5): 47, (6, 6): 46, (6, 7): 43, 
         (7, 0): 57, (7, 1): 56, (7, 2): 53, (7, 3): 52, (7, 4): 49, (7, 5): 48, (7, 6): 45, (7, 7): 44}
     return hamcycle
-
-def delete_cell(grid, del_key):
-    grid.pop(del_key, None)
-    for key in grid:
-        grid[key].pop(del_key, None)
-
-def graphDir_to_gameDir(head_pos, target_pos):
-    # restituisce la posizione della cella target rispetto alla cella head
-    headPosList = head_pos[1:-1].split(',')
-    targetPosList = target_pos[1:-1].split(',')
-
-    if int(targetPosList[0]) < int(headPosList[0]):  # x shift
-        ret = Directions.LEFT
-    elif int(targetPosList[0]) > int(headPosList[0]):
-        ret = Directions.RIGHT
-    elif int(targetPosList[1]) < int(headPosList[1]):  # y shift
-        ret = Directions.UP
-    else:
-        ret = Directions.DOWN
-
-    return ret
-
-def build_location(grid):
-    locations = {}
-    for key in grid:
-        locations[key]=key
-    return locations
-
 
 class Bot_hamilton(Player):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
