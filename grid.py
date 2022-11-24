@@ -1,3 +1,4 @@
+import copy
 import random as rand
 import math
 import re 
@@ -107,6 +108,9 @@ class Grid:
         for key in self.grid:
             self.grid[key].pop(del_key, None)
 
+    def get_obstacles(self):
+        return copy.deepcopy(self.obstacles)
+        
 class Obstacle:
 
     def __init__(self, color, x, y):
