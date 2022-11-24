@@ -9,6 +9,7 @@ from snake import Snake
 from food import Food
 from bottoni import *
 from obstacles import *
+from colors import Colors
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
@@ -48,7 +49,7 @@ def singleplayer_start():
     # obstacles = Obstacles('gray')
     # obstacles.spawn(snakes, grid)
 
-    food = Food(RED)
+    food = Food(Colors.RED)
     food.respawn(snakes, grid)
 
     # logs
@@ -102,7 +103,7 @@ def singleplayer_start():
         end = False
         if lost:
             end = True
-            text = font.render('GAME OVER', True, FUXIA)
+            text = font.render('GAME OVER', True, Colors.FUXIA)
             window.blit(text, (180, 270))
 
         if end:
@@ -126,7 +127,7 @@ def singleplayer_start():
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             
-            text = font.render('COMPLETE', True, FUXIA)
+            text = font.render('COMPLETE', True, Colors.FUXIA)
             window.blit(text, (180, 270))
             
             pygame.display.update()
@@ -136,7 +137,7 @@ def singleplayer_start():
             grid.spawn_obstacles(snakes)
             food.respawn(snakes, grid)
         else:
-            window.fill(BLACK)
+            window.fill(Colors.BLACK)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)
@@ -159,7 +160,7 @@ def hamilton_start():
     obstacles = Obstacles('gray')
     #obstacles.spawn(snakes, grid)
 
-    food = Food(RED)
+    food = Food(Colors.RED)
     food.respawn(snakes, grid, obstacles)
 
     # logs
@@ -213,7 +214,7 @@ def hamilton_start():
         end = False
         if lost:
             end = True
-            text = font.render('GAME OVER', True, FUXIA)
+            text = font.render('GAME OVER', True, Colors.FUXIA)
             window.blit(text, (180, 270))
 
         if end:
@@ -236,7 +237,7 @@ def hamilton_start():
         if (snake.length == grid_area):
             snake.draw(pygame, window, grid)
             
-            text = font.render('COMPLETE', True, FUXIA)
+            text = font.render('COMPLETE', True, Colors.FUXIA)
             window.blit(text, (180, 270))
             
             pygame.display.update()
@@ -245,7 +246,7 @@ def hamilton_start():
             snake.respawn(grid)
             food.respawn(snakes, grid,obstacles)
         else:
-            window.fill(BLACK)
+            window.fill(Colors.BLACK)
             snake.draw(pygame, window, grid)
             food.draw(pygame, window, grid)
             pygame.display.update()
@@ -271,7 +272,7 @@ def multiplayer_start():
     obstacles = Obstacles('gray')
     obstacles.spawn(snakes, grid)
 
-    food = Food(RED)
+    food = Food(Colors.RED)
     food.respawn(snakes, grid, obstacles)
 
     for i, p in enumerate(players_info):  # indice e iteratore nella lista (piccina)
@@ -352,7 +353,7 @@ def multiplayer_start():
         lost[0] = lost[0] or collisions[0]
         lost[1] = lost[1] or collisions[1]
         if collisions[0] or collisions[1]:  # redraw to see which snake collided
-            window.fill(BLACK)
+            window.fill(Colors.BLACK)
             snakes[0].draw(pygame, window, grid)
             snakes[1].draw(pygame, window, grid)
 
@@ -360,21 +361,21 @@ def multiplayer_start():
         if lost[0] or lost[1]:
             end = True
         if lost[0] and lost[1]:
-            text = font.render('DRAW', True, FUXIA)
+            text = font.render('DRAW', True, Colors.FUXIA)
             window.blit(text, (250, 270))
             logfiles[0].write("DRAW,")
             logfiles[1].write("DRAW,")
         elif lost[0]:
-            text = font.render('GAME OVER', True, FUXIA)
+            text = font.render('GAME OVER', True, Colors.FUXIA)
             window.blit(text, (180, 230))
-            text = font.render('PLAYER 1 WON', True, FUXIA)
+            text = font.render('PLAYER 1 WON', True, Colors.FUXIA)
             window.blit(text, (140, 310))
             logfiles[0].write("LOST,")
             logfiles[1].write("WIN,")
         elif lost[1]:
-            text = font.render('GAME OVER', True, FUXIA)
+            text = font.render('GAME OVER', True, Colors.FUXIA)
             window.blit(text, (180, 230))
-            text = font.render('PLAYER 1 WON', True, FUXIA)
+            text = font.render('PLAYER 1 WON', True, Colors.FUXIA)
             window.blit(text, (140, 310))
             logfiles[0].write("WIN,")
             logfiles[1].write("LOST,")
@@ -396,7 +397,7 @@ def multiplayer_start():
 
             steps = 0
 
-        window.fill(BLACK)
+        window.fill(Colors.BLACK)
         for i in range(len(snakes)):
             snakes[i].draw(pygame, window, grid)
         obstacles.draw(pygame, window, grid)

@@ -9,4 +9,4 @@ class Colors(Enum):
     BLUE = (0, 0, 255)
     FUXIA = (255, 0, 100)
     PINK = (255, 105, 180)
-    RANDOM = (r.randint(255), r.randint(255), r.randint(255))
+    RANDOM = (r.randint(0,255), r.randint(0,255), r.randint(0,255))
