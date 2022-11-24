@@ -7,6 +7,7 @@ import copy
 import grid
 import snake
 import food
+from bot import BotS
 from colors import Colors 
 import obstacles
 from grid_problem import *
@@ -17,38 +18,13 @@ FIRST_IT_C = Colors.RED
 TO_FOOD_C = Colors.ORANGE
 DEF_C = Colors.BLUE
 
-def delete_cell(grid, del_key):
-    grid.pop(del_key, None)
-    for key in grid:
-        grid[key].pop(del_key, None)
 
-def coordinates2cell(x, y, bsize):
-    return "(%d,%d)" % (x/bsize, y/bsize)
-
-# restituisce la posizione della cella targhet rispetto alla cella head
-def graphDir_to_gameDir(head_pos, target_pos):
-
-    if head_pos[0] < target_pos[0]:  # x shift
-        return Directions.LEFT
-    elif target_pos[0] > head_pos[0]:
-        return Directions.RIGHT
-    elif target_pos[1] < head_pos[1]:  # y shift
-        return Directions.UP
-    else:
-        return Directions.DOWN
-
-def build_location(grid):
-    locations = {}
-    for key in grid:
-        locations[key]=key
-    return locations
-
-class Bot_singleplayer(Player):
+class Bot_singleplayer(BotS):
     # input anche lo snake
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, obstacles:obstacles.Obstacles, debug=False):
 
         self.grid = grid
-        self.locations = build_location(self.grid.grid) #immutabile
+        self.locations = self.build_location(self.grid.grid) #immutabile
         self.debug = debug
         #self.obstacles = obstacles
 
@@ -91,7 +67,7 @@ class Bot_singleplayer(Player):
             retInt = lp.longest_path(newG, start, goal)
             retS = []
             for x in retInt:
-                retS.append(coordinates2cell('(%d,%d)', x[0], x[1]))
+                retS.append(x)
             return retS
 
         else:
@@ -160,7 +136,6 @@ class Bot_singleplayer(Player):
                         self.nnto = node
                         return
                         
-    #TODO: creare una scelta sensata tra le mele ?????
     def get_best_food(self):
         return self.food.get_positions()[0] #una mela a caso, per ora
     
@@ -172,7 +147,7 @@ class Bot_singleplayer(Player):
         new_grid = copy.deepcopy(grid) #forse ci va messo grid?
 
         for segment in snake_false_body: #manca la testa
-            delete_cell(new_grid, segment)
+            self.delete_cell(new_grid, segment)
 
         return new_grid
 
@@ -217,7 +192,7 @@ class Bot_singleplayer(Player):
             #la mossa è stata presa, aggiorniamo
             #calcolo direzione verso la mela
             c = self.path_to_food.pop(0)
-            return graphDir_to_gameDir(snake_body[-1], self.path_to_food[0]) 
+            return self.graphDir_to_gameDir(snake_body[-1], self.path_to_food[0]) 
 
         snake_body = self.snake.get_body()
         self.change_color()
@@ -225,7 +200,7 @@ class Bot_singleplayer(Player):
         #ora inizia la parte difficile, qui possono accadere cose strane (strande inesistenti ecc...)       
         if len(self.path_to_food) > 0: #non siamo ancora arrivati alla mela
             move = self.path_to_food.pop(0)
-            return graphDir_to_gameDir(snake_body[-1], move)
+            return self.graphDir_to_gameDir(snake_body[-1], move)
 
  
         # posizione mela migliore e testa snake
@@ -251,11 +226,11 @@ class Bot_singleplayer(Player):
                 self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
 
                 move = self.path_to_food.pop(0)
-                return graphDir_to_gameDir(snake_body[-1], move)
+                return self.graphDir_to_gameDir(snake_body[-1], move)
 
         self.optimize_standard_path()
         move = self.default_path.pop(0)
-        ret = graphDir_to_gameDir(snake_body[-1], move) # è un ciclo
+        ret = self.graphDir_to_gameDir(snake_body[-1], move) # è un ciclo
         self.default_path.append(move)
         return ret
 

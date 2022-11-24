@@ -32,7 +32,8 @@ class Snake:
                 node[i] = int(node[i])
             body_coord[len(body_coord):] = [
                 (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
-        return body_coord"""        
+        return body_coord"""     
+           
     def coord_from_graph(self, node_list, grid):
         body_coord = []
         for node in node_list:
