@@ -65,7 +65,10 @@ class Grid:
         grid = {}
         for x in range(self.x_blocks):
             for y in range(self.y_blocks):
-                grid[(x, y)] = list(neighbors(x, y))
+                value = {}
+                for neigh in list(neighbors(x, y)):
+                    value[neigh] = 1
+                grid[(x, y)] = value
         return grid
 
     def spawn_obstacles(self, snakes):

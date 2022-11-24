@@ -42,14 +42,6 @@ class Snake:
                 (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
         return body_coord
 
-    def integer_from_string(self, node):
-        chars = ['(', ')']
-       # node = node.translate(str.maketrans({ord(char): '' for char in chars}))
-        node = node.split(',')
-        for i in range(2):
-            node[i] = int(node[i])
-        return [int(node[0]), int(node[1])]
-
     def draw(self, game, window, grid):
         # riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
         body_coord = self.coordinate_from_nodes(self.body, grid)
@@ -97,7 +89,7 @@ class Snake:
 
         self.__steer(direction)
         curr_head = self.body[-1]
-        [x, y] = self.integer_from_string(curr_head)
+        x, y = (curr_head)
 
         if self.direction == Directions.DOWN:
             y = y + 1
