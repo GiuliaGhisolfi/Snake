@@ -7,14 +7,15 @@ import copy
 import grid
 import snake
 import food
+from colors import Colors 
 import obstacles
 from grid_problem import *
 from bottoni import *
 import longest_path as lp
 
-FIRST_IT_C = RED
-TO_FOOD_C = ORANGE
-DEF_C = BLUE
+FIRST_IT_C = Colors.RED
+TO_FOOD_C = Colors.ORANGE
+DEF_C = Colors.BLUE
 
 def delete_cell(grid, del_key):
     grid.pop(del_key, None)
