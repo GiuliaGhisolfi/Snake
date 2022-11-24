@@ -21,7 +21,6 @@ class Snake:
                          ((grid.x_blocks-4), (grid.y_blocks-6))]
             self.direction = Directions.UP
 
-    # TODO: copiare da Giacomo
     """def coordinate_from_nodes(self, node_list, grid):
         chars = ['(', ')']
         body_coord = []
@@ -33,7 +32,14 @@ class Snake:
                 node[i] = int(node[i])
             body_coord[len(body_coord):] = [
                 (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
-        return body_coord"""
+        return body_coord"""        
+    def coord_from_graph(self, node_list, grid):
+        body_coord = []
+        for node in node_list:
+            node = self.position[0]
+            body_coord[len(body_coord):] = [
+                (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
+        return body_coord
 
     def integer_from_string(self, node):
         chars = ['(', ')']
