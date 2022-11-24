@@ -42,13 +42,14 @@ def singleplayer_start():
 
     snake.respawn(grid)
     snakes.append(snake)
+    grid.spawn_obstacles(snakes)
     
     # creo ostacoli
-    obstacles = Obstacles('gray')
-    obstacles.spawn(snakes, grid)
+    # obstacles = Obstacles('gray')
+    # obstacles.spawn(snakes, grid)
 
     food = Food(RED)
-    food.respawn(snakes, grid, obstacles)
+    food.respawn(snakes, grid)
 
     # logs
     file = open("player0"+"_logfile.csv", "w")
@@ -63,7 +64,7 @@ def singleplayer_start():
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
     elif players_info["type"] == "sbot":
-        player = Bot_singleplayer(grid, snakes[0], food, obstacles, True)
+        player = Bot_singleplayer(grid, snakes[0], food, True)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
@@ -91,11 +92,11 @@ def singleplayer_start():
         snake.move(dir)
         if snake.can_eat(food):
             snake.eat()
-            food.respawn(snakes, grid, obstacles)
+            food.respawn(snakes, grid)
 
         lost = snake.check_bounds(grid) or \
-            snake.check_tail_collision() or \
-            snake.check_obstacles_collision(obstacles)
+            snake.check_tail_collision() # or \
+            # snake.check_obstacles_collision() # non serve vero?
 
 
         end = False
@@ -115,15 +116,15 @@ def singleplayer_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            grid.spawn_obstacles(snakes)
+            food.respawn(snakes, grid)
 
             steps = 0
 
         grid_area = X_BLOCKS * Y_BLOCKS
         if (snake.length == grid_area):
             snake.draw(pygame, window, grid)
-            obstacles.draw(pygame, window, grid)
+            grid.draw_obstacles(pygame, window)
             
             text = font.render('COMPLETE', True, FUXIA)
             window.blit(text, (180, 270))
@@ -132,12 +133,12 @@ def singleplayer_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            grid.spawn_obstacles(snakes)
+            food.respawn(snakes, grid)
         else:
             window.fill(BLACK)
             snake.draw(pygame, window, grid)
-            obstacles.draw(pygame, window, grid)
+            grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)
             pygame.display.update()
 
@@ -234,8 +235,6 @@ def hamilton_start():
         grid_area = X_BLOCKS * Y_BLOCKS
         if (snake.length == grid_area):
             snake.draw(pygame, window, grid)
-            #obstacles.draw(pygame, window, grid)
-            #food.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, FUXIA)
             window.blit(text, (180, 270))
@@ -244,12 +243,10 @@ def hamilton_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            #obstacles.spawn(snakes, grid)
             food.respawn(snakes, grid,obstacles)
         else:
             window.fill(BLACK)
             snake.draw(pygame, window, grid)
-            #obstacles.draw(pygame, window, grid)
             food.draw(pygame, window, grid)
             pygame.display.update()
 
