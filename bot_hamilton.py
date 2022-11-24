@@ -156,7 +156,7 @@ class Bot_hamilton(Player):
     def hamilton_cicle_start(self):
         self.prec_snake_body = self.snake.get_body()
 
-        goal = self.food.position[0]
+        goal = self.food.position[0] #TODO: usare get_position
         head = self.prec_snake_body[-1]
 
         dummy_g = self.get_true_graph(self.prec_snake_body[:-1])
