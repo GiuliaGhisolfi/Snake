@@ -8,7 +8,6 @@ from bot_hamilton import Bot_hamilton
 from snake import Snake
 from food import Food
 from bottoni import *
-from obstacles import *
 from colors import Colors
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
@@ -157,11 +156,11 @@ def hamilton_start():
     snakes.append(snake)
     
     # creo ostacoli
-    obstacles = Obstacles('gray')
+    #obstacles = Obstacles('gray')
     #obstacles.spawn(snakes, grid)
 
     food = Food(Colors.RED)
-    food.respawn(snakes, grid, obstacles)
+    food.respawn(snakes, grid)
 
     # logs
     file = open("player0"+"_logfile.csv", "w")
@@ -204,11 +203,10 @@ def hamilton_start():
         snake.move(dir)
         if snake.can_eat(food):
             snake.eat()
-            food.respawn(snakes, grid, obstacles)
+            food.respawn(snakes, grid)
 
         lost = snake.check_bounds(grid) or \
-            snake.check_tail_collision() or \
-            snake.check_obstacles_collision(obstacles)
+            snake.check_tail_collision()
 
 
         end = False
@@ -229,7 +227,7 @@ def hamilton_start():
             
             snake.respawn(grid)
             #obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            food.respawn(snakes, grid)
 
             steps = 0
             
@@ -244,7 +242,7 @@ def hamilton_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            food.respawn(snakes, grid,obstacles)
+            food.respawn(snakes, grid)
         else:
             window.fill(Colors.BLACK)
             snake.draw(pygame, window, grid)
@@ -269,11 +267,11 @@ def multiplayer_start():
         snakes.append(snake)
     
     # creo ostacoli
-    obstacles = Obstacles('gray')
-    obstacles.spawn(snakes, grid)
+    #obstacles = Obstacles('gray')
+    #obstacles.spawn(snakes, grid)
 
     food = Food(Colors.RED)
-    food.respawn(snakes, grid, obstacles)
+    food.respawn(snakes, grid)
 
     for i, p in enumerate(players_info):  # indice e iteratore nella lista (piccina)
         # logs

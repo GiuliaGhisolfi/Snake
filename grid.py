@@ -14,7 +14,7 @@ class Grid:
         self.block_size = x_pixel/x_blocks
         self.build_grid()
         self.obstacles = []
-
+    '''
     def build_grid(self):
         self.grid = {} #immutabile
         self.grid["(0,0)"] = {"(0,1)": 1, "(1,0)": 1}
@@ -52,7 +52,21 @@ class Grid:
                     "(%d,%d)" % ((i+2), (j+1)): 1,
                     "(%d,%d)" % ((i+1), (j)): 1
                 }
-        return self.grid
+        return self.grid'''
+
+    def build_grid(self):
+        def neighbors(x, y):
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+            for (dx, dy) in directions:
+                (nx, ny) = (x + dx, y + dy)
+                if  0 <= nx < self.x_blocks and 0 <= ny < self.y_blocks:
+                    yield (nx, ny)
+                    
+        grid = {}
+        for x in range(self.x_blocks):
+            for y in range(self.y_blocks):
+                grid[(x, y)] = list(neighbors(x, y))
+        return grid
 
     def spawn_obstacles(self, snakes):
         self.obstacles.clear()
@@ -62,10 +76,10 @@ class Grid:
                 x_new = rand.randrange(1, self.x_blocks - 1)
                 y_new = rand.randrange(1, self.y_blocks - 1)
                 obstacle = Obstacle('gray', x_new, y_new)
-                str_position = "(%d,%d)" % (x_new, y_new)
-                if self.is_ammissible(obstacle, snakes) and not self.is_overlapped(str_position, snakes):
+                position = (x_new, y_new)
+                if self.is_ammissible(obstacle, snakes) and not self.is_overlapped(position, snakes):
                     self.obstacles.append(obstacle)
-                    self.delete_cell(str_position)
+                    self.delete_cell(position)
                     break
 
     def draw_obstacles(self, game, window):
@@ -112,31 +126,7 @@ class Grid:
         return copy.deepcopy(self.obstacles)
         
 class Obstacle:
-
     def __init__(self, color, x, y):
         self.color = color
         self.x_position = x
         self.y_position = y
-
-    '''
-    def draw(self, game, window, grid):
-        for i in range(len(self.positions)):
-            game.draw.rect(
-                window,
-                self.color,
-                ((self.positions[i][0])*grid.block_size +1 , (self.positions[i][1])*grid.block_size +1, grid.block_size-2, grid.block_size-2))
-     
-    
-    def spawn(self, snakes, grid):
-        self.positions.clear()
-        num_obstacles = math.ceil(math.sqrt(grid.x_blocks*grid.y_blocks))-1
-        for i in range(num_obstacles):
-            while True:
-                x_new = rand.randrange(1, grid.x_blocks-1)
-                y_new = rand.randrange(1, grid.y_blocks-1)
-                position = (x_new, y_new)
-                str_position = "(%d,%d)" % (x_new, y_new)
-                if self.is_ammissible(position, snakes) and not self.is_overlapped(str_position,snakes):
-                    self.positions.append(position)
-                    break
-    '''

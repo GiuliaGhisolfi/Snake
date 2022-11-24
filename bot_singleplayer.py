@@ -9,7 +9,6 @@ import snake
 import food
 from bot import BotS
 from colors import Colors 
-import obstacles
 from grid_problem import *
 from bottoni import *
 import longest_path as lp
@@ -21,7 +20,7 @@ DEF_C = Colors.BLUE
 
 class Bot_singleplayer(BotS):
     # input anche lo snake
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, obstacles:obstacles.Obstacles, debug=False):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False):
 
         self.grid = grid
         self.locations = self.build_location(self.grid.grid) #immutabile
