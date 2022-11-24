@@ -12,7 +12,7 @@ class Grid:
         x_pixel = size-(size % x_blocks)
         self.bounds = (x_pixel, x_pixel*y_blocks/x_blocks)
         self.block_size = x_pixel/x_blocks
-        self.build_grid()
+        self.grid = self.build_grid()
         self.obstacles = []
     '''
     def build_grid(self):
