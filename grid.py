@@ -101,12 +101,12 @@ class Grid:
 
             #facciamo in modo che non ci siano ostacoli immediatamente davanti lo snake
             for i in range(len(snakes)):
-                head = re.findall('(\d+)', snakes[i].body[-1])
+                head = snakes[i].get_body()[-1]
                 if snakes[i].start_location == 'top-left':
-                    if (int(head[0]) == new_obstacle.x_position and (int(head[1]) == new_obstacle.y_position - 1 or int(head[1]) == new_obstacle.y_position - 2)):
+                    if (head[0] == new_obstacle.x_position and (head[1]== new_obstacle.y_position - 1 or head[1] == new_obstacle.y_position - 2)):
                         return False
                 else:
-                    if (int(head[0]) == new_obstacle.x_position and (int(head[1]) == new_obstacle.y_position + 1 or int(head[1]) == new_obstacle.y_position + 2)):
+                    if (head[0] == new_obstacle.x_position and (head[1] == new_obstacle.y_position + 1 or head[1] == new_obstacle.y_position + 2)):
                         return False
         return True
 
