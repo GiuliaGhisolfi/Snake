@@ -1,5 +1,4 @@
 from directions import Directions
-from player import Player
 from bot import BotS
 from search import *
 from grid_problem import *
@@ -62,7 +61,7 @@ def cycle8():
         (7, 0): 57, (7, 1): 56, (7, 2): 53, (7, 3): 52, (7, 4): 49, (7, 5): 48, (7, 6): 45, (7, 7): 44}
     return hamcycle
 
-class Bot_hamilton(Player):
+class Bot_hamilton(BotS):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
         self.next_move = Directions.DOWN  # random
         self.grid = grid
