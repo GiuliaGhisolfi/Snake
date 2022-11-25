@@ -387,7 +387,7 @@ def multiplayer_start():
                 GAMEOVER_FILE.write('\n')
                 
                 snakes[i].respawn(grid)
-            grid.spawn_obstacles(snakes, grid)
+            grid.spawn_obstacles(snakes)
             food.respawn(snakes, grid)
 
             steps = 0
