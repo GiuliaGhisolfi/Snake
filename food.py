@@ -31,7 +31,8 @@ class Food:
                 if segment == position:
                     return True
         for p in grid.get_obstacles():
-            if position == p: #GETTER!!!!!!!!
+            obstacle = (p.x_position, p.y_position)
+            if position == obstacle: #GETTER!!!!!!!!
                 return True
         return False
 
