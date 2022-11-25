@@ -122,12 +122,11 @@ class Bot_singleplayer(BotS):
         
         #definiamo tg se non già fatto
         if not tg:
-            tg = self.get_true_graph(self.snake.fast_get_body()[:-1])
+            tg = self.grid.grid
 
         if self.nnto == self.snake.fast_get_body()[-1]: #next node to optimize
-            print('ping')
+            #print('ping', self.nnto)
             if is_optimizable(self.snake.fast_get_body()[-1], tg):
-                tg = self.get_true_graph([self.snake.fast_get_body()[-1]], tg)
                 #cerchiamo il prossimo choke point
                 chokepoint = None
                 for c in self.default_path[:-1]:
@@ -142,26 +141,26 @@ class Bot_singleplayer(BotS):
                         to_remove = []
                         if len(self.default_path) > choke_i + 2:
                             to_remove = self.default_path[choke_i + 1:-1]
-                        true_g = self.get_true_graph(self.snake.fast_get_body()[:-1] + to_remove)
+                        true_g = self.get_true_graph(to_remove)
 
                         #senza testa
                         #patch = get_ham_path(self.snake.fast_get_body()[-1], chokepoint, true_g)
                         patch = lp.longest_path(true_g, self.snake.fast_get_body()[-1], chokepoint)
-                        if patch != None:
+                        if patch != [] or patch != None:
                             self.default_path = patch + self.default_path[choke_i + 1:]
 
-                            print('Ottimizzato', chokepoint)
-                            self.nnto = self.default_path[len(patch)]
+                            if self.debug: print('Ottimizzato', chokepoint)
+                            self.nnto = self.default_path[choke_i + 1]
                             return #esce dal for
-            else:
-                tg = self.get_true_graph(self.snake.fast_get_body()[-1:], tg) #solo ultima posizione
-                #calcoliamo il prossimo nodo che è ottimizzabile
-                for node in self.default_path[:-1]:
-                    if node in tg and is_optimizable(node,tg):
-                        #se lo troviamo, lo salviamo e terminiamo
-                        self.nnto = node
-                        print(self.nnto)
-                        return
+            
+            #tg = self.get_true_graph(self.snake.fast_get_body()[-1:], tg) #solo ultima posizione
+            #calcoliamo il prossimo nodo che è ottimizzabile
+            for node in self.default_path[:-1]:
+                if node in tg and is_optimizable(node,self.grid.grid):
+                    #se lo troviamo, lo salviamo e terminiamo
+                    self.nnto = node
+                    #print(self.nnto)
+                    return
                         
     def get_best_food(self):
         return self.food.get_positions()[0] #una mela a caso, per ora
@@ -227,9 +226,9 @@ class Bot_singleplayer(BotS):
         #ora inizia la parte difficile, qui possono accadere cose strane (strande inesistenti ecc...)       
         if len(self.path_to_food) > 0: #non siamo ancora arrivati alla mela
             move = self.path_to_food.pop(0)
-            return self.graphDir_to_gameDir(snake_body[-1], move)
+            dir = self.graphDir_to_gameDir(snake_body[-1], move)
+            return dir
 
- 
         # posizione mela migliore e testa snake
         goal = self.get_best_food()
         start = snake_body[-1]

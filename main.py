@@ -13,8 +13,8 @@ import colors
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
 FRAME_DELAY = 20
-X_BLOCKS = 11
-Y_BLOCKS = 10
+X_BLOCKS = 50
+Y_BLOCKS = 25
 OBSTACLES = True
    
 pygame.init()
@@ -112,7 +112,7 @@ def singleplayer_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles(snakes)
             food.respawn(snakes, grid)
 
             steps = 0
@@ -129,7 +129,7 @@ def singleplayer_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles(snakes)
             food.respawn(snakes, grid)
         else:
             window.fill(colors.BLACK)
@@ -383,7 +383,7 @@ def multiplayer_start():
                 GAMEOVER_FILE.write('\n')
                 
                 snakes[i].respawn(grid)
-            grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles(snakes)
             food.respawn(snakes, grid)
 
             steps = 0
