@@ -10,7 +10,6 @@ class BotS(Player):
 
     # restituisce la posizione della cella targhet rispetto alla cella head
     def graphDir_to_gameDir(self, head_pos, target_pos):
-
         if target_pos[0] < head_pos[0]:  # x shift
             return Directions.LEFT
         elif target_pos[0] > head_pos[0]:
