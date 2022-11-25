@@ -48,9 +48,7 @@ class Bot_singleplayer(BotS):
     def graph_search(self, start, goal, graph):
         
         if self.chosen_search == 0:
-            graph = Graph(graph) 
-            graph.locations = self.locations
-            grid_problem = GridProblem(start, True, goal, graph)
+            grid_problem = GridProblem(start, goal, graph, True)
             dummy = astar_search_min_turns(grid_problem)
 
             if dummy != None:
@@ -59,7 +57,6 @@ class Bot_singleplayer(BotS):
 
         elif self.chosen_search == 1:
             newG = graph
-            newG.locations = self.locations
             goal = goal
             start = start
 
