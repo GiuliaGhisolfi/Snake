@@ -100,7 +100,7 @@ class Bot_hamilton(BotS):
 
         grid = self.get_current_grid(body[:-1])
         grid_area = self.grid.x_blocks * self.grid.y_blocks
-        grid_problem = GridProblem(head, goal, grid)
+        grid_problem = GridProblem(head, goal, grid, False)
 
         self.ham_cycle = get_cycle(self.grid)
         head_ham_pos = self.ham_cycle[head]

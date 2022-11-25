@@ -19,9 +19,3 @@ class BotS(Player):
             return Directions.UP
         else:
             return Directions.DOWN
-
-    def build_location(self, grid):
-        locations = {}
-        for key in grid:
-            locations[key]=key
-        return locations

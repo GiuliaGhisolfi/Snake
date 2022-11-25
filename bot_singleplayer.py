@@ -23,7 +23,6 @@ class Bot_singleplayer(BotS):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False):
 
         self.grid = grid
-        self.locations = self.build_location(self.grid.grid) #immutabile
         self.debug = debug
         #self.obstacles = obstacles
 
