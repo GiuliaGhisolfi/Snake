@@ -1,5 +1,7 @@
 from search import *
 
+PESI = (1,0.5,0.5,0.5) #path_cost, h??????, turn, n_neighbours
+
 class GridProblem(Problem):
     def __init__(self, initial, goal, grid, horizontal_orientation):
         super().__init__(initial, goal)
@@ -109,7 +111,7 @@ class GridNode(Node):
         return next_node
 
 
-def best_first_grid_search_min_turns(problem, f, t, display=False):
+def best_first_grid_search_dummy(problem, f, t, display=False):
     if not isinstance(problem, GridProblem):
         print("The problem must be a grid problem")
         exit()
@@ -148,18 +150,27 @@ def astar_search_opportunistic(problem, snake, grid_area):
 
 def astar_search_min_turns(problem):
     h = memoize(problem.h, 'h')
-    return best_first_grid_search_min_turns(
+    return best_first_grid_search_dummy(
         problem, 
-        lambda n: n.path_cost + h(n) + n.turn, # la f da minimizzare 
+        lambda n: PESI[0]*n.path_cost + PESI[1]*h(n) + PESI[2]*n.turn, # la f da minimizzare 
         lambda n: -(n.path_cost) # la funzione da minimizzare nel caso in cui ci siano più nodi con pari valore di f
     )
 
 # individua il cammino che rimane più vicino al corpo
 def astar_search_saving_spaces(problem):
     h = memoize(problem.h, 'h')
-    return best_first_grid_search_min_turns(
+    return best_first_grid_search_dummy(
         problem, 
-        lambda n: n.path_cost + h(n) + n.n_neighbours, # la f da minimizzare 
+        lambda n: PESI[0]*n.path_cost + PESI[1]*h(n) + PESI[3]*n.n_neighbours, # la f da minimizzare 
         lambda n: -(n.path_cost) # la funzione da minimizzare nel caso in cui ci siano più nodi con pari valore di f
+    )
+
+# individua il cammino che rimane più vicino al corpo
+def astar_search_inverse(problem):
+    h = memoize(problem.h, 'h')
+    return best_first_grid_search_dummy(
+        problem, 
+        lambda n: -n.path_cost,
+        lambda n: n.turn # la funzione da minimizzare nel caso in cui ci siano più nodi con pari valore di f
     )
 

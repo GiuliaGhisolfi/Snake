@@ -10,7 +10,7 @@ def longest_path(grid, start, goal):
             new2 not in path
     
     # Compute shortest path
-    gp = GridProblem(start, goal, grid)
+    gp = GridProblem(start, goal, grid, False)
     node = astar_search(gp)
     path = []
     if node != None:

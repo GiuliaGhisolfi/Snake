@@ -12,10 +12,10 @@ import colors
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
-FRAME_DELAY = 200
-X_BLOCKS = 17
-Y_BLOCKS = 16
-
+FRAME_DELAY = 20
+X_BLOCKS = 11
+Y_BLOCKS = 10
+OBSTACLES = True
    
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
@@ -42,11 +42,7 @@ def singleplayer_start():
 
     snake.respawn(grid)
     snakes.append(snake)
-    grid.spawn_obstacles(snakes)
-    
-    # creo ostacoli
-    # obstacles = Obstacles('gray')
-    # obstacles.spawn(snakes, grid)
+    if OBSTACLES: grid.spawn_obstacles(snakes)
 
     food = Food(colors.RED)
     food.respawn(snakes, grid)
