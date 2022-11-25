@@ -4,50 +4,38 @@ import copy
 
 class Snake:
     def __init__(self, color=(0, 190, 80), start_location="top-left"):
-        self.color = color #immutabile
-        self.start_location = start_location #da lockare!
+        self.color = color  # immutabile
+        self.start_location = start_location  # da lockare!
 
     def respawn(self, grid):
         self.length = 3
         if self.start_location == "top-left":
-            self.body = ["(3,2)",
-                        "(3,3)",
-                        "(3,4)"]
+            self.body = [(3, 2),
+                         (3, 3),
+                         (3, 4)]
             self.direction = Directions.DOWN
         if self.start_location == "bottom-right":
-            self.body = ["(%d,%d)" % ((grid.x_blocks-4), (grid.y_blocks-4)),
-                        "(%d,%d)" % ((grid.x_blocks-4),
-                                    (grid.y_blocks-5)),
-                        "(%d,%d)" % ((grid.x_blocks-4), (grid.y_blocks-6))]
+            self.body = [((grid.x_blocks-4), (grid.y_blocks-4)),
+                         ((grid.x_blocks-4), (grid.y_blocks-5)),
+                         ((grid.x_blocks-4), (grid.y_blocks-6))]
             self.direction = Directions.UP
-
-    def coordinate_from_nodes(self, node_list, grid):
-        chars = ['(', ')']
+    
+    def coord_from_graph(self, node_list, grid):
         body_coord = []
         for node in node_list:
-            node = node.translate(str.maketrans({ord(char): '' for char in chars}))
-            node = node.split(',')
-            for i in range(2):
-                node[i] = int(node[i])
-            body_coord[len(body_coord):] = [( int(node[0])*grid.block_size, int(node[1])*grid.block_size )]
+            #node = self.position[0]
+            body_coord[len(body_coord):] = [
+                (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
         return body_coord
 
-    def integer_from_string(self, node):
-        chars = ['(', ')']
-        node = node.translate(str.maketrans({ord(char): '' for char in chars}))
-        node = node.split(',')
-        for i in range(2):
-            node[i] = int(node[i])
-        return [int(node[0]), int(node[1])]
-
     def draw(self, game, window, grid):
-        #riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
-        body_coord = self.coordinate_from_nodes(self.body, grid)
+        # riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
+        body_coord = self.coord_from_graph(self.body, grid)
 
         bsize = grid.block_size
-        head = body_coord[-1]
+        head = body_coord[-1] # tupla di interi
         tail = body_coord[0]
-        
+
         # Draw tail
         game.draw.rect(window, self.color,
                        (tail[0]+1, tail[1]+1, bsize-2, bsize-2))
@@ -87,7 +75,7 @@ class Snake:
 
         self.__steer(direction)
         curr_head = self.body[-1]
-        [x, y] = self.integer_from_string(curr_head)
+        x, y = (curr_head)
 
         if self.direction == Directions.DOWN:
             y = y + 1
@@ -98,7 +86,7 @@ class Snake:
         elif self.direction == Directions.LEFT:
             x = x - 1
 
-        next_head = "(%d,%d)" % (x, y)
+        next_head = (x, y)
         self.body.append(next_head)
 
         if self.length < len(self.body):
@@ -117,136 +105,125 @@ class Snake:
         elif self.direction == Directions.RIGHT and direction != Directions.LEFT:
             self.direction = direction
 
-
     def eat(self):
         self.length += 1
-
-        
 
     def can_eat(self, food):
         return self.body[-1] == food.position[0]  # confronto tra nodi
 
-    def check_obstacles_collision(self, obstacles):
-        condition = False
+    def tail_collision(self):
         head = self.body[-1]
-        for i in range(len(obstacles.positions)):
-            str_position = "(%d,%d)" % (obstacles.positions[i][0], obstacles.positions[i][1])
-            if head == str_position:
-                condition = True
-        return condition
-
-    def check_tail_collision(self):
-        condition = False
-        head = self.body[-1]
-        for i in range(len(self.body) - 1):
-            segment = self.body[i]
+        for segment in self.body[:-1]:
             if head == segment:
-                condition = True
-        return condition
+                return True
+        return False
 
-    def check_adversarial_collision(self, adversarial_body):
-        condition = False
-
+    def adversarial_collision(self, adversarial_body):
         head = self.body[-1]
-        for i in range(len(adversarial_body)):
-            segment = adversarial_body[i]
+        for segment in adversarial_body:
             if head == segment:
-                condition = True
-        return condition
+                return True
+        return False
 
-    def check_bounds(self, grid):
-        condition = False
-
+    def bounds_collision(self, grid):
         head = self.body[-1]
         if head not in grid.grid:
-            condition = True
+            return True
+        return False
 
-        return condition
-    
     def get_body(self):
         return copy.deepcopy(self.body)
-    
-    def fast_get_body(self):#attenzione, rompe i principi di Barbara :(
+
+    def fast_get_body(self):  # attenzione, rompe i principi di Barbara :(
         return self.body
+
 
 class LockedSnake(Snake):
     def __init__(self, color=(0, 190, 80), start_location="top-left"):
-        
+
         super().__init__(color, start_location)
         self.lock = threading.RLock()
- 
+
     def respawn(self, grid):
         self.lock.acquire()
         try:
             super().respawn(grid)
-        finally: self.lock.release()
+        finally:
+            self.lock.release()
 
     def draw(self, game, window, grid):
-        #riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
+        # riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
         self.lock.acquire()
-        try: 
+        try:
             super().draw(game, window, grid)
-        finally: self.lock.release()
+        finally:
+            self.lock.release()
 
     def move(self, direction):
         self.lock.acquire()
         try:
             super().move(direction)
-        finally: self.lock.release()
+        finally:
+            self.lock.release()
 
     def __steer(self, direction):
         self.lock.acquire()
         try:
             super().__steer(direction)
-        finally: self.lock.release()
+        finally:
+            self.lock.release()
 
     def eat(self):
         self.lock.acquire()
         try:
             super().eat()
-        finally: self.lock.release()
-        
+        finally:
+            self.lock.release()
+
     def can_eat(self, food):
         self.lock.acquire()
         try:
             ret = super().can_eat(food)
-        finally: self.lock.release()
+        finally:
+            self.lock.release()
         return ret  # confronto tra nodi
 
-    def check_tail_collision(self):
+    def tail_collision(self):
         self.lock.acquire()
         try:
-            ret = super().check_tail_collision()
-        finally: self.lock.release()
+            ret = super().tail_collision()
+        finally:
+            self.lock.release()
         return ret
 
-    def check_adversarial_collision(self, adversarial_body):
-        condition = False
-
+    def adversarial_collision(self, adversarial_body):
         self.lock.acquire()
         try:
-            ret = super().check_adversarial_collision(adversarial_body)
-        finally: self.lock.release()
+            ret = super().adversarial_collision(adversarial_body)
+        finally:
+            self.lock.release()
         return ret
 
-    def check_bounds(self, grid):
-        condition = False
+    def bounds_collision(self, grid):
         self.lock.acquire()
         try:
-            ret = super().check_bounds(grid)
-        finally: self.lock.release()    
+            ret = super().bounds_collision(grid)
+        finally:
+            self.lock.release()
         return ret
-    
+
     def get_body(self):
         self.lock.acquire()
         try:
             ret = super().get_body()
-        finally: self.lock.release()    
+        finally:
+            self.lock.release()
         return ret
-    
+
     def fast_get_body(self):
         self.lock.acquire()
         try:
             ret = copy.deepcopy(super().fast_get_body())
-        finally: self.lock.release()    
+        finally:
+            self.lock.release()
         return ret

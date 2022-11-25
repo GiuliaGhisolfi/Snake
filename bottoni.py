@@ -1,20 +1,12 @@
 import pygame, sys
 import copy
+import colors
 #from main import *
 
 scelta = False
 buttons = []
 dict_info = []
 dict_info_single = {}
-
-# colori migliori trovati nel mondo
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-ORANGE = (255, 102, 0)
-GREEN = (0, 190, 80)
-BLUE = (0, 0, 255)
-FUXIA = (255, 0, 100)
-PINK = (255, 105, 180)
 
 class Button:
     def __init__(self,text,width,height,pos,elevation):
@@ -65,7 +57,7 @@ class Button:
                     info = [
                             {   
                                 "type": "mbot",
-                                "color": GREEN,
+                                "color": colors.GREEN,
                                 "scelta":"singleplayer",
                                 "start_location": "top-left",
                                 "keys": {
@@ -77,7 +69,7 @@ class Button:
                             },
                             {
                                 "type": "mbot",
-                                "color": BLUE,
+                                "color": colors.BLUE,
                                 "start_location": "bottom-right",
                                 "keys": {
                                     "up": pygame.K_UP,
@@ -106,7 +98,7 @@ class Button:
                 elif self.text == 'Bot Player':
                     info_bot =  {
                                 "type": "sbot",  # human - sbot - mbot
-                                "color": PINK,
+                                "color": colors.PINK,
                                 "start_location": "top-left",
                                 "keys": {
                                     "up": pygame.K_UP,
@@ -120,7 +112,7 @@ class Button:
                 elif self.text == 'A* search':             
                     info_bot = {
                               "type": "sbot",  # human - sbot - mbot
-                                "color": PINK,
+                                "color": colors.PINK,
                                 "start_location": "top-left",
                                 "keys": {
                                     "up": pygame.K_UP,
@@ -134,7 +126,7 @@ class Button:
                 elif self.text == 'Hamilton search':
                     info_bot = {
                                "type": "sbot",  # human - sbot - mbot
-                                "color": GREEN,
+                                "color": colors.GREEN,
                                 "start_location": "top-left",
                                 "keys": {
                                     "up": pygame.K_UP,

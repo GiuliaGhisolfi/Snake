@@ -1,42 +1,5 @@
 from search import *
-
-def Grid(width, height, obstacles=[]):
-    def neighbors(x, y):
-        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-        for (dx, dy) in directions:
-            (nx, ny) = (x + dx, y + dy)
-            if (nx, ny) not in obstacles and 0 <= nx < width and 0 <= ny < height:
-                yield (nx, ny)
-                
-    grid = {}
-    for x in range(width):
-        for y in range(height):
-            if (x, y) not in obstacles:
-                grid[(x, y)] = list(neighbors(x, y))
-    return grid # A dictionary with pairs of integers as keys and lists of pairs of integers as values
-
-class GridProblem(Problem):
-    def __init__(self, initial, goal, grid):
-        super().__init__(initial, goal)
-        self.grid = grid
-    
-    def actions(self, state): 
-        return self.grid[state]
-
-    def result(self, state, action):
-        return action
-    
-    def h(self, state): # Manhattan distance
-        if isinstance(self.goal, list):
-            min = np.inf
-            for goal in self.goal:
-                d = abs(state.state[0]-goal[0]) + abs(state.state[1]-goal[1])
-                if d < min:
-                    min = d
-            d = min
-        else:
-            d = abs(state.state[0]-self.goal[0]) + abs(state.state[1]-self.goal[1])
-        return d
+from grid_problem import *
 
 def longest_path(grid, start, goal):
     def could_extend(path, curr, next, new1, new2):
@@ -99,14 +62,3 @@ def longest_path(grid, start, goal):
     
     path.pop(0)
     return path
-
-# TESTS
-
-grid = Grid(4, 4)
-print(longest_path(grid, (2,0), (0,0)))
-
-grid = Grid(4, 4)
-print(longest_path(grid, (2,2), (0,0)))
-
-grid = Grid(4, 4, obstacles=[(2,1)])
-print(longest_path(grid, (2,2), (0,0)))

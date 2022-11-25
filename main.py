@@ -8,13 +8,13 @@ from bot_hamilton import Bot_hamilton
 from snake import Snake
 from food import Food
 from bottoni import *
-from obstacles import *
+import colors
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
-FRAME_DELAY = 10
-X_BLOCKS = 11
-Y_BLOCKS = 10
+FRAME_DELAY = 200
+X_BLOCKS = 17
+Y_BLOCKS = 16
 
    
 pygame.init()
@@ -42,13 +42,14 @@ def singleplayer_start():
 
     snake.respawn(grid)
     snakes.append(snake)
+    grid.spawn_obstacles(snakes)
     
     # creo ostacoli
-    obstacles = Obstacles('gray')
-    obstacles.spawn(snakes, grid)
+    # obstacles = Obstacles('gray')
+    # obstacles.spawn(snakes, grid)
 
-    food = Food(RED)
-    food.respawn(snakes, grid, obstacles)
+    food = Food(colors.RED)
+    food.respawn(snakes, grid)
 
     # logs
     file = open("player0"+"_logfile.csv", "w")
@@ -63,7 +64,7 @@ def singleplayer_start():
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
     elif players_info["type"] == "sbot":
-        player = Bot_singleplayer(grid, snakes[0], food, obstacles, True)
+        player = Bot_singleplayer(grid, snakes[0], food, True)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
@@ -91,17 +92,17 @@ def singleplayer_start():
         snake.move(dir)
         if snake.can_eat(food):
             snake.eat()
-            food.respawn(snakes, grid, obstacles)
+            food.respawn(snakes, grid)
 
-        lost = snake.check_bounds(grid) or \
-            snake.check_tail_collision() or \
-            snake.check_obstacles_collision(obstacles)
+        lost = snake.bounds_collision(grid) or \
+            snake.tail_collision() # or \
+            # snake.check_obstacles_collision() # non serve vero?
 
 
         end = False
         if lost:
             end = True
-            text = font.render('GAME OVER', True, FUXIA)
+            text = font.render('GAME OVER', True, colors.FUXIA)
             window.blit(text, (180, 270))
 
         if end:
@@ -115,30 +116,29 @@ def singleplayer_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            grid.spawn_obstacles(snakes)
+            food.respawn(snakes, grid)
 
             steps = 0
 
         grid_area = X_BLOCKS * Y_BLOCKS
-        if (snake.length == grid_area - 1):
+        if (snake.length == grid_area):
             snake.draw(pygame, window, grid)
-            obstacles.draw(pygame, window, grid)
-            food.draw(pygame, window, grid)
+            grid.draw_obstacles(pygame, window)
             
-            text = font.render('COMPLETE', True, FUXIA)
+            text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
             
             pygame.display.update()
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            grid.spawn_obstacles(snakes)
+            food.respawn(snakes, grid)
         else:
-            window.fill(BLACK)
+            window.fill(colors.BLACK)
             snake.draw(pygame, window, grid)
-            obstacles.draw(pygame, window, grid)
+            grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)
             pygame.display.update()
 
@@ -156,11 +156,11 @@ def hamilton_start():
     snakes.append(snake)
     
     # creo ostacoli
-    obstacles = Obstacles('gray')
+    #obstacles = Obstacles('gray')
     #obstacles.spawn(snakes, grid)
 
-    food = Food(RED)
-    food.respawn(snakes, grid, obstacles)
+    food = Food(colors.RED)
+    food.respawn(snakes, grid)
 
     # logs
     file = open("player0"+"_logfile.csv", "w")
@@ -203,17 +203,16 @@ def hamilton_start():
         snake.move(dir)
         if snake.can_eat(food):
             snake.eat()
-            food.respawn(snakes, grid, obstacles)
+            food.respawn(snakes, grid)
 
-        lost = snake.check_bounds(grid) or \
-            snake.check_tail_collision() or \
-            snake.check_obstacles_collision(obstacles)
+        lost = snake.bounds_collision(grid) or \
+            snake.tail_collision()
 
 
         end = False
         if lost:
             end = True
-            text = font.render('GAME OVER', True, FUXIA)
+            text = font.render('GAME OVER', True, colors.FUXIA)
             window.blit(text, (180, 270))
 
         if end:
@@ -228,29 +227,25 @@ def hamilton_start():
             
             snake.respawn(grid)
             #obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            food.respawn(snakes, grid)
 
             steps = 0
             
         grid_area = X_BLOCKS * Y_BLOCKS
-        if (snake.length == grid_area - 1):
+        if (snake.length == grid_area):
             snake.draw(pygame, window, grid)
-            #obstacles.draw(pygame, window, grid)
-            food.draw(pygame, window, grid)
             
-            text = font.render('COMPLETE', True, FUXIA)
+            text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
             
             pygame.display.update()
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            #obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            food.respawn(snakes, grid)
         else:
-            window.fill(BLACK)
+            window.fill(colors.BLACK)
             snake.draw(pygame, window, grid)
-            #obstacles.draw(pygame, window, grid)
             food.draw(pygame, window, grid)
             pygame.display.update()
 
@@ -272,11 +267,11 @@ def multiplayer_start():
         snakes.append(snake)
     
     # creo ostacoli
-    obstacles = Obstacles('gray')
-    obstacles.spawn(snakes, grid)
+    #obstacles = Obstacles('gray')
+    #obstacles.spawn(snakes, grid)
 
-    food = Food(RED)
-    food.respawn(snakes, grid, obstacles)
+    food = Food(colors.RED)
+    food.respawn(snakes, grid)
 
     for i, p in enumerate(players_info):  # indice e iteratore nella lista (piccina)
         # logs
@@ -293,10 +288,8 @@ def multiplayer_start():
                 right_key=p["keys"]["right"],
                 left_key=p["keys"]["left"])
         elif p["type"] == "mbot":
-            player = Bot_twoplayers(grid, obstacles)
+            player = Bot_twoplayers(grid)
             num_threads = num_threads + 1
-        elif p["type"] == "sbot":
-            player = Bot_singleplayer(grid, snakes[i], food, obstacles, True)
         else:
             print('PLAYERS INFO ERROR: player type not recognized')
             exit(1)
@@ -338,25 +331,24 @@ def multiplayer_start():
             snakes[i].move(dir)
             if snakes[i].can_eat(food):
                 snakes[i].eat()
-                food.respawn(snakes, grid, obstacles)
+                food.respawn(snakes, grid)
             if (players_info[i]['type'] != 'sbot' and players_info[i]['type'] != 'human'): #modifica per fa funzionare sbot o human
                 tasks[i].cancel()
 
         lost = []
         for i in range(len(snakes)):
-            lost.append(snakes[i].check_bounds(grid) or
-                        snakes[i].check_tail_collision() or
-                        snakes[i].check_obstacles_collision(obstacles))
+            lost.append(snakes[i].bounds_collision(grid) or
+                        snakes[i].tail_collision())
 
         collisions = []
         collisions.append(
-            snakes[0].check_adversarial_collision(snakes[1].body))
+            snakes[0].adversarial_collision(snakes[1].body))
         collisions.append(
-            snakes[1].check_adversarial_collision(snakes[0].body))
+            snakes[1].adversarial_collision(snakes[0].body))
         lost[0] = lost[0] or collisions[0]
         lost[1] = lost[1] or collisions[1]
         if collisions[0] or collisions[1]:  # redraw to see which snake collided
-            window.fill(BLACK)
+            window.fill(colors.BLACK)
             snakes[0].draw(pygame, window, grid)
             snakes[1].draw(pygame, window, grid)
 
@@ -364,21 +356,21 @@ def multiplayer_start():
         if lost[0] or lost[1]:
             end = True
         if lost[0] and lost[1]:
-            text = font.render('DRAW', True, FUXIA)
+            text = font.render('DRAW', True, colors.FUXIA)
             window.blit(text, (250, 270))
             logfiles[0].write("DRAW,")
             logfiles[1].write("DRAW,")
         elif lost[0]:
-            text = font.render('GAME OVER', True, FUXIA)
+            text = font.render('GAME OVER', True, colors.FUXIA)
             window.blit(text, (180, 230))
-            text = font.render('PLAYER 1 WON', True, FUXIA)
+            text = font.render('PLAYER 1 WON', True, colors.FUXIA)
             window.blit(text, (140, 310))
             logfiles[0].write("LOST,")
             logfiles[1].write("WIN,")
         elif lost[1]:
-            text = font.render('GAME OVER', True, FUXIA)
+            text = font.render('GAME OVER', True, colors.FUXIA)
             window.blit(text, (180, 230))
-            text = font.render('PLAYER 1 WON', True, FUXIA)
+            text = font.render('PLAYER 1 WON', True, colors.FUXIA)
             window.blit(text, (140, 310))
             logfiles[0].write("WIN,")
             logfiles[1].write("LOST,")
@@ -395,15 +387,15 @@ def multiplayer_start():
                 GAMEOVER_FILE.write('\n')
                 
                 snakes[i].respawn(grid)
-            obstacles.spawn(snakes, grid)
-            food.respawn(snakes, grid,obstacles)
+            grid.spawn_obstacles(snakes)
+            food.respawn(snakes, grid)
 
             steps = 0
 
-        window.fill(BLACK)
+        window.fill(colors.BLACK)
         for i in range(len(snakes)):
             snakes[i].draw(pygame, window, grid)
-        obstacles.draw(pygame, window, grid)
+        grid.draw_obstacles(pygame, window)
         food.draw(pygame, window, grid)
         pygame.display.update()
 
