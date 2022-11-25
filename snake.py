@@ -2,7 +2,6 @@ from directions import Directions
 import threading
 import copy
 
-
 class Snake:
     def __init__(self, color=(0, 190, 80), start_location="top-left"):
         self.color = color  # immutabile
@@ -20,21 +19,7 @@ class Snake:
                          ((grid.x_blocks-4), (grid.y_blocks-5)),
                          ((grid.x_blocks-4), (grid.y_blocks-6))]
             self.direction = Directions.UP
-
-    """def coordinate_from_nodes(self, node_list, grid):
-        chars = ['(', ')']
-        body_coord = []
-        for node in node_list:
-            node = node.translate(str.maketrans(
-                {ord(char): '' for char in chars}))
-            node = node.split(',')
-            for i in range(2):
-                node[i] = int(node[i])
-            body_coord[len(body_coord):] = [
-                (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
-        return body_coord"""
-       
-           
+    
     def coord_from_graph(self, node_list, grid):
         body_coord = []
         for node in node_list:
@@ -126,28 +111,25 @@ class Snake:
     def can_eat(self, food):
         return self.body[-1] == food.position[0]  # confronto tra nodi
 
-    def check_tail_collision(self):
-        condition = False
+    def tail_collision(self):
         head = self.body[-1]
         for segment in self.body[:-1]:
             if head == segment:
-                condition = True
-        return condition
+                return True
+        return False
 
-    def check_adversarial_collision(self, adversarial_body):
-        condition = False
+    def adversarial_collision(self, adversarial_body):
         head = self.body[-1]
         for segment in adversarial_body:
             if head == segment:
-                condition = True
-        return condition
+                return True
+        return False
 
-    def check_bounds(self, grid):
-        condition = False
+    def bounds_collision(self, grid):
         head = self.body[-1]
         if head not in grid.grid:
-            condition = True
-        return condition
+            return True
+        return False
 
     def get_body(self):
         return copy.deepcopy(self.body)
@@ -206,29 +188,26 @@ class LockedSnake(Snake):
             self.lock.release()
         return ret  # confronto tra nodi
 
-    def check_tail_collision(self):
+    def tail_collision(self):
         self.lock.acquire()
         try:
-            ret = super().check_tail_collision()
+            ret = super().tail_collision()
         finally:
             self.lock.release()
         return ret
 
-    def check_adversarial_collision(self, adversarial_body):
-        condition = False
-
+    def adversarial_collision(self, adversarial_body):
         self.lock.acquire()
         try:
-            ret = super().check_adversarial_collision(adversarial_body)
+            ret = super().adversarial_collision(adversarial_body)
         finally:
             self.lock.release()
         return ret
 
-    def check_bounds(self, grid):
-        condition = False
+    def bounds_collision(self, grid):
         self.lock.acquire()
         try:
-            ret = super().check_bounds(grid)
+            ret = super().bounds_collision(grid)
         finally:
             self.lock.release()
         return ret

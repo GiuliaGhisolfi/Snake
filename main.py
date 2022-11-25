@@ -94,8 +94,8 @@ def singleplayer_start():
             snake.eat()
             food.respawn(snakes, grid)
 
-        lost = snake.check_bounds(grid) or \
-            snake.check_tail_collision() # or \
+        lost = snake.bounds_collision(grid) or \
+            snake.tail_collision() # or \
             # snake.check_obstacles_collision() # non serve vero?
 
 
@@ -205,8 +205,8 @@ def hamilton_start():
             snake.eat()
             food.respawn(snakes, grid)
 
-        lost = snake.check_bounds(grid) or \
-            snake.check_tail_collision()
+        lost = snake.bounds_collision(grid) or \
+            snake.tail_collision()
 
 
         end = False
@@ -337,14 +337,14 @@ def multiplayer_start():
 
         lost = []
         for i in range(len(snakes)):
-            lost.append(snakes[i].check_bounds(grid) or
-                        snakes[i].check_tail_collision())
+            lost.append(snakes[i].bounds_collision(grid) or
+                        snakes[i].tail_collision())
 
         collisions = []
         collisions.append(
-            snakes[0].check_adversarial_collision(snakes[1].body))
+            snakes[0].adversarial_collision(snakes[1].body))
         collisions.append(
-            snakes[1].check_adversarial_collision(snakes[0].body))
+            snakes[1].adversarial_collision(snakes[0].body))
         lost[0] = lost[0] or collisions[0]
         lost[1] = lost[1] or collisions[1]
         if collisions[0] or collisions[1]:  # redraw to see which snake collided
