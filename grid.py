@@ -34,10 +34,8 @@ class Grid:
         num_obstacles = math.ceil(math.sqrt(self.x_blocks * self.y_blocks)) - 1
         for i in range(num_obstacles):
             while True:
-                """x_new = rand.randrange(1, self.x_blocks - 1)
-                y_new = rand.randrange(1, self.y_blocks - 1)"""
-                x_new = 3
-                y_new = 6
+                x_new = rand.randrange(1, self.x_blocks - 1)
+                y_new = rand.randrange(1, self.y_blocks - 1)
                 obstacle = Obstacle('gray', x_new, y_new)
                 position = (x_new, y_new)
                 if (self.is_ammissible(obstacle, snakes)) and (not self.is_overlapped(position, snakes)):
