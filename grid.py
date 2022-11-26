@@ -3,6 +3,7 @@ import random as rand
 import math
 import colors
 
+
 class Grid:
     def __init__(self, size, x_blocks, y_blocks):
         self.size = size
@@ -55,72 +56,95 @@ class Grid:
         if x == xprec + 1:
             return 0  # RIGHT
         elif x == xprec - 1:
-            return 1 # LEFT
+            return 1  # LEFT
         elif y == yprec + 1:
-            return 2 # DOWN
+            return 2  # DOWN
         elif y == yprec - 1:
-           return 3 # UP
-    
-    def compute_hamilton_direction(self, cycle):        
-        direct = [] # direct[i] = direction from node with value = i to node (i + 1) in hamilton cycle
+            return 3  # UP
+
+    def compute_hamilton_direction(self, cycle):
+        # direct[i] = direction from node with value = i to node (i + 1) in hamilton cycle
+        direct = []
         for value in range(self.grid_area):
             for node in cycle:
                 if cycle[node] == value:
-                    curr = node # chiave del nodo che ha come valore value
+                    curr = node  # chiave del nodo che ha come valore value
                     break
             x, y = curr
             if value != 0:
-                direct.append(self.hamilton_direction(x, y , xprec, yprec))
-            else: 
+                direct.append(self.hamilton_direction(x, y, xprec, yprec))
+            else:
                 x0 = x
-                y0 =y
+                y0 = y
             xprec = x
-            yprec = y            
+            yprec = y
 
         direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
         return direct
-        
+
     def draw_cycle(self, game, window, cycle):
         self.grid_area = self.x_blocks * self.y_blocks
         direct = self.compute_hamilton_direction(cycle)
         add = math.floor(self.block_size / 2)
-        i = 0
-        
-        # TODO: è sbaglito, mancano le svolte, rifare!!!! con ciclo for su direct[]
+
         for node in cycle:
             x, y = node
-            dir = direct[i]
-            if dir == 0 or dir == 1: # RIGHT or LEFT
+            value = cycle[node]
+            dir = (direct[value - 1], direct[value])
+            
+            if dir == (0, 0) or dir == (1, 1): # RIGHT to RIGHT or LEFT to LEFT:
                 game.draw.rect(window, colors.WHITE,
-                       ( (x * self.block_size), (y * self.block_size + add), self.block_size, 1) )
-            elif dir == 2 or dir == 3: # UP or DOWN
-                game.draw.rect(window, colors.WHITE, 
-                               ( (x * self.block_size + add), (y * self.block_size), 1, self.block_size) )
-            i += 1
-        
-    
+                               ((x * self.block_size), (y * self.block_size + add), self.block_size, 1))
+            if dir == (2, 2) or dir == (3, 3):  # DOWN to DOWN or UP to UP:
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size))
+            if dir == (1, 2) or dir == (3, 0):  # L to D or U to R
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size + add), 1, self.block_size / 2))
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size + add), self.block_size / 2, 1))
+                
+            if dir == (0, 2) or dir == (3, 1):  # R to D or U to L
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size + add), 1, self.block_size / 2))
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size), (y * self.block_size + add), self.block_size / 2, 1))
+                
+            if dir == (0, 3) or dir == (2, 1):  # R to U or D to L
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size / 2))
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size), (y * self.block_size + add), self.block_size / 2, 1))
+                
+            if dir == (2, 0) or dir == (1, 3):  # D to R or L to U
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size / 2))
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size + add), self.block_size / 2, 1))
+
     def is_ammissible(self, new_obstacle, snakes):
         for i in range(len(self.obstacles)):
-            #controllo posizioni occupate in diagonale
-            if ((new_obstacle.x_position == self.obstacles[i].x_position + 1 and new_obstacle.y_position == self.obstacles[i].y_position + 1) or \
-                (new_obstacle.x_position == self.obstacles[i].x_position - 1 and new_obstacle.y_position == self.obstacles[i].y_position - 1) or \
-                (new_obstacle.x_position == self.obstacles[i].x_position + 1 and new_obstacle.y_position == self.obstacles[i].y_position - 1) or \
-                (new_obstacle.x_position == self.obstacles[i].x_position - 1 and new_obstacle.y_position == self.obstacles[i].y_position + 1) or \
-                (new_obstacle.x_position == self.obstacles[i].x_position and new_obstacle.y_position == self.obstacles[i].y_position)):
+            # controllo posizioni occupate in diagonale
+            if ((new_obstacle.x_position == self.obstacles[i].x_position + 1 and new_obstacle.y_position == self.obstacles[i].y_position + 1) or
+                (new_obstacle.x_position == self.obstacles[i].x_position - 1 and new_obstacle.y_position == self.obstacles[i].y_position - 1) or
+                (new_obstacle.x_position == self.obstacles[i].x_position + 1 and new_obstacle.y_position == self.obstacles[i].y_position - 1) or
+                (new_obstacle.x_position == self.obstacles[i].x_position - 1 and new_obstacle.y_position == self.obstacles[i].y_position + 1) or
+                    (new_obstacle.x_position == self.obstacles[i].x_position and new_obstacle.y_position == self.obstacles[i].y_position)):
                 return False
 
-        #facciamo in modo che non ci siano ostacoli immediatamente davanti lo snake
+        # facciamo in modo che non ci siano ostacoli immediatamente davanti lo snake
         for i in range(len(snakes)):
             head = snakes[i].get_body()[-1]
             if snakes[i].start_location == 'top-left':
-                if (head[0] == new_obstacle.x_position and (head[1]== new_obstacle.y_position - 1 or head[1] == new_obstacle.y_position - 2)):
+                if (head[0] == new_obstacle.x_position and (head[1] == new_obstacle.y_position - 1 or head[1] == new_obstacle.y_position - 2)):
                     return False
             else:
                 if (head[0] == new_obstacle.x_position and (head[1] == new_obstacle.y_position + 1 or head[1] == new_obstacle.y_position + 2)):
                     return False
         return True
 
-    def is_overlapped(self, position, snakes): #snakes è una lista di stringhe (male male!!)
+    # snakes è una lista di stringhe (male male!!)
+    def is_overlapped(self, position, snakes):
         for i in range(len(snakes)):
             for segment in snakes[i].body:
                 if segment == position:
@@ -135,7 +159,8 @@ class Grid:
 
     def get_obstacles(self):
         return copy.deepcopy(self.obstacles)
-        
+
+
 class Obstacle:
     def __init__(self, color, x, y):
         self.color = color
