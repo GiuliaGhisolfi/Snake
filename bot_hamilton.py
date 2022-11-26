@@ -74,7 +74,7 @@ class Bot_hamilton(BotS):
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
             exit()
               
-        self.chosen_strat = self.hamilton_cicle_start # strategia
+        self.chosen_strat = self.hamilton_start # strategia
 
     def start(self):
         self.chosen_strat()
@@ -93,7 +93,7 @@ class Bot_hamilton(BotS):
         # flag = 1 sono tutta dentro ad ham -> posso girarmi
         return flag
 
-    def hamilton_cicle_start(self):
+    def hamilton_start(self):
         body = self.snake.get_body()
         head = body[-1]
         goal = self.food.get_positions()[0]
@@ -138,6 +138,10 @@ class Bot_hamilton(BotS):
         self.next_move = self.graphDir_to_gameDir(head, move)
         return self.next_move
 
+    def change_cycle(self):
+        
+        pass
+    
     def get_current_grid(self, snake_false_body):
         # eliminiamo dal grafo le celle occupate dal corpo dello snake
         new_grid = copy.deepcopy(self.grid.grid)
@@ -146,6 +150,9 @@ class Bot_hamilton(BotS):
             self.delete_cell(new_grid, segment)
 
         return new_grid
+    
+    def return_cycle(self):
+        return self.ham_cycle
     
     def get_next_move(self):
         return self.chosen_strat()

@@ -1,6 +1,7 @@
 import copy
 import random as rand
 import math
+import colors
 
 class Grid:
     def __init__(self, size, x_blocks, y_blocks):
@@ -19,9 +20,9 @@ class Grid:
             directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
             for (dx, dy) in directions:
                 (nx, ny) = (x + dx, y + dy)
-                if  0 <= nx < self.x_blocks and 0 <= ny < self.y_blocks:
+                if 0 <= nx < self.x_blocks and 0 <= ny < self.y_blocks:
                     yield (nx, ny)
-        
+
         grid = {}
         for x in range(self.x_blocks):
             for y in range(self.y_blocks):
@@ -48,8 +49,56 @@ class Grid:
             game.draw.rect(
                 window,
                 self.obstacles[i].color,
-                ((self.obstacles[i].x_position) * self.block_size +1 , (self.obstacles[i].y_position) * self.block_size +1, self.block_size-2, self.block_size-2))
+                ((self.obstacles[i].x_position) * self.block_size + 1, (self.obstacles[i].y_position) * self.block_size + 1, self.block_size-2, self.block_size-2))
 
+    def hamilton_direction(self, x, y, xprec, yprec):
+        if x == xprec + 1:
+            return 0  # RIGHT
+        elif x == xprec - 1:
+            return 1 # LEFT
+        elif y == yprec + 1:
+            return 2 # DOWN
+        elif y == yprec - 1:
+           return 3 # UP
+    
+    def compute_hamilton_direction(self, cycle):        
+        direct = [] # direct[i] = direction from node with value = i to node (i + 1) in hamilton cycle
+        for value in range(self.grid_area):
+            for node in cycle:
+                if cycle[node] == value:
+                    curr = node # chiave del nodo che ha come valore value
+                    break
+            x, y = curr
+            if value != 0:
+                direct.append(self.hamilton_direction(x, y , xprec, yprec))
+            else: 
+                x0 = x
+                y0 =y
+            xprec = x
+            yprec = y            
+
+        direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
+        return direct
+        
+    def draw_cycle(self, game, window, cycle):
+        self.grid_area = self.x_blocks * self.y_blocks
+        direct = self.compute_hamilton_direction(cycle)
+        add = math.floor(self.block_size / 2)
+        i = 0
+        
+        # TODO: è sbaglito, mancano le svolte, rifare!!!! con ciclo for su direct[]
+        for node in cycle:
+            x, y = node
+            dir = direct[i]
+            if dir == 0 or dir == 1: # RIGHT or LEFT
+                game.draw.rect(window, colors.WHITE,
+                       ( (x * self.block_size), (y * self.block_size + add), self.block_size, 1) )
+            elif dir == 2 or dir == 3: # UP or DOWN
+                game.draw.rect(window, colors.WHITE, 
+                               ( (x * self.block_size + add), (y * self.block_size), 1, self.block_size) )
+            i += 1
+        
+    
     def is_ammissible(self, new_obstacle, snakes):
         for i in range(len(self.obstacles)):
             #controllo posizioni occupate in diagonale

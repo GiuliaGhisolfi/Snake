@@ -13,8 +13,8 @@ import colors
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
 FRAME_DELAY = 20
-X_BLOCKS = 50
-Y_BLOCKS = 25
+X_BLOCKS = 8
+Y_BLOCKS = 8
 OBSTACLES = True
    
 pygame.init()
@@ -204,7 +204,9 @@ def hamilton_start():
         lost = snake.bounds_collision(grid) or \
             snake.tail_collision()
 
-
+        ham_cycle = {}
+        ham_cycle = player.return_cycle()
+        
         end = False
         if lost:
             end = True
@@ -229,6 +231,7 @@ def hamilton_start():
             
         grid_area = X_BLOCKS * Y_BLOCKS
         if (snake.length == grid_area):
+            grid.draw_cycle(pygame, window, ham_cycle)
             snake.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
@@ -241,6 +244,7 @@ def hamilton_start():
             food.respawn(snakes, grid)
         else:
             window.fill(colors.BLACK)
+            grid.draw_cycle(pygame, window, ham_cycle)
             snake.draw(pygame, window, grid)
             food.draw(pygame, window, grid)
             pygame.display.update()
