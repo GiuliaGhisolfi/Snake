@@ -94,33 +94,35 @@ class Grid:
             
             if dir == (0, 0) or dir == (1, 1): # RIGHT to RIGHT or LEFT to LEFT:
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size), (y * self.block_size + add), self.block_size, 1))
+                               ((x * self.block_size), (y * self.block_size + add), self.block_size + 1, 1))
+                
             if dir == (2, 2) or dir == (3, 3):  # DOWN to DOWN or UP to UP:
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size))
+                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size + 1))
+                
             if dir == (1, 2) or dir == (3, 0):  # L to D or U to R
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size + add), 1, self.block_size / 2))
+                               ((x * self.block_size + add), (y * self.block_size + add), 1, (self.block_size / 2) + 1))
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size + add), self.block_size / 2, 1))
+                               ((x * self.block_size + add), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
                 
             if dir == (0, 2) or dir == (3, 1):  # R to D or U to L
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size + add), 1, self.block_size / 2))
+                               ((x * self.block_size + add), (y * self.block_size + add), 1, (self.block_size / 2) + 1))
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size), (y * self.block_size + add), self.block_size / 2, 1))
+                               ((x * self.block_size), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
                 
             if dir == (0, 3) or dir == (2, 1):  # R to U or D to L
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size / 2))
+                               ((x * self.block_size + add), (y * self.block_size), 1, (self.block_size / 2) + 1))
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size), (y * self.block_size + add), self.block_size / 2, 1))
+                               ((x * self.block_size), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
                 
             if dir == (2, 0) or dir == (1, 3):  # D to R or L to U
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size / 2))
+                               ((x * self.block_size + add), (y * self.block_size), 1, (self.block_size / 2) + 1))
                 game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size + add), self.block_size / 2, 1))
+                               ((x * self.block_size + add), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
 
     def is_ammissible(self, new_obstacle, snakes):
         for i in range(len(self.obstacles)):
