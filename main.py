@@ -9,11 +9,12 @@ from snake import Snake
 from food import Food
 from bottoni import *
 import colors
+import time
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
 FRAME_DELAY = 20
-X_BLOCKS = 8
+X_BLOCKS = 7
 Y_BLOCKS = 8
 OBSTACLES = True
    
@@ -118,9 +119,9 @@ def singleplayer_start():
             steps = 0
 
         grid_area = X_BLOCKS * Y_BLOCKS
-        if (snake.length == grid_area):
-            snake.draw(pygame, window, grid)
+        if (snake.length == grid_area):            
             grid.draw_obstacles(pygame, window)
+            snake.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
@@ -183,6 +184,7 @@ def hamilton_start():
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
     
+    tic = time.time()
     while run:
         steps = steps + 1
 
@@ -231,15 +233,22 @@ def hamilton_start():
             
         grid_area = X_BLOCKS * Y_BLOCKS
         if (snake.length == grid_area):
+            toc = time.time()
             grid.draw_cycle(pygame, window, ham_cycle)
             snake.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
             
+            GAMEOVER_FILE.write('Complete')
+            GAMEOVER_FILE.write(',')
+            GAMEOVER_FILE.write(str(toc - tic))
+            GAMEOVER_FILE.write('\n')
+            
             pygame.display.update()
             pygame.time.delay(700)
             
+            tic = time.time()
             snake.respawn(grid)
             food.respawn(snakes, grid)
         else:

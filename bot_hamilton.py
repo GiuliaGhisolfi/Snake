@@ -110,7 +110,7 @@ class Bot_hamilton(BotS):
                 move = (coordinates[0], coordinates[1])
                 break
         
-        if len(body) < 0.5 * grid_area: # TODO: parametrizza e tenta altri valori
+        if len(body) < 0.7 * grid_area: # TODO: parametrizza e tenta altri valori
             goal_node = astar_search(grid_problem)
             if goal_node != None:
                 # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
