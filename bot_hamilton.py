@@ -162,10 +162,10 @@ class Bot_hamilton(BotS):
                         for n2 in self.ham_cycle: 
                             n1_idx = self.ham_cycle[n1]
                             n2_idx = self.ham_cycle[n2]  
-                            n1_pos = (n1_idx - head_idx) % self.grid_area  
+                            n1_pos = (n1_idx - head_idx) % self.grid_area  # questa chiaramente sbagliata
                             n2_pos = (n2_idx - head_idx) % self.grid_area                 
                             if self.ham_cycle[n2] > self.ham_cycle[n1] + 1: # questo non funziona, che cazzo volevo scrivere?
-                                if n1_pos > 0 and n2_pos < node_pos: 
+                                if n1_pos > 0 and n2_pos < node_pos: # questa condizione mi sembrava sbagliata, ma forse l'ho messa a caso
                                     flag = True # qua ci passa però
                                     break
                     
