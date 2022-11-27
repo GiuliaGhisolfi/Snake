@@ -7,6 +7,9 @@ import grid
 import snake
 import food
 
+# Se False utilizza a*, altrimenti cerca di fare tagli in tutte le celle vicine 
+# alla testa e sceglie quella più vicina alla mela sul ciclo hamiltoniano
+GREEDY = True
 
 def get_cycle(grid):
     x_blocks = grid.x_blocks
@@ -68,6 +71,7 @@ class Bot_hamilton(BotS):
         self.grid = grid
         self.snake = snake
         self.food = food
+        self.ham_cycle = get_cycle(self.grid)
 
         # TODO: spostare check
         if len(self.snake.get_body()) < 3:
@@ -102,7 +106,6 @@ class Bot_hamilton(BotS):
         grid_area = self.grid.x_blocks * self.grid.y_blocks
         grid_problem = GridProblem(head, goal, grid, False)
 
-        self.ham_cycle = get_cycle(self.grid)
         head_ham_pos = self.ham_cycle[head]
 
         for coordinates, ham_pos in self.ham_cycle.items():
@@ -110,25 +113,40 @@ class Bot_hamilton(BotS):
                 move = (coordinates[0], coordinates[1])
                 break
         
-        if len(body) < 0.5 * grid_area: # TODO: parametrizza e tenta altri valori
-            goal_node = astar_search(grid_problem)
-            if goal_node != None:
-                # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
-                path = goal_node.solution()
-                next_ham_pos = self.ham_cycle[path[0]] # netx idx (seguendo path a*)
-                tail_ham_pos = self.ham_cycle[body[0]]
-                food_ham_pos = self.ham_cycle[goal]
-                if not (len(path) == 1 and abs(food_ham_pos-tail_ham_pos) == 1):
-                    head_rel = (head_ham_pos - tail_ham_pos) % grid_area
-                    # distanza tra tail e head, seguendo ciclo ham ( == len(snake.body) ) # REVIEW: stampandoli sono diversi
-                    next_rel = (next_ham_pos - tail_ham_pos) % grid_area
-                    # distanza tra tail e prossima cella ocuupata dal path a*, seguendo ciclo ham
-                    food_rel = (food_ham_pos - tail_ham_pos) % grid_area
-                    # distanza tra tail e food position, seguendo ciclo ham
-                    if next_rel > head_rel and next_rel <= food_rel:
-                        # dist da tail snake a cella a* > len snake (i.e. non mi mangio) and
-                        # dist da tail snake a cella a* <= dist food a tail (i.e. faccio un taglio utile e non supero la mela)
-                        move = path[0] # seguo path a*
+        if len(body) < 0.5 * grid_area:
+            if GREEDY:
+                neighbours = grid[head]
+                min_ham_dis = np.inf
+                for next in neighbours:
+                    next_ham_pos = self.ham_cycle[next]
+                    tail_ham_pos = self.ham_cycle[body[0]]
+                    food_ham_pos = self.ham_cycle[goal]
+                    if not (goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
+                        head_rel = (head_ham_pos - tail_ham_pos) % grid_area
+                        next_rel = (next_ham_pos - tail_ham_pos) % grid_area
+                        food_rel = (food_ham_pos - tail_ham_pos) % grid_area
+                        if next_rel > head_rel and next_rel <= food_rel:
+                            if food_rel - next_rel < min_ham_dis:
+                                move = next
+            else:
+                goal_node = astar_search(grid_problem)
+                if goal_node != None:
+                    # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
+                    path = goal_node.solution()
+                    next_ham_pos = self.ham_cycle[path[0]] # netx idx (seguendo path a*)
+                    tail_ham_pos = self.ham_cycle[body[0]]
+                    food_ham_pos = self.ham_cycle[goal]
+                    if not (len(path) == 1 and abs(food_ham_pos-tail_ham_pos) == 1):
+                        head_rel = (head_ham_pos - tail_ham_pos) % grid_area
+                        # distanza tra tail e head, seguendo ciclo ham ( == len(snake.body) solo se è tutto sul ciclo)
+                        next_rel = (next_ham_pos - tail_ham_pos) % grid_area
+                        # distanza tra tail e prossima cella ocuupata dal path a*, seguendo ciclo ham
+                        food_rel = (food_ham_pos - tail_ham_pos) % grid_area
+                        # distanza tra tail e food position, seguendo ciclo ham
+                        if next_rel > head_rel and next_rel <= food_rel:
+                            # dist da tail snake a cella a* > len snake (i.e. non mi mangio) and
+                            # dist da tail snake a cella a* <= dist food a tail (i.e. faccio un taglio utile e non supero la mela)
+                            move = path[0] # seguo path a*
                         
         # TODO: check che mi posso mettere dentro al contrario
         # riscrivere tutte le funzioni per leggere dizionario da (grid_area-1) a 0
