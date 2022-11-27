@@ -7,6 +7,7 @@ import grid
 import snake
 import food
 
+GREEDY = True
 
 def get_cycle(grid):
     x_blocks = grid.x_blocks
@@ -111,24 +112,39 @@ class Bot_hamilton(BotS):
                 break
         
         if len(body) < 0.5 * grid_area: # TODO: parametrizza e tenta altri valori
-            goal_node = astar_search(grid_problem)
-            if goal_node != None:
-                # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
-                path = goal_node.solution()
-                next_ham_pos = self.ham_cycle[path[0]] # netx idx (seguendo path a*)
-                tail_ham_pos = self.ham_cycle[body[0]]
-                food_ham_pos = self.ham_cycle[goal]
-                if not (len(path) == 1 and abs(food_ham_pos-tail_ham_pos) == 1):
-                    head_rel = (head_ham_pos - tail_ham_pos) % grid_area
-                    # distanza tra tail e head, seguendo ciclo ham ( == len(snake.body) ) # REVIEW: stampandoli sono diversi
-                    next_rel = (next_ham_pos - tail_ham_pos) % grid_area
-                    # distanza tra tail e prossima cella ocuupata dal path a*, seguendo ciclo ham
-                    food_rel = (food_ham_pos - tail_ham_pos) % grid_area
-                    # distanza tra tail e food position, seguendo ciclo ham
-                    if next_rel > head_rel and next_rel <= food_rel:
-                        # dist da tail snake a cella a* > len snake (i.e. non mi mangio) and
-                        # dist da tail snake a cella a* <= dist food a tail (i.e. faccio un taglio utile e non supero la mela)
-                        move = path[0] # seguo path a*
+            if GREEDY:
+                neighbours = grid[head]
+                min_ham_dis = np.inf
+                for next in neighbours:
+                    next_ham_pos = self.ham_cycle[next]
+                    tail_ham_pos = self.ham_cycle[body[0]]
+                    food_ham_pos = self.ham_cycle[goal]
+                    if not (goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
+                        head_rel = (head_ham_pos - tail_ham_pos) % grid_area
+                        next_rel = (next_ham_pos - tail_ham_pos) % grid_area
+                        food_rel = (food_ham_pos - tail_ham_pos) % grid_area
+                        if next_rel > head_rel and next_rel <= food_rel:
+                            if food_rel - next_rel < min_ham_dis:
+                                move = next
+            else:
+                goal_node = astar_search(grid_problem)
+                if goal_node != None:
+                    # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
+                    path = goal_node.solution()
+                    next_ham_pos = self.ham_cycle[path[0]] # netx idx (seguendo path a*)
+                    tail_ham_pos = self.ham_cycle[body[0]]
+                    food_ham_pos = self.ham_cycle[goal]
+                    if not (len(path) == 1 and abs(food_ham_pos-tail_ham_pos) == 1):
+                        head_rel = (head_ham_pos - tail_ham_pos) % grid_area
+                        # distanza tra tail e head, seguendo ciclo ham ( == len(snake.body) ) # REVIEW: stampandoli sono diversi
+                        next_rel = (next_ham_pos - tail_ham_pos) % grid_area
+                        # distanza tra tail e prossima cella ocuupata dal path a*, seguendo ciclo ham
+                        food_rel = (food_ham_pos - tail_ham_pos) % grid_area
+                        # distanza tra tail e food position, seguendo ciclo ham
+                        if next_rel > head_rel and next_rel <= food_rel:
+                            # dist da tail snake a cella a* > len snake (i.e. non mi mangio) and
+                            # dist da tail snake a cella a* <= dist food a tail (i.e. faccio un taglio utile e non supero la mela)
+                            move = path[0] # seguo path a*
                         
         # TODO: check che mi posso mettere dentro al contrario
         # riscrivere tutte le funzioni per leggere dizionario da (grid_area-1) a 0
