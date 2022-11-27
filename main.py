@@ -15,7 +15,7 @@ import time
 
 FRAME_DELAY = 20
 X_BLOCKS = 8
-Y_BLOCKS = 8
+Y_BLOCKS = 7
 OBSTACLES = True
    
 pygame.init()
@@ -184,7 +184,7 @@ def hamilton_start():
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
     
-    tic = time.time()
+    tic = time.time() # TODO: togliere, sono 3 + la scrittura nel file
     while run:
         steps = steps + 1
 
