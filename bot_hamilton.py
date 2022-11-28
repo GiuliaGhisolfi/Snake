@@ -216,10 +216,6 @@ class Bot_hamilton(BotS):
                 elif value > head_idx and value <= n1_idx:
                     i = (value - n1_idx) # distanza nodo nn e n1
                     self.ham_cycle[nn] = (delta_n1 + i) % self.grid_area
-                
-
-
-            # self.ham_cycle[n1_coll] = self.ham_cycle[n1] + 1 -> rimane uguale da qua in poi
 
     def get_current_grid(self, snake_false_body):
         # eliminiamo dal grafo le celle occupate dal corpo dello snake
