@@ -11,6 +11,7 @@ import food
 # alla testa e sceglie quella più vicina alla mela sul ciclo hamiltoniano
 GREEDY = True
 
+# ciclo ham per griglia senza ostacoli
 def get_cycle(grid):
     x_blocks = grid.x_blocks
     y_blocks = grid.y_blocks
@@ -71,7 +72,7 @@ class Bot_hamilton(BotS):
         self.grid = grid
         self.snake = snake
         self.food = food
-        self.ham_cycle = get_cycle(self.grid)
+        self.ham_cycle = self.grid.get_cycle()
 
         # TODO: spostare check
         if len(self.snake.get_body()) < 3:
@@ -103,7 +104,7 @@ class Bot_hamilton(BotS):
         goal = self.food.get_positions()[0]
 
         grid = self.get_current_grid(body[:-1])
-        grid_area = self.grid.x_blocks * self.grid.y_blocks
+        grid_area = self.grid.get_grid_free_area()
         grid_problem = GridProblem(head, goal, grid, False)
 
         head_ham_pos = self.ham_cycle[head]
@@ -112,7 +113,7 @@ class Bot_hamilton(BotS):
             if ham_pos == (head_ham_pos + 1) % grid_area:
                 move = (coordinates[0], coordinates[1])
                 break
-        
+
         if len(body) < 0.5 * grid_area:
             if GREEDY:
                 neighbours = grid[head]
@@ -140,7 +141,7 @@ class Bot_hamilton(BotS):
                         head_rel = (head_ham_pos - tail_ham_pos) % grid_area
                         # distanza tra tail e head, seguendo ciclo ham ( == len(snake.body) solo se è tutto sul ciclo)
                         next_rel = (next_ham_pos - tail_ham_pos) % grid_area
-                        # distanza tra tail e prossima cella ocuupata dal path a*, seguendo ciclo ham
+                        # distanza tra tail e prossima cella occupata dal path a*, seguendo ciclo ham
                         food_rel = (food_ham_pos - tail_ham_pos) % grid_area
                         # distanza tra tail e food position, seguendo ciclo ham
                         if next_rel > head_rel and next_rel <= food_rel:
@@ -152,7 +153,7 @@ class Bot_hamilton(BotS):
         # riscrivere tutte le funzioni per leggere dizionario da (grid_area-1) a 0
         # MA HA SENSO???
         # se riusciamo a fare i tagli bene è meglio!!!!!!!!!!
-        # anche partendo dai cicli ham più semplici                
+        # anche partendo dai cicli ham più semplici
         self.next_move = self.graphDir_to_gameDir(head, move)
         return self.next_move
 

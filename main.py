@@ -12,10 +12,11 @@ import colors
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
-FRAME_DELAY = 20
-X_BLOCKS = 50
-Y_BLOCKS = 25
+FRAME_DELAY = 5
 OBSTACLES = True
+# NON MODIFICARE!
+X_BLOCKS = 15
+Y_BLOCKS = 16
    
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
@@ -42,7 +43,7 @@ def singleplayer_start():
 
     snake.respawn(grid)
     snakes.append(snake)
-    if OBSTACLES: grid.spawn_obstacles(snakes)
+    if OBSTACLES: grid.spawn_obstacles()
 
     food = Food(colors.RED)
     food.respawn(snakes, grid)
@@ -91,9 +92,7 @@ def singleplayer_start():
             food.respawn(snakes, grid)
 
         lost = snake.bounds_collision(grid) or \
-            snake.tail_collision() # or \
-            # snake.check_obstacles_collision() # non serve vero?
-
+            snake.tail_collision()
 
         end = False
         if lost:
@@ -112,7 +111,7 @@ def singleplayer_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
 
             steps = 0
@@ -129,7 +128,7 @@ def singleplayer_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
         else:
             window.fill(colors.BLACK)
@@ -150,10 +149,7 @@ def hamilton_start():
 
     snake.respawn(grid)
     snakes.append(snake)
-    
-    # creo ostacoli
-    #obstacles = Obstacles('gray')
-    #obstacles.spawn(snakes, grid)
+    if OBSTACLES: grid.spawn_obstacles()
 
     food = Food(colors.RED)
     food.respawn(snakes, grid)
@@ -222,14 +218,14 @@ def hamilton_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            #obstacles.spawn(snakes, grid)
+            if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
 
             steps = 0
             
-        grid_area = X_BLOCKS * Y_BLOCKS
-        if (snake.length == grid_area):
+        if (snake.length == grid.get_grid_free_area()):
             snake.draw(pygame, window, grid)
+            grid.draw_obstacles(pygame, window)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
@@ -238,10 +234,12 @@ def hamilton_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
+            if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
         else:
             window.fill(colors.BLACK)
             snake.draw(pygame, window, grid)
+            grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)
             pygame.display.update()
 
@@ -383,7 +381,7 @@ def multiplayer_start():
                 GAMEOVER_FILE.write('\n')
                 
                 snakes[i].respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
 
             steps = 0
