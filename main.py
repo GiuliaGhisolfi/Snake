@@ -14,8 +14,8 @@ import time
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
 FRAME_DELAY = 20
-X_BLOCKS = 8
-Y_BLOCKS = 7
+X_BLOCKS = 12
+Y_BLOCKS = 12
 OBSTACLES = True
    
 pygame.init()
