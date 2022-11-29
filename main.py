@@ -9,6 +9,7 @@ from snake import Snake
 from food import Food
 from bottoni import *
 import colors
+import directions
 
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
@@ -88,7 +89,7 @@ def singleplayer_start():
    
         dir = player.get_next_move()
         print(dir, food.fast_get_positions())
-        if dir != None:
+        if dir != directions.Directions.CLOSE:
             
             mangiato = snake.move(dir, food)
 
@@ -100,6 +101,7 @@ def singleplayer_start():
                 end = True
                 text = font.render('GAME OVER', True, colors.FUXIA)
                 window.blit(text, (180, 270))
+
         else:
             text = font.render('LOOP', True, colors.GREEN)
             window.blit(text, (250, 270))
@@ -122,7 +124,7 @@ def singleplayer_start():
             
         if end:
             pygame.display.update()
-            pygame.time.delay(60000)
+            pygame.time.delay(7000)
             file.write("%s,%s\n" % (snake.length, steps))
 
             GAMEOVER_FILE.write(str(snake.get_body()))
