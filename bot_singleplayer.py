@@ -11,12 +11,12 @@ from bot import BotS
 import colors
 from grid_problem import *
 from bottoni import *
-import longest_path as lp
 
 FIRST_IT_C = colors.RED
 TO_FOOD_C = colors.ORANGE
 DEF_C = colors.BLUE
 
+DETECTLOOPGENEROSITY = 3
 
 class Bot_singleplayer(BotS):
     # input anche lo snake
@@ -29,6 +29,9 @@ class Bot_singleplayer(BotS):
         self.snake = snake       
         self.food = food 
 
+        self.loop = 0
+        self.max_loop = self.grid.x_blocks*self.grid.y_blocks*DETECTLOOPGENEROSITY
+
         if len(self.snake.get_body()) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
             exit() #boom
@@ -38,8 +41,8 @@ class Bot_singleplayer(BotS):
 
         #strategia attuale
         self.chosen_strat = self.mela_cicle_strat
-        self.chosen_search = 2 # 0->a min turns, 1-> salva spazio, 2->mista, 3->longest path, 4->euritica inversa
-        self.chosen_optimization = 1 #0-> longest path, 1->euristica inversa
+        self.chosen_search = 2 # 0->a min turns, 1-> salva spazio, 2->mista, 3-> bonk
+        self.chosen_optimization = 0 #0-> longest path
 
         self.nnto = None #next node to optimize
 
@@ -69,17 +72,8 @@ class Bot_singleplayer(BotS):
                 return dummy.solution()
             else: return dummy
         if self.chosen_search == 3:
-            dummy = lp.longest_path(graph, start, goal)
-            if dummy != None:
-                return dummy.solution()
-            else: return dummy
-        if self.chosen_search == 3:
-            grid_problem = GridProblem(start, goal, graph, False)
-            dummy = astar_search_inverse(grid_problem)
-
-            if dummy != None:
-                return dummy.solution()
-            else: return dummy
+            dummy = longest_path(graph, start, goal)
+            return dummy
 
         else:
             print('Strategia ancora non implementata!!')
@@ -87,14 +81,7 @@ class Bot_singleplayer(BotS):
     
     def opt_search(self, start, goal, graph):
         if self.chosen_optimization == 0:
-            return lp.longest_path(graph, start, goal)
-        elif self.chosen_optimization == 1:
-            grid_problem = GridProblem(start, goal, graph, False)
-            dummy = astar_search_inverse(grid_problem)
-
-            if dummy != None:
-                return dummy.solution()
-            else: return dummy
+            return longest_path(graph, start, goal)
         else:
             print('Strategia ancora non implementata!!')
             exit()
@@ -124,9 +111,9 @@ class Bot_singleplayer(BotS):
         if not tg:
             tg = self.grid.grid
 
-        if self.nnto == self.snake.fast_get_body()[-1]: #next node to optimize
+        if self.nnto == self.snake.get_body()[-1]: #next node to optimize
             #print('ping', self.nnto)
-            if is_optimizable(self.snake.fast_get_body()[-1], tg):
+            if is_optimizable(self.snake.get_body()[-1], tg):
                 #cerchiamo il prossimo choke point
                 chokepoint = None
                 for c in self.default_path[:-1]:
@@ -145,11 +132,9 @@ class Bot_singleplayer(BotS):
 
                         #senza testa
                         #patch = get_ham_path(self.snake.fast_get_body()[-1], chokepoint, true_g)
-                        patch = lp.longest_path(true_g, self.snake.fast_get_body()[-1], chokepoint)
+                        patch = self.opt_search(self.snake.get_body()[-1], chokepoint, true_g)
                         if patch != [] or patch != None:
                             self.default_path = patch + self.default_path[choke_i + 1:]
-
-                            if self.debug: print('Ottimizzato', chokepoint)
                             self.nnto = self.default_path[choke_i + 1]
                             return #esce dal for
             
@@ -252,9 +237,13 @@ class Bot_singleplayer(BotS):
                 self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
 
                 move = self.path_to_food.pop(0)
+                self.loop = 0
                 return self.graphDir_to_gameDir(snake_body[-1], move)
 
         self.optimize_standard_path()
+        self.loop += 1
+        if self.loop > self.max_loop:
+            return None
         move = self.default_path.pop(0)
         ret = self.graphDir_to_gameDir(snake_body[-1], move) # è un ciclo
         self.default_path.append(move)

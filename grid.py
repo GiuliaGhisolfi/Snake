@@ -119,38 +119,6 @@ class Grid:
             self.obstacles.append(obstacle)
             self.delete_cell(pos)
 
-    
-    '''
-
-    def is_ammissible(self, new_obstacle, snakes):
-        for i in range(len(self.obstacles)):
-            #controllo posizioni occupate in diagonale
-            if ((new_obstacle.x_position == self.obstacles[i].x_position + 1 and new_obstacle.y_position == self.obstacles[i].y_position + 1) or \
-                (new_obstacle.x_position == self.obstacles[i].x_position - 1 and new_obstacle.y_position == self.obstacles[i].y_position - 1) or \
-                (new_obstacle.x_position == self.obstacles[i].x_position + 1 and new_obstacle.y_position == self.obstacles[i].y_position - 1) or \
-                (new_obstacle.x_position == self.obstacles[i].x_position - 1 and new_obstacle.y_position == self.obstacles[i].y_position + 1) or \
-                (new_obstacle.x_position == self.obstacles[i].x_position and new_obstacle.y_position == self.obstacles[i].y_position)):
-                return False
-
-        #facciamo in modo che non ci siano ostacoli immediatamente davanti lo snake
-        for i in range(len(snakes)):
-            head = snakes[i].get_body()[-1]
-            if snakes[i].start_location == 'top-left':
-                if (head[0] == new_obstacle.x_position and (head[1]== new_obstacle.y_position - 1 or head[1] == new_obstacle.y_position - 2)):
-                    return False
-            else:
-                if (head[0] == new_obstacle.x_position and (head[1] == new_obstacle.y_position + 1 or head[1] == new_obstacle.y_position + 2)):
-                    return False
-        return True
-
-    def is_overlapped(self, position, snakes): #snakes è una lista di stringhe (male male!!)
-        for i in range(len(snakes)):
-            for segment in snakes[i].body:
-                if segment == position:
-                    return True
-        return False
-    '''
-
     def delete_cell(self, del_key):
         self.grid.pop(del_key, None)
         for key in self.grid:
