@@ -92,9 +92,8 @@ class Grid:
             x, y = node
             value = cycle[node]
             dir = (direct[value - 1], direct[value])
-
-            # RIGHT to RIGHT or LEFT to LEFT:
-            if dir == (0, 0) or dir == (1, 1):
+            
+            if dir == (0, 0) or dir == (1, 1):  # RIGHT to RIGHT or LEFT to LEFT:
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size), (y * self.block_size + add), self.block_size + 1, 1))
 

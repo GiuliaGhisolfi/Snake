@@ -105,17 +105,8 @@ class Bot_hamilton(BotS):
         self.grid_area = self.grid.x_blocks * self.grid.y_blocks
         grid_problem = GridProblem(self.head, self.goal, grid, False)
 
-        print(self.ham_cycle)
         self.changed = False
         self.change_cycle()
-        if self.changed:
-            print('Snake pos: ')
-            print(self.body)
-            print('Food pos: ')
-            print(self.goal)
-            print('New Ham!!')
-            print(self.ham_cycle)
-            print('  ')
         head_ham_pos = self.ham_cycle[self.head]
 
         for coordinates, ham_pos in self.ham_cycle.items():
@@ -145,21 +136,18 @@ class Bot_hamilton(BotS):
                         # dist da tail snake a cella a* <= dist food a tail (i.e. faccio un taglio utile e non supero la mela)
                         move = path[0]  # seguo path a*
 
-        # TODO: check che mi posso mettere dentro al contrario
-        # riscrivere tutte le funzioni per leggere dizionario da (grid_area-1) a 0
-        # MA HA SENSO???
-        # se riusciamo a fare i tagli bene è meglio!!!!!!!!!!
-        # anche partendo dai cicli ham più semplici
         self.next_move = self.graphDir_to_gameDir(self.head, move)
         return self.next_move
 
-    def change_cycle(self):  
-        head_idx = self.ham_cycle[self.head] # valore della testa nel ciclo ham
+    def change_cycle(self):
+        # valore della testa nel ciclo ham
+        head_idx = self.ham_cycle[self.head]
         goal_idx = self.ham_cycle[self.goal]
         tail_idx = self.ham_cycle[self.body[0]]
         # head_pos = 0
-        
-        goal_pos = (goal_idx - head_idx) % self.grid_area # distanza relativa goal da head su ham_cycle
+
+        # distanza relativa goal da head su ham_cycle
+        goal_pos = (goal_idx - head_idx) % self.grid_area
         tail_pos = (tail_idx - head_idx) % self.grid_area
 
         flag = False
@@ -174,8 +162,9 @@ class Bot_hamilton(BotS):
 
                 if flag:
                     flag = False
-                    for n1 in self.ham_cycle:  # questo doppio for è una merda, ma non so come fare senza passare tutto il dizionario
-                        for n2 in self.ham_cycle: # TODO: qua si potrebbero fare dei controlli non solo su ham cycle ( tipo usare true graph(?))
+                    for n1 in self.ham_cycle:
+                        # TODO: qua si potrebbero fare dei controlli non solo su ham cycle ( tipo usare true graph(?))
+                        for n2 in self.ham_cycle:
                             n1_idx = self.ham_cycle[n1]
                             n2_idx = self.ham_cycle[n2]
                             n1_pos = (n1_idx - head_idx) % self.grid_area
@@ -184,7 +173,8 @@ class Bot_hamilton(BotS):
                                 if n1_pos > 0 and n2_pos < node_pos:
                                     flag = True
                                     break
-                        if flag: break
+                        if flag:
+                            break
 
                     if flag:
                         flag = False
@@ -201,53 +191,65 @@ class Bot_hamilton(BotS):
                                         n2_coll in self.grid.grid[n2] and n1_coll in self.grid.grid[n1]:
                                     flag = True
                                     break
-                            if flag: break
-                
-                if flag: break
+                            if flag:
+                                break
+
+                if flag:
+                    break
 
         if flag:
-            """# cambio ciclo ham: 
-            self.ham_cycle[node] = node_idx - node_pos + 1
-            n2_coll_rel_node = (n2_coll_idx - node_idx) % self.grid_area # quanto c'è tra
-            self.ham_cycle[n2_coll] = (self.ham_cycle[node] + n2_coll_rel_node) % self.grid_area # sbagliato e influenza i due elif
-            for nn in self.ham_cycle:
-                value = self.ham_cycle[nn]
-                value_rel = (value - head_idx) % self.grid_area
-                
-                # nodi con idx in [node, n2_coll] in ham precedente
-                if value_rel > node_idx and value_rel < n2_coll_idx:
-                    self.ham_cycle[nn] = (value - node_pos + 1) % self.grid_area
+            # cambio ciclo ham:
+            position = np.array(list(self.ham_cycle.values()))            
+            position = (position - head_idx) % self.grid_area # head in first position
+            new_position = - np.ones((position.size,), dtype = int)
 
-                # nodi con idx in [n2, (node - 1)] in ham precedente
-                elif value_rel >= n2_idx and value_rel < node_idx:  
-                    i = (value - n2_idx) # distanza tra nodo nn e n2 nel ciclo precedente
-                    delta_n2 = self.ham_cycle[n2_coll] + 1
-                    self.ham_cycle[nn] = (delta_n2 + i) % self.grid_area
-      
-                # nodi con idx in [(head + 1), n1] in ham precedente
-                elif value_rel > head_idx and value_rel <= n1_idx:
-                    i = (value - n1_idx) # distanza nodo nn e n1
-                    delta_n1 = self.ham_cycle[n1_coll] + 1
-                    self.ham_cycle[nn] = (delta_n1 - i) % self.grid_area"""
+            for i in range(position.size):
+                if position[i] == 0:
+                    new_position[i] = 0 # head
             
+            count = 1            
+            incr1 = 0
+            incr2 = 1
+            
+            check = node_pos
+            while check < n2_coll_pos + 1:  # nn_idx in [node, n2_coll]
+                for i in range(position.size):
+                    if position[i] == node_pos + count:
+                        new_position[i] = count
+                        count += 1
+                        check += 1
+                        break
+            
+            check = 0
+            while check < node_pos - n2_coll_pos + 1:  # nn_idx in [n2, node - 1]
+                for i in range(position.size):
+                    if position[i] == n2_pos + incr1:
+                        new_position[i] = count
+                        count += 1
+                        incr1 += 1
+                        check += 1
+                        break
+            
+            check = 0
+            while check < n1_pos + 1:  # nn_idx in [head + 1, n1]
+                for i in range(position.size):                
+                    if position[i] == incr2:
+                        new_position[i] = count
+                        count += 1
+                        incr2 += 1
+                        check += 1
+                        break
+ 
+            for i in range(position.size): # nn_idx in [n1_coll, head - 1]
+                if new_position[i] == -1:
+                    new_position[i] = position[i]
+            
+            idx = 0
             for nn in self.ham_cycle:
-                value = self.ham_cycle[nn]
-                
-                # nn_idx in [node, n2_coll]
-                if value in range(n1_coll_idx, head_idx + 1):
-                    self.ham_cycle[nn] = (value - node_idx + head_idx + 1) % self.grid_area
-                
-                # nn_idx in [n2, (node - 1)]
-                if value in range(n2_idx, node_idx):
-                    self.ham_cycle[nn] = (value - node_idx + head_idx + 1) % self.grid_area
-                    
-                # nn_idx in [head + 1, n1]
-                if value in range(n2_idx, node_idx):
-                    self.ham_cycle[nn] = (value + node_idx - head_idx + 1) % self.grid_area
-                    
-            print('node = '+ str(node) + ' n1 = ' + str(n1) + ' n2 = ' + str(n2) + ' n1_coll = ' + str(n1_coll) + ' n2_coll = ' + str(n2_coll) )      
-            self.changed = True      
-            
+                self.ham_cycle[nn] = new_position[idx]
+                idx += 1
+
+            self.changed = True
 
     def get_current_grid(self, snake_false_body):
         # eliminiamo dal grafo le celle occupate dal corpo dello snake
