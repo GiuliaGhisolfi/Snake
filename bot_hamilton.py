@@ -105,7 +105,17 @@ class Bot_hamilton(BotS):
         self.grid_area = self.grid.x_blocks * self.grid.y_blocks
         grid_problem = GridProblem(self.head, self.goal, grid, False)
 
+        print(self.ham_cycle)
+        self.changed = False
         self.change_cycle()
+        if self.changed:
+            print('Snake pos: ')
+            print(self.body)
+            print('Food pos: ')
+            print(self.goal)
+            print('New Ham!!')
+            print(self.ham_cycle)
+            print('  ')
         head_ham_pos = self.ham_cycle[self.head]
 
         for coordinates, ham_pos in self.ham_cycle.items():
@@ -143,7 +153,7 @@ class Bot_hamilton(BotS):
         self.next_move = self.graphDir_to_gameDir(self.head, move)
         return self.next_move
 
-    def change_cycle(self):     
+    def change_cycle(self):  
         head_idx = self.ham_cycle[self.head] # valore della testa nel ciclo ham
         goal_idx = self.ham_cycle[self.goal]
         tail_idx = self.ham_cycle[self.body[0]]
@@ -196,17 +206,20 @@ class Bot_hamilton(BotS):
                 if flag: break
 
         if flag:
-            # cambio ciclo ham:                         
+            """# cambio ciclo ham: 
+            self.ham_cycle[node] = node_idx - node_pos + 1
+            n2_coll_rel_node = (n2_coll_idx - node_idx) % self.grid_area # quanto c'è tra
+            self.ham_cycle[n2_coll] = (self.ham_cycle[node] + n2_coll_rel_node) % self.grid_area # sbagliato e influenza i due elif
             for nn in self.ham_cycle:
                 value = self.ham_cycle[nn]
                 value_rel = (value - head_idx) % self.grid_area
                 
                 # nodi con idx in [node, n2_coll] in ham precedente
-                if value_rel >= node_idx and value_rel <= n2_coll_idx:
-                    self.ham_cycle[nn] = (value - node_pos) % self.grid_area
+                if value_rel > node_idx and value_rel < n2_coll_idx:
+                    self.ham_cycle[nn] = (value - node_pos + 1) % self.grid_area
 
                 # nodi con idx in [n2, (node - 1)] in ham precedente
-                elif value_rel >= n2_idx and value_rel < node_idx:
+                elif value_rel >= n2_idx and value_rel < node_idx:  
                     i = (value - n2_idx) # distanza tra nodo nn e n2 nel ciclo precedente
                     delta_n2 = self.ham_cycle[n2_coll] + 1
                     self.ham_cycle[nn] = (delta_n2 + i) % self.grid_area
@@ -215,7 +228,26 @@ class Bot_hamilton(BotS):
                 elif value_rel > head_idx and value_rel <= n1_idx:
                     i = (value - n1_idx) # distanza nodo nn e n1
                     delta_n1 = self.ham_cycle[n1_coll] + 1
-                    self.ham_cycle[nn] = (delta_n1 - i) % self.grid_area
+                    self.ham_cycle[nn] = (delta_n1 - i) % self.grid_area"""
+            
+            for nn in self.ham_cycle:
+                value = self.ham_cycle[nn]
+                
+                # nn_idx in [node, n2_coll]
+                if value in range(n1_coll_idx, head_idx + 1):
+                    self.ham_cycle[nn] = (value - node_idx + head_idx + 1) % self.grid_area
+                
+                # nn_idx in [n2, (node - 1)]
+                if value in range(n2_idx, node_idx):
+                    self.ham_cycle[nn] = (value - node_idx + head_idx + 1) % self.grid_area
+                    
+                # nn_idx in [head + 1, n1]
+                if value in range(n2_idx, node_idx):
+                    self.ham_cycle[nn] = (value + node_idx - head_idx + 1) % self.grid_area
+                    
+            print('node = '+ str(node) + ' n1 = ' + str(n1) + ' n2 = ' + str(n2) + ' n1_coll = ' + str(n1_coll) + ' n2_coll = ' + str(n2_coll) )      
+            self.changed = True      
+            
 
     def get_current_grid(self, snake_false_body):
         # eliminiamo dal grafo le celle occupate dal corpo dello snake
