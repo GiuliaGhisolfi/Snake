@@ -82,8 +82,9 @@ class Grid:
         direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
         return direct
 
-    def draw_cycle(self, game, window, cycle):
+    def draw_cycle(self, game, window, cycle):  # TODO: flag da bot ham
         self.grid_area = self.x_blocks * self.y_blocks
+        # TODO: mettere un flag se cambia il ciclo, così ricomputo le direzioni solo se flag == True
         direct = self.compute_hamilton_direction(cycle)
         add = math.floor(self.block_size / 2)
 
@@ -91,33 +92,34 @@ class Grid:
             x, y = node
             value = cycle[node]
             dir = (direct[value - 1], direct[value])
-            
-            if dir == (0, 0) or dir == (1, 1): # RIGHT to RIGHT or LEFT to LEFT:
+
+            # RIGHT to RIGHT or LEFT to LEFT:
+            if dir == (0, 0) or dir == (1, 1):
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size), (y * self.block_size + add), self.block_size + 1, 1))
-                
+
             if dir == (2, 2) or dir == (3, 3):  # DOWN to DOWN or UP to UP:
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size + add), (y * self.block_size), 1, self.block_size + 1))
-                
+
             if dir == (1, 2) or dir == (3, 0):  # L to D or U to R
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size + add), (y * self.block_size + add), 1, (self.block_size / 2) + 1))
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size + add), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
-                
+
             if dir == (0, 2) or dir == (3, 1):  # R to D or U to L
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size + add), (y * self.block_size + add), 1, (self.block_size / 2) + 1))
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
-                
+
             if dir == (0, 3) or dir == (2, 1):  # R to U or D to L
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size + add), (y * self.block_size), 1, (self.block_size / 2) + 1))
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
-                
+
             if dir == (2, 0) or dir == (1, 3):  # D to R or L to U
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size + add), (y * self.block_size), 1, (self.block_size / 2) + 1))
