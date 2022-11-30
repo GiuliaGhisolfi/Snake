@@ -82,16 +82,16 @@ class Grid:
         direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
         return direct
 
-    def draw_cycle(self, game, window, cycle):  # TODO: flag da bot ham
+    def draw_cycle(self, game, window, cycle, ham_cycle_changed):
         self.grid_area = self.x_blocks * self.y_blocks
-        # TODO: mettere un flag se cambia il ciclo, così ricomputo le direzioni solo se flag == True
-        direct = self.compute_hamilton_direction(cycle)
+        if ham_cycle_changed:
+            self.direct = self.compute_hamilton_direction(cycle)
         add = math.floor(self.block_size / 2)
 
         for node in cycle:
             x, y = node
             value = cycle[node]
-            dir = (direct[value - 1], direct[value])
+            dir = (self.direct[value - 1], self.direct[value])
             
             if dir == (0, 0) or dir == (1, 1):  # RIGHT to RIGHT or LEFT to LEFT:
                 game.draw.rect(window, colors.WHITE,

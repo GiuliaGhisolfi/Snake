@@ -14,8 +14,8 @@ import time
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
 FRAME_DELAY = 20
-X_BLOCKS = 10
-Y_BLOCKS = 10
+X_BLOCKS = 16
+Y_BLOCKS = 16
 OBSTACLES = True
    
 pygame.init()
@@ -208,6 +208,9 @@ def hamilton_start():
 
         ham_cycle = {}
         ham_cycle = player.return_cycle()
+        ham_cycle_changed  = player.return_ham_cycle_changed()
+        if steps == 1:
+            ham_cycle_changed = True
         
         end = False
         if lost:
@@ -234,7 +237,7 @@ def hamilton_start():
         grid_area = X_BLOCKS * Y_BLOCKS
         if (snake.length == grid_area):
             toc = time.time()
-            grid.draw_cycle(pygame, window, ham_cycle)
+            grid.draw_cycle(pygame, window, ham_cycle, ham_cycle_changed)
             snake.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
@@ -253,7 +256,7 @@ def hamilton_start():
             food.respawn(snakes, grid)
         else:
             window.fill(colors.BLACK)
-            grid.draw_cycle(pygame, window, ham_cycle)
+            grid.draw_cycle(pygame, window, ham_cycle, ham_cycle_changed)
             snake.draw(pygame, window, grid)
             food.draw(pygame, window, grid)
             pygame.display.update()
