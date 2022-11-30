@@ -16,7 +16,6 @@ def get_cycle(grid):
     x_blocks = grid.x_blocks
     y_blocks = grid.y_blocks
 
-    # TODO: spostare check
     if (x_blocks % 2) != 0 and (y_blocks % 2) != 0:
         print("Grid dimension not allowed")
         exit()
@@ -60,8 +59,7 @@ class Bot_hamilton(BotS):
         self.snake = snake
         self.food = food
 
-        self.ham_cycle = get_cycle(self.grid) # TODO: spostare da qua (tipo in grid) e passare come parametro, 
-        # altrimenti ad ogni nuovo game riparte dall'ultima configurazione del ciclo trovata
+        self.ham_cycle = get_cycle(self.grid)
 
         if len(self.snake.get_body()) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
@@ -90,18 +88,18 @@ class Bot_hamilton(BotS):
                 move = (coordinates[0], coordinates[1])
                 break
 
-        if len(body) < 0.5 * grid_area:
+        if len(self.body) < 0.5 * self.grid_area:
             if GREEDY:
-                neighbours = grid[head]
+                neighbours = grid[self.head]
                 min_ham_dis = np.inf
                 for next in neighbours:
                     next_ham_pos = self.ham_cycle[next]
-                    tail_ham_pos = self.ham_cycle[body[0]]
-                    food_ham_pos = self.ham_cycle[goal]
-                    if not (goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
-                        head_rel = (head_ham_pos - tail_ham_pos) % grid_area
-                        next_rel = (next_ham_pos - tail_ham_pos) % grid_area
-                        food_rel = (food_ham_pos - tail_ham_pos) % grid_area
+                    tail_ham_pos = self.ham_cycle[self.body[0]]
+                    food_ham_pos = self.ham_cycle[self.goal]
+                    if not (self.goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
+                        head_rel = (head_ham_pos - tail_ham_pos) % self.grid_area
+                        next_rel = (next_ham_pos - tail_ham_pos) % self.grid_area
+                        food_rel = (food_ham_pos - tail_ham_pos) % self.grid_area
 
                         if next_rel > head_rel and next_rel <= food_rel:
                             if food_rel - next_rel < min_ham_dis:
