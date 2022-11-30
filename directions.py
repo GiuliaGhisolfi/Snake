@@ -6,3 +6,6 @@ class Directions(Enum):
   LEFT = 2
   RIGHT = 3
 
+  CLOSE = -1
+
+

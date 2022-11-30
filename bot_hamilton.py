@@ -7,8 +7,11 @@ import grid
 import snake
 import food
 
+# Se False utilizza a*, altrimenti cerca di fare tagli in tutte le celle vicine 
+# alla testa e sceglie quella più vicina alla mela sul ciclo hamiltoniano
 GREEDY = True
 
+# ciclo ham per griglia senza ostacoli
 def get_cycle(grid):
     x_blocks = grid.x_blocks
     y_blocks = grid.y_blocks
@@ -56,8 +59,9 @@ class Bot_hamilton(BotS):
         self.grid = grid
         self.snake = snake
         self.food = food
+
         self.ham_cycle = get_cycle(self.grid) # TODO: spostare da qua (tipo in grid) e passare come parametro, 
-        # altrimenti ad ogninuovo game riparte dall'ultima configurazione del ciclo trovata
+        # altrimenti ad ogni nuovo game riparte dall'ultima configurazione del ciclo trovata
 
         if len(self.snake.get_body()) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
@@ -85,19 +89,20 @@ class Bot_hamilton(BotS):
             if ham_pos == (head_ham_pos + 1) % self.grid_area:
                 move = (coordinates[0], coordinates[1])
                 break
-        
-        if len(self.body) < 0.5 * self.grid_area: # TODO: parametrizza e tenta altri valori
+
+        if len(body) < 0.5 * grid_area:
             if GREEDY:
-                neighbours = grid[self.head]
+                neighbours = grid[head]
                 min_ham_dis = np.inf
                 for next in neighbours:
                     next_ham_pos = self.ham_cycle[next]
-                    tail_ham_pos = self.ham_cycle[self.body[0]]
-                    food_ham_pos = self.ham_cycle[self.goal]
-                    if not (self.goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
-                        head_rel = (head_ham_pos - tail_ham_pos) % self.grid_area
-                        next_rel = (next_ham_pos - tail_ham_pos) % self.grid_area
-                        food_rel = (food_ham_pos - tail_ham_pos) % self.grid_area
+                    tail_ham_pos = self.ham_cycle[body[0]]
+                    food_ham_pos = self.ham_cycle[goal]
+                    if not (goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
+                        head_rel = (head_ham_pos - tail_ham_pos) % grid_area
+                        next_rel = (next_ham_pos - tail_ham_pos) % grid_area
+                        food_rel = (food_ham_pos - tail_ham_pos) % grid_area
+
                         if next_rel > head_rel and next_rel <= food_rel:
                             if food_rel - next_rel < min_ham_dis:
                                 move = next
@@ -107,6 +112,7 @@ class Bot_hamilton(BotS):
                     # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
                     path = goal_node.solution()
                     next_ham_pos = self.ham_cycle[path[0]] # netx idx (seguendo path a*)
+
                     tail_ham_pos = self.ham_cycle[self.body[0]]
                     food_ham_pos = self.ham_cycle[self.goal]
                     if not (len(path) == 1 and abs(food_ham_pos-tail_ham_pos) == 1):
@@ -115,12 +121,13 @@ class Bot_hamilton(BotS):
                         next_rel = (next_ham_pos - tail_ham_pos) % self.grid_area
                         # distanza tra tail e prossima cella ocuupata dal path a*, seguendo ciclo ham
                         food_rel = (food_ham_pos - tail_ham_pos) % self.grid_area
+
                         # distanza tra tail e food position, seguendo ciclo ham
                         if next_rel > head_rel and next_rel <= food_rel:
                             # dist da tail snake a cella a* > len snake (i.e. non mi mangio) and
                             # dist da tail snake a cella a* <= dist food a tail (i.e. faccio un taglio utile e non supero la mela)
                             move = path[0] # seguo path a*
-                
+      
         self.next_move = self.graphDir_to_gameDir(self.head, move)
         return self.next_move
 
