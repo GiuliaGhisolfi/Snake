@@ -214,14 +214,14 @@ class Bot_hamilton(BotS):
             check = node_pos
             while check < n2_coll_pos + 1:  # nn_idx in [node, n2_coll]
                 for i in range(position.size):
-                    if position[i] == node_pos + count:
+                    if position[i] == node_pos + count - 1:
                         new_position[i] = count
                         count += 1
                         check += 1
                         break
             
             check = 0
-            while check < node_pos - n2_coll_pos + 1:  # nn_idx in [n2, node - 1]
+            while check < node_pos - n2_pos:  # nn_idx in [n2, node - 1]
                 for i in range(position.size):
                     if position[i] == n2_pos + incr1:
                         new_position[i] = count
@@ -231,7 +231,7 @@ class Bot_hamilton(BotS):
                         break
             
             check = 0
-            while check < n1_pos + 1:  # nn_idx in [head + 1, n1]
+            while check < n1_pos:  # nn_idx in [head + 1, n1]
                 for i in range(position.size):                
                     if position[i] == incr2:
                         new_position[i] = count
