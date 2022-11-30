@@ -58,8 +58,9 @@ class Bot_hamilton(BotS):
         self.grid = grid
         self.snake = snake
         self.food = food
-
-        self.ham_cycle = get_cycle(self.grid)
+        
+        self.ham_cycle = self.grid.get_cycle()
+        #self.ham_cycle = get_cycle(self.grid)
 
         if len(self.snake.get_body()) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
@@ -76,7 +77,7 @@ class Bot_hamilton(BotS):
         self.goal = self.food.get_positions()[0]
 
         grid = self.get_current_grid(self.body[:-1])
-        self.grid_area = self.grid.x_blocks * self.grid.y_blocks
+        self.grid_area = self.grid.get_grid_free_area()
         grid_problem = GridProblem(self.head, self.goal, grid, False)
 
         self.ham_cycle_changed = False

@@ -139,7 +139,7 @@ class Grid:
         return direct
 
     def draw_cycle(self, game, window, cycle, ham_cycle_changed):
-        self.grid_area = self.x_blocks * self.y_blocks
+        self.grid_area = self.get_grid_free_area()
         if ham_cycle_changed:
             self.direct = self.compute_hamilton_direction(cycle)
         add = math.floor(self.block_size / 2)
