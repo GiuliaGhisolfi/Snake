@@ -14,8 +14,8 @@ import time
 # stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
 FRAME_DELAY = 20
-X_BLOCKS = 8
-Y_BLOCKS = 8
+X_BLOCKS = 10
+Y_BLOCKS = 10
 OBSTACLES = True
    
 pygame.init()
@@ -184,7 +184,7 @@ def hamilton_start():
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
     
-    tic = time.time()
+    tic = time.time() # TODO: togliere, sono 3 + la scrittura nel file
     while run:
         steps = steps + 1
 
