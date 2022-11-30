@@ -70,7 +70,7 @@ class Bot_hamilton(BotS):
         self.grid = grid
         self.snake = snake
         self.food = food
-        self.ham_cycle = get_cycle(self.grid) # TODO: spostare da qua (tipo in grid) e passre come parametro, 
+        self.ham_cycle = get_cycle(self.grid) # TODO: spostare da qua (tipo in grid) e passare come parametro, 
         # altrimenti ad ogninuovo game riparte dall'ultima configurazione del ciclo trovata
 
         if len(self.snake.get_body()) < 3:
@@ -262,27 +262,6 @@ class Bot_hamilton(BotS):
                 idx += 1
 
             self.changed = True
-            print(new_position[0], new_position[1], new_position[10], new_position[11], new_position[20], new_position[21])
-            print(new_position[35], new_position[2], new_position[9], new_position[12], new_position[19], new_position[22])
-            print(new_position[34], new_position[3], new_position[8], new_position[13], new_position[18], new_position[23])
-            print(new_position[33], new_position[4], new_position[7], new_position[14], new_position[17], new_position[24])
-            print(new_position[32], new_position[5], new_position[6], new_position[15], new_position[16], new_position[25])
-            print(new_position[31], new_position[30], new_position[29], new_position[28], new_position[27], new_position[26])
-            print('Node: ') 
-            print(node)
-            print('N1: ') 
-            print(n1)
-            print('N2: ') 
-            print(n2)
-            print('N2_coll: ') 
-            print(n2_coll)
-            print('N1: ') 
-            print(n1_coll) 
-            print('Food position: ') 
-            print(self.goal)          
-            print('Snake body: ')
-            print(self.body)
-            print('\n')
 
     def get_current_grid(self, snake_false_body):
         # eliminiamo dal grafo le celle occupate dal corpo dello snake
