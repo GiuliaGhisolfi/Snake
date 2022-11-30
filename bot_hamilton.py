@@ -244,6 +244,7 @@ class Bot_hamilton(BotS):
                 if new_position[i] == -1:
                     new_position[i] = position[i]
             
+            new_position = (new_position + head_idx) % self.grid_area
             idx = 0
             for nn in self.ham_cycle:
                 self.ham_cycle[nn] = new_position[idx]
