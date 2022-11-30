@@ -70,7 +70,8 @@ class Bot_hamilton(BotS):
         self.grid = grid
         self.snake = snake
         self.food = food
-        self.ham_cycle = get_cycle(self.grid)
+        self.ham_cycle = get_cycle(self.grid) # TODO: spostare da qua (tipo in grid) e passre come parametro, 
+        # altrimenti ad ogninuovo game riparte dall'ultima configurazione del ciclo trovata
 
         if len(self.snake.get_body()) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
@@ -114,7 +115,7 @@ class Bot_hamilton(BotS):
                 move = (coordinates[0], coordinates[1])
                 break
 
-        if len(self.body) < 0.5 * self.grid_area:  # TODO: parametrizza e tenta altri valori
+        if len(self.body) < 0.5 * self.grid_area:  # TODO: parametrizza e tenta altri valori -> sembra che il migliore sia 0.5 o poco sopra
             goal_node = astar_search(grid_problem)
             if goal_node != None:
                 # cerco di seguire il path di a*, se riesco a farlo ritornando sul ciclo ham
@@ -156,14 +157,24 @@ class Bot_hamilton(BotS):
             for node in node_neigh:
                 flag = False
                 node_idx = self.ham_cycle[node]
+                
+                node_prec = None
+                head_succ = None
                 if node_idx > (head_idx + 2) and node_idx < goal_idx:
-                    flag = True
-                    node_pos = (node_idx - head_idx) % self.grid_area
+                    for nn in self.ham_cycle:
+                        if self.ham_cycle[nn] == (node_idx - 1):
+                            node_prec = nn # elemento che ha value = (node_idx - 1) in ham_cycle
+                        if self.ham_cycle[nn] == (head_idx + 1):
+                            head_succ = nn # elemento che ha value = (head_idx + 1) in ham cycle
+                        if node_prec != None and head_succ != None:
+                            break
+                    if node_prec in self.grid.grid[head_succ]:
+                        flag = True
+                        node_pos = (node_idx - head_idx) % self.grid_area
 
                 if flag:
                     flag = False
                     for n1 in self.ham_cycle:
-                        # TODO: qua si potrebbero fare dei controlli non solo su ham cycle ( tipo usare true graph(?))
                         for n2 in self.ham_cycle:
                             n1_idx = self.ham_cycle[n1]
                             n2_idx = self.ham_cycle[n2]
@@ -266,7 +277,11 @@ class Bot_hamilton(BotS):
             print('N2_coll: ') 
             print(n2_coll)
             print('N1: ') 
-            print(n1_coll)
+            print(n1_coll) 
+            print('Food position: ') 
+            print(self.goal)          
+            print('Snake body: ')
+            print(self.body)
             print('\n')
 
     def get_current_grid(self, snake_false_body):
