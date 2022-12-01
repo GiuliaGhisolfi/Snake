@@ -10,8 +10,8 @@ from food import Food
 from bottoni import *
 import colors
 import directions
+import time
 
-# stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
 FRAME_DELAY = 5
 OBSTACLES = True
@@ -137,11 +137,11 @@ def singleplayer_start():
             food.respawn(snakes, grid)
 
             steps = 0
-
         
         if snake.length == GRID_AREA:
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
+            snake.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
@@ -203,8 +203,9 @@ def hamilton_start():
     # avvia il bot corretto
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
-    
-    magiato = False
+
+    mangiato = False
+
     while run:
         steps = steps + 1
 
@@ -223,7 +224,9 @@ def hamilton_start():
         lost = snake.bounds_collision(grid) or \
             snake.tail_collision()
 
-
+        ham_cycle = {}
+        ham_cycle = player.return_cycle()
+        
         end = False
         if lost:
             end = True
@@ -247,13 +250,18 @@ def hamilton_start():
             food.respawn(snakes, grid)
 
             steps = 0
-        
+
         if snake.length == grid.get_grid_free_area():
+            toc = time.time()
+            grid.draw_cycle(pygame, window, ham_cycle, steps)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
+            
+            GAMEOVER_FILE.write('Complete')
+            GAMEOVER_FILE.write('\n')
             
             pygame.display.update()
             pygame.time.delay(700)
@@ -267,6 +275,7 @@ def hamilton_start():
             if mangiato:
                 food.respawn(snakes, grid)
             window.fill(colors.BLACK)
+            grid.draw_cycle(pygame, window, ham_cycle, steps)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)

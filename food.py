@@ -11,10 +11,10 @@ class Food:
     def draw(self, game, window, grid):
 
         [x,y] = self.coord_from_graph(grid)
-        game.draw.rect(
-            window,
-            self.color,
-            (x+1, y+1, grid.block_size-2, grid.block_size-2))
+        # game.draw.rect(window, self.color, (x+1, y+1, grid.block_size-2, grid.block_size-2))
+        radious = (grid.block_size / 2) - 3
+        game.draw.circle(
+            window, self.color, (x + radious + 3, y + radious + 3), radious)
         
     def coord_from_graph(self, grid):
         node = self.position[0]
