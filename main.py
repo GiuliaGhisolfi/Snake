@@ -9,13 +9,16 @@ from snake import Snake
 from food import Food
 from bottoni import *
 import colors
+import directions
+import time
 
-# stat gioco, da mettere nel file bottoni per farli modificare a seconda della modalità di gioco
 
-FRAME_DELAY = 200
-X_BLOCKS = 17
+FRAME_DELAY = 5
+OBSTACLES = True
+# NON MODIFICARE!
+X_BLOCKS = 15
 Y_BLOCKS = 16
-
+GRID_AREA = X_BLOCKS*Y_BLOCKS
    
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
@@ -29,7 +32,7 @@ clock = pygame.time.Clock()
     #  singleplayer - diventi singlethrea, niente threadpool o cose simili, e che venga gestito
     #               meglio il delay di attesa tra un frame e l'altro perchè sia il max
     #               tra quello scelto e il tempo di esecuzione di get_next_move
-
+mangiato = False
 def singleplayer_start():
     players_info = dict_info_single
 
@@ -42,11 +45,7 @@ def singleplayer_start():
 
     snake.respawn(grid)
     snakes.append(snake)
-    grid.spawn_obstacles(snakes)
-    
-    # creo ostacoli
-    # obstacles = Obstacles('gray')
-    # obstacles.spawn(snakes, grid)
+    if OBSTACLES: grid.spawn_obstacles()
 
     food = Food(colors.RED)
     food.respawn(snakes, grid)
@@ -75,8 +74,9 @@ def singleplayer_start():
     # avvia il bot corretto
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
-    
+
     while run:
+        if len(snake.get_body()) != snake.length: print('ops')
         steps = steps + 1
 
         pygame.time.delay(FRAME_DELAY)
@@ -86,45 +86,62 @@ def singleplayer_start():
                 run = False
                 file.close()
                 GAMEOVER_FILE.close()
-
-        
+   
         dir = player.get_next_move()
-        snake.move(dir)
-        if snake.can_eat(food):
-            snake.eat()
-            food.respawn(snakes, grid)
+        print(dir, food.fast_get_positions())
+        if dir != directions.Directions.CLOSE:
+            
+            mangiato = snake.move(dir, food)
 
-        lost = snake.bounds_collision(grid) or \
-            snake.tail_collision() # or \
-            # snake.check_obstacles_collision() # non serve vero?
+            lost = snake.bounds_collision(grid) or \
+                snake.tail_collision()
 
+            end = False
+            if lost:
+                end = True
+                text = font.render('GAME OVER', True, colors.FUXIA)
+                window.blit(text, (180, 270))
 
-        end = False
-        if lost:
-            end = True
-            text = font.render('GAME OVER', True, colors.FUXIA)
-            window.blit(text, (180, 270))
-
-        if end:
+        else:
+            text = font.render('LOOP', True, colors.GREEN)
+            window.blit(text, (250, 270))
+            
             pygame.display.update()
             pygame.time.delay(700)
             file.write("%s,%s\n" % (snake.length, steps))
 
-            GAMEOVER_FILE.write(str(snake.body))
+            GAMEOVER_FILE.write(str(snake.get_body()))
             GAMEOVER_FILE.write(',')
             GAMEOVER_FILE.write(str(food.position))
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
 
             steps = 0
+            end = False
+            
+        if end:
+            pygame.display.update()
+            pygame.time.delay(7000)
+            file.write("%s,%s\n" % (snake.length, steps))
 
-        grid_area = X_BLOCKS * Y_BLOCKS
-        if (snake.length == grid_area):
+            GAMEOVER_FILE.write(str(snake.get_body()))
+            GAMEOVER_FILE.write(',')
+            GAMEOVER_FILE.write(str(food.position))
+            GAMEOVER_FILE.write('\n')
+            
+            snake.respawn(grid)
+            if OBSTACLES: grid.spawn_obstacles()
+            food.respawn(snakes, grid)
+
+            steps = 0
+        
+        if snake.length == GRID_AREA:
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
+            snake.draw(pygame, window, grid)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
@@ -133,9 +150,12 @@ def singleplayer_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
         else:
+            if mangiato:
+                food.respawn(snakes, grid)
+
             window.fill(colors.BLACK)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
@@ -154,10 +174,7 @@ def hamilton_start():
 
     snake.respawn(grid)
     snakes.append(snake)
-    
-    # creo ostacoli
-    #obstacles = Obstacles('gray')
-    #obstacles.spawn(snakes, grid)
+    if OBSTACLES: grid.spawn_obstacles()
 
     food = Food(colors.RED)
     food.respawn(snakes, grid)
@@ -186,7 +203,9 @@ def hamilton_start():
     # avvia il bot corretto
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
-    
+
+    mangiato = False
+
     while run:
         steps = steps + 1
 
@@ -200,15 +219,14 @@ def hamilton_start():
 
         
         dir = player.get_next_move()
-        snake.move(dir)
-        if snake.can_eat(food):
-            snake.eat()
-            food.respawn(snakes, grid)
+        mangiato = snake.move(dir, food)
 
         lost = snake.bounds_collision(grid) or \
             snake.tail_collision()
 
-
+        ham_cycle = {}
+        ham_cycle = player.return_cycle()
+        
         end = False
         if lost:
             end = True
@@ -226,26 +244,41 @@ def hamilton_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            #obstacles.spawn(snakes, grid)
+            if OBSTACLES:
+                grid.spawn_obstacles()
+                player.update_ham_cycle()
             food.respawn(snakes, grid)
 
             steps = 0
-            
-        grid_area = X_BLOCKS * Y_BLOCKS
-        if (snake.length == grid_area):
+
+        if snake.length == grid.get_grid_free_area():
+            grid.draw_cycle(pygame, window, ham_cycle, steps)
             snake.draw(pygame, window, grid)
+            grid.draw_obstacles(pygame, window)
             
             text = font.render('COMPLETE', True, colors.FUXIA)
             window.blit(text, (180, 270))
             
+            GAMEOVER_FILE.write('Complete')
+            GAMEOVER_FILE.write('\n')
+            
             pygame.display.update()
             pygame.time.delay(700)
             
+            steps = 0
+            
             snake.respawn(grid)
+            if OBSTACLES:
+                grid.spawn_obstacles()
+                player.update_ham_cycle()                
             food.respawn(snakes, grid)
         else:
+            if mangiato:
+                food.respawn(snakes, grid)
             window.fill(colors.BLACK)
+            grid.draw_cycle(pygame, window, ham_cycle, steps)
             snake.draw(pygame, window, grid)
+            grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)
             pygame.display.update()
 
@@ -328,10 +361,9 @@ def multiplayer_start():
 
         for i in range(len(players)):
             dir = players[i].get_next_move()
-            snakes[i].move(dir)
-            if snakes[i].can_eat(food):
-                snakes[i].eat()
-                food.respawn(snakes, grid)
+            mangiato = snakes[i].move(dir, food)
+            if mangiato: food.respawn(snakes, grid)
+                
             if (players_info[i]['type'] != 'sbot' and players_info[i]['type'] != 'human'): #modifica per fa funzionare sbot o human
                 tasks[i].cancel()
 
@@ -387,7 +419,7 @@ def multiplayer_start():
                 GAMEOVER_FILE.write('\n')
                 
                 snakes[i].respawn(grid)
-            grid.spawn_obstacles(snakes)
+            if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
 
             steps = 0

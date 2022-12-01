@@ -20,20 +20,19 @@ class Snake:
                          ((grid.x_blocks-4), (grid.y_blocks-6))]
             self.direction = Directions.UP
     
-    def coord_from_graph(self, node_list, grid):
+    def coord_from_graph(self, grid):
         body_coord = []
-        for node in node_list:
-            #node = self.position[0]
+        for node in self.get_body():
             body_coord[len(body_coord):] = [
                 (int(node[0])*grid.block_size, int(node[1])*grid.block_size)]
         return body_coord
 
     def draw(self, game, window, grid):
         # riduciamo il tempo dello snake lockato? o preferiamo la rapidità?
-        body_coord = self.coord_from_graph(self.body, grid)
+        body_coord = self.coord_from_graph(grid)
 
         bsize = grid.block_size
-        head = body_coord[-1] # tupla di interi
+        head = body_coord[-1]
         tail = body_coord[0]
 
         # Draw tail
@@ -71,11 +70,12 @@ class Snake:
         game.draw.rect(window, black, (eye1_x, eye1_y, eye_size, eye_size))
         game.draw.rect(window, black, (eye2_x, eye2_y, eye_size, eye_size))
 
-    def move(self, direction):
+    def move(self, direction, food):
+
+        
 
         self.__steer(direction)
-        curr_head = self.body[-1]
-        x, y = (curr_head)
+        x, y = self.body[-1]
 
         if self.direction == Directions.DOWN:
             y = y + 1
@@ -89,8 +89,13 @@ class Snake:
         next_head = (x, y)
         self.body.append(next_head)
 
+        mangiato = self.can_eat(food)
+        if mangiato: self.eat()
+
         if self.length < len(self.body):
             self.body.pop(0)
+
+        return mangiato
 
     def __steer(self, direction):
 
