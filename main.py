@@ -252,7 +252,6 @@ def hamilton_start():
             steps = 0
 
         if snake.length == grid.get_grid_free_area():
-            toc = time.time()
             grid.draw_cycle(pygame, window, ham_cycle, steps)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
