@@ -203,9 +203,8 @@ def hamilton_start():
     # avvia il bot corretto
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('CORPO,CIBO\n')
-    
-    tic = time.time() # TODO: togliere, sono 3 + la scrittura nel file
-    magiato = False
+
+    mangiato = False
 
     while run:
         steps = steps + 1
@@ -227,9 +226,6 @@ def hamilton_start():
 
         ham_cycle = {}
         ham_cycle = player.return_cycle()
-        ham_cycle_changed  = player.return_ham_cycle_changed()
-        if steps == 1:
-            ham_cycle_changed = True
         
         end = False
         if lost:
@@ -253,10 +249,9 @@ def hamilton_start():
 
             steps = 0
 
-        
         if snake.length == grid.get_grid_free_area():
             toc = time.time()
-            grid.draw_cycle(pygame, window, ham_cycle, ham_cycle_changed)
+            grid.draw_cycle(pygame, window, ham_cycle, steps)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             
@@ -264,14 +259,11 @@ def hamilton_start():
             window.blit(text, (180, 270))
             
             GAMEOVER_FILE.write('Complete')
-            GAMEOVER_FILE.write(',')
-            GAMEOVER_FILE.write(str(toc - tic))
             GAMEOVER_FILE.write('\n')
             
             pygame.display.update()
             pygame.time.delay(700)
             
-            tic = time.time()
             snake.respawn(grid)
             if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
@@ -279,7 +271,7 @@ def hamilton_start():
             if mangiato:
                 food.respawn(snakes, grid)
             window.fill(colors.BLACK)
-            grid.draw_cycle(pygame, window, ham_cycle, ham_cycle_changed)
+            grid.draw_cycle(pygame, window, ham_cycle, steps)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)

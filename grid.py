@@ -138,9 +138,9 @@ class Grid:
         direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
         return direct
 
-    def draw_cycle(self, game, window, cycle, ham_cycle_changed):
+    def draw_cycle(self, game, window, cycle, steps):
         self.grid_area = self.get_grid_free_area()
-        if ham_cycle_changed:
+        if steps == 1:
             self.direct = self.compute_hamilton_direction(cycle)
         add = math.floor(self.block_size / 2)
 
