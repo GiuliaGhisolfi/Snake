@@ -265,10 +265,12 @@ def hamilton_start():
             pygame.display.update()
             pygame.time.delay(700)
             
+            steps = 0
+            
             snake.respawn(grid)
             if OBSTACLES:
                 grid.spawn_obstacles()
-                player.update_ham_cycle()
+                player.update_ham_cycle()                
             food.respawn(snakes, grid)
         else:
             if mangiato:
