@@ -226,6 +226,9 @@ def hamilton_start():
 
         ham_cycle = {}
         ham_cycle = player.return_cycle()
+        ham_cycle_changed  = player.return_ham_cycle_changed()
+        if steps == 1:
+            ham_cycle_changed = True
         
         end = False
         if lost:
@@ -249,10 +252,8 @@ def hamilton_start():
                 player.update_ham_cycle()
             food.respawn(snakes, grid)
 
-            steps = 0
-
         if snake.length == grid.get_grid_free_area():
-            grid.draw_cycle(pygame, window, ham_cycle, steps)
+            grid.draw_cycle(pygame, window, ham_cycle, ham_cycle_changed)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             
@@ -276,7 +277,7 @@ def hamilton_start():
             if mangiato:
                 food.respawn(snakes, grid)
             window.fill(colors.BLACK)
-            grid.draw_cycle(pygame, window, ham_cycle, steps)
+            grid.draw_cycle(pygame, window, ham_cycle, ham_cycle_changed)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)

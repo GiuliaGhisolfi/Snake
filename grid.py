@@ -165,10 +165,40 @@ class Grid:
 
         direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
         return direct
+    
+    def hamilton_direction(self, x, y, xprec, yprec):
+        if x == xprec + 1:
+            return 0  # RIGHT
+        elif x == xprec - 1:
+            return 1  # LEFT
+        elif y == yprec + 1:
+            return 2  # DOWN
+        elif y == yprec - 1:
+            return 3  # UP
 
-    def draw_cycle(self, game, window, cycle, steps):
+    def compute_hamilton_direction(self, cycle):
+        # direct[i] = direction from node with value = i to node (i + 1) in hamilton cycle
+        direct = []
+        for value in range(self.grid_area):
+            for node in cycle:
+                if cycle[node] == value:
+                    curr = node  # chiave del nodo che ha come valore value
+                    break
+            x, y = curr
+            if value != 0:
+                direct.append(self.hamilton_direction(x, y, xprec, yprec))
+            else:
+                x0 = x
+                y0 = y
+            xprec = x
+            yprec = y
+
+        direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
+        return direct
+
+    def draw_cycle(self, game, window, cycle, ham_cycle_changed):
         self.grid_area = self.get_grid_free_area()
-        if steps == 1:
+        if ham_cycle_changed:
             self.direct = self.compute_hamilton_direction(cycle)
         add = math.floor(self.block_size / 2)
 
