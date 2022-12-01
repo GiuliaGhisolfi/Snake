@@ -244,7 +244,9 @@ def hamilton_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
+            if OBSTACLES:
+                grid.spawn_obstacles()
+                player.update_ham_cycle()
             food.respawn(snakes, grid)
 
             steps = 0
@@ -265,7 +267,9 @@ def hamilton_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
+            if OBSTACLES:
+                grid.spawn_obstacles()
+                player.update_ham_cycle()
             food.respawn(snakes, grid)
         else:
             if mangiato:
