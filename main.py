@@ -268,6 +268,7 @@ def hamilton_start():
             snake.respawn(grid)
             if OBSTACLES:
                 grid.spawn_obstacles()
+                player.update_ham_cycle()
             food.respawn(snakes, grid)
         else:
             if mangiato:

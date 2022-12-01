@@ -118,6 +118,9 @@ class Bot_hamilton(BotS):
 
     def return_cycle(self):
         return self.ham_cycle
+    
+    def update_ham_cycle(self):
+        self.ham_cycle = self.grid.get_cycle()
 
     def get_next_move(self):
         return self.chosen_strat()
