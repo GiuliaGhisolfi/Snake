@@ -82,7 +82,7 @@ class Bot_hamilton(BotS):
 
         grid = self.get_current_grid(self.body[:-1])
         self.grid_area = self.grid.get_grid_free_area()
-        grid_problem = GridProblem(self.head, self.goal, grid, False)
+        #grid_problem = GridProblem(self.head, self.goal, grid, False)
 
         if DYNAMIC:
             # ad ogni iter cerca un ciclo ham ottimo per quella mossa

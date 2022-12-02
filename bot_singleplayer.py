@@ -10,11 +10,11 @@ import food
 from bot import BotS
 import colors
 from grid_problem import *
-from bottoni import *
+from button import *
 
-FIRST_IT_C = colors.RED
-TO_FOOD_C = colors.ORANGE
-DEF_C = colors.BLUE
+#FIRST_IT_C = colors.RED
+#TO_FOOD_C = colors.ORANGE
+#DEF_C = colors.BLUE
 
 DETECTLOOPGENEROSITY = 3
 
@@ -174,8 +174,8 @@ class Bot_singleplayer(BotS):
 
         # inizio e basta
         if self.default_path == None and self.path_to_food == None:
-            if self.debug:
-                self.snake.color = FIRST_IT_C 
+            #if self.debug:
+            #    self.snake.color = FIRST_IT_C 
             
             snake_body = self.snake.get_body()
 
@@ -206,7 +206,7 @@ class Bot_singleplayer(BotS):
             return self.graphDir_to_gameDir(snake_body[-1], c) 
 
         snake_body = self.snake.get_body()
-        self.change_color()
+        #self.change_color()
         
         #ora inizia la parte difficile, qui possono accadere cose strane (strande inesistenti ecc...)       
         if len(self.path_to_food) > 0: #non siamo ancora arrivati alla mela
