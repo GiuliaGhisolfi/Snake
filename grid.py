@@ -239,7 +239,16 @@ class Grid:
                 game.draw.rect(window, colors.WHITE,
                                ((x * self.block_size + add), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
 
-    
+    def draw_path(self, game, window, cycles, cl, closed):
+        for i, c in enumerate(cycles):
+            
+            points = []
+            shift = self.block_size/2
+            for n in c:
+                points.append((n[0]*self.block_size + shift, n[1] * self.block_size + shift))
+            if len(points) > 1:
+                game.draw.lines(window, cl[i], closed[i], points)
+
     def spawn_obstacles(self):
         self.grid = copy.deepcopy(self.full_grid)
         self.obstacles.clear()

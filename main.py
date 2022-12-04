@@ -136,6 +136,8 @@ def singleplayer_start():
             steps = 0
         
         if snake.length == grid.get_grid_free_area():
+            
+            grid.draw_path(pygame, window, [player.path_to_food, player.default_path], [colors.YELLOW, colors.WHITE], [False, True])
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             snake.draw(pygame, window, grid)
@@ -154,6 +156,7 @@ def singleplayer_start():
                 food.respawn(snakes, grid)
 
             window.fill(colors.BLACK)
+            grid.draw_path(pygame, window, [player.path_to_food, player.default_path], [colors.YELLOW, colors.WHITE], [False, True])
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)
