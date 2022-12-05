@@ -16,7 +16,7 @@ FIRST_IT_C = colors.RED
 TO_FOOD_C = colors.ORANGE
 DEF_C = colors.BLUE
 
-DETECTLOOPGENEROSITY = 3
+DETECTLOOPGENEROSITY = 5
 
 class Bot_singleplayer(BotS):
     # input anche lo snake

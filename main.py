@@ -13,7 +13,7 @@ import directions
 import time
 
 
-FRAME_DELAY = 90
+FRAME_DELAY = 15
 OBSTACLES = True
 ### NON MODIFICARE!
 X_BLOCKS = 15
@@ -156,7 +156,7 @@ def singleplayer_start():
                 food.respawn(snakes, grid)
 
             window.fill(colors.BLACK)
-            grid.draw_path(pygame, window, [player.path_to_food, player.default_path], [colors.YELLOW, colors.WHITE], [False, True])
+            grid.draw_path(pygame, window, [player.default_path, player.path_to_food], [colors.YELLOW, colors.RED], [True, False])
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)
