@@ -202,9 +202,10 @@ def hamilton_start():
 
     # avvia il bot corretto
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
-    GAMEOVER_FILE.write('CORPO,CIBO\n')
+    GAMEOVER_FILE.write('COMPLETE, CONFIGURATION, TIME, STEPS\n')
 
     mangiato = False
+    tic = time.time()
 
     while run:
         steps = steps + 1
@@ -253,6 +254,7 @@ def hamilton_start():
             food.respawn(snakes, grid)
 
         if snake.length == grid.get_grid_free_area():
+            toc = time.time()
             grid.draw_cycle(pygame, window, ham_cycle, ham_cycle_changed)
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
@@ -261,12 +263,19 @@ def hamilton_start():
             window.blit(text, (180, 270))
             
             GAMEOVER_FILE.write('Complete')
+            GAMEOVER_FILE.write(', ')
+            GAMEOVER_FILE.write(str(grid.current_config))
+            GAMEOVER_FILE.write(', ')
+            GAMEOVER_FILE.write(str(toc - tic))
+            GAMEOVER_FILE.write(', ')
+            GAMEOVER_FILE.write(str(steps))
             GAMEOVER_FILE.write('\n')
             
             pygame.display.update()
             pygame.time.delay(700)
             
             steps = 0
+            tic = time.time()
             
             snake.respawn(grid)
             if OBSTACLES:

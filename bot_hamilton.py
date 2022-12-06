@@ -161,11 +161,10 @@ class Bot_hamilton(BotS):
                             n2_idx = self.ham_cycle[n2]
                             n1_pos = (n1_idx - head_idx) % self.grid_area
                             n2_pos = (n2_idx - head_idx) % self.grid_area
-                            if n2_pos > n1_pos:
+                            if n2_pos == (n1_pos + 1):
                                 if n1_pos > 0 and n2_pos < node_pos:
-                                    if n2 in self.grid.grid[n1]:
-                                        flag = True
-                                        break
+                                    flag = True 
+                                    break
                         if flag:
                             break
 
@@ -179,8 +178,7 @@ class Bot_hamilton(BotS):
                                     n1_coll_idx - head_idx) % self.grid_area
                                 n2_coll_pos = (
                                     n2_coll_idx - head_idx) % self.grid_area
-                                delta_node = n2_pos - n1_pos
-                                if (n2_coll_pos > node_pos) and (n1_coll_pos == (n2_coll_pos + delta_node)) and \
+                                if (n2_coll_pos > node_pos) and (n1_coll_pos == (n2_coll_pos + 1)) and \
                                         n2_coll in self.grid.grid[n2] and n1_coll in self.grid.grid[n1]:
                                     flag = True
                                     break
