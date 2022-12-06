@@ -7,19 +7,19 @@ from bot_singleplayer import Bot_singleplayer
 from bot_hamilton import Bot_hamilton
 from snake import Snake
 from food import Food
-from bottoni import *
+from button import *
 import colors
 import directions
 import time
 
 
-FRAME_DELAY = 5
+FRAME_DELAY = 15
 OBSTACLES = True
-# NON MODIFICARE!
+### NON MODIFICARE!
 X_BLOCKS = 15
 Y_BLOCKS = 16
-GRID_AREA = X_BLOCKS*Y_BLOCKS
-   
+#GRID_AREA = X_BLOCKS*Y_BLOCKS
+###
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
 window = pygame.display.set_mode(grid.bounds)
@@ -27,12 +27,9 @@ pygame.display.set_caption("Snake")
 font = pygame.font.SysFont('Arial', 40, True)
 clock = pygame.time.Clock()
 
-#TODO: separare per bene singleplayer da multiplayer, in modo che:
-    #  multiplayer - tenga la threadpool, utilizzi le classi LockedFood e LockedSnake
-    #  singleplayer - diventi singlethrea, niente threadpool o cose simili, e che venga gestito
-    #               meglio il delay di attesa tra un frame e l'altro perchè sia il max
-    #               tra quello scelto e il tempo di esecuzione di get_next_move
+
 mangiato = False
+
 def singleplayer_start():
     players_info = dict_info_single
 
@@ -88,7 +85,7 @@ def singleplayer_start():
                 GAMEOVER_FILE.close()
    
         dir = player.get_next_move()
-        print(dir, food.fast_get_positions())
+        #print(dir, food.fast_get_positions())
         if dir != directions.Directions.CLOSE:
             
             mangiato = snake.move(dir, food)
@@ -124,7 +121,7 @@ def singleplayer_start():
             
         if end:
             pygame.display.update()
-            pygame.time.delay(7000)
+            pygame.time.delay(700)
             file.write("%s,%s\n" % (snake.length, steps))
 
             GAMEOVER_FILE.write(str(snake.get_body()))
@@ -138,7 +135,9 @@ def singleplayer_start():
 
             steps = 0
         
-        if snake.length == GRID_AREA:
+        if snake.length == grid.get_grid_free_area():
+            
+            grid.draw_path(pygame, window, [player.path_to_food, player.default_path], [colors.YELLOW, colors.WHITE], [False, True])
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             snake.draw(pygame, window, grid)
@@ -157,6 +156,7 @@ def singleplayer_start():
                 food.respawn(snakes, grid)
 
             window.fill(colors.BLACK)
+            grid.draw_path(pygame, window, [player.default_path, player.path_to_food], [colors.YELLOW, colors.RED], [True, False])
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)

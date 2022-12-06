@@ -1,6 +1,6 @@
 from search import *
 
-PESI = (1,0.75,0.75,0.75) #path_cost, h??????, turn, n_neighbours
+PESI = (1,0.1,0.1,0.1) #path_cost, h??????, turn, n_neighbours
 
 class GridProblem(Problem):
     def __init__(self, initial, goal, grid, horizontal_orientation):
