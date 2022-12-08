@@ -156,7 +156,8 @@ def singleplayer_start():
                 food.respawn(snakes, grid)
 
             window.fill(colors.BLACK)
-            grid.draw_path(pygame, window, [player.default_path, player.path_to_food], [colors.YELLOW, colors.RED], [True, False])
+            if players_info["type"] == "sbot":
+                grid.draw_path(pygame, window, [player.default_path, player.path_to_food], [colors.YELLOW, colors.RED], [True, False])
             snake.draw(pygame, window, grid)
             grid.draw_obstacles(pygame, window)
             food.draw(pygame, window, grid)
