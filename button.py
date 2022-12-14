@@ -1,11 +1,14 @@
 import pygame, sys
-import copy
 import colors
-#from main import *
+
+pygame.init()
+window = pygame.display.set_mode((700,700))
+pygame.display.set_caption("Snake")
+font = pygame.font.SysFont('Arial', 40, True)
+clock = pygame.time.Clock()
 
 scelta = False
 buttons = []
-dict_info = []
 dict_info_single = {}
 
 class Button:
@@ -49,39 +52,7 @@ class Button:
             if pygame.mouse.get_pressed()[0]:
                 self.dynamic_elecation = 0
                 self.pressed = True
-                if self.text == 'Single Player':
-                    info = []
-                    scelta = 'singleplayer'
-                    return info
-                elif self.text == 'Multiplayer':
-                    info = [
-                            {   
-                                "type": "mbot",
-                                "color": colors.GREEN,
-                                "scelta":"singleplayer",
-                                "start_location": "top-left",
-                                "keys": {
-                                    "up": pygame.K_UP,
-                                    "down": pygame.K_DOWN,
-                                    "right": pygame.K_RIGHT,
-                                    "left": pygame.K_LEFT
-                                }
-                            },
-                            {
-                                "type": "mbot",
-                                "color": colors.BLUE,
-                                "start_location": "bottom-right",
-                                "keys": {
-                                    "up": pygame.K_UP,
-                                    "down": pygame.K_DOWN,
-                                    "right": pygame.K_RIGHT,
-                                    "left": pygame.K_LEFT
-                                }
-                            }
-                        ]
-                    scelta = 'multiplayer'
-                    return info 
-                elif self.text == 'Human Player':
+                if self.text == 'Human Player':
                     info_human =  {
                                 "type": "human",  # human - sbot - mbot
                                 "color": 'orange',
@@ -112,7 +83,7 @@ class Button:
                 elif self.text == 'A* search':             
                     info_bot = {
                               "type": "sbot",  # human - sbot - mbot
-                                "color": colors.PINK,
+                                "color": colors.BLUE,
                                 "start_location": "top-left",
                                 "keys": {
                                     "up": pygame.K_UP,
@@ -137,6 +108,12 @@ class Button:
                     }
                     scelta = 'hamilton'
                     return info_bot
+                elif self.text == "Yes":
+                    scelta = True
+                    return 'yes'
+                elif self.text == "No":
+                    scelta = True
+                    return 'no'
             else:
                 self.dynamic_elecation = self.elevation
                 if self.pressed == True:
@@ -153,76 +130,84 @@ def buttons_draw():
     for b in buttons:
         b.draw()
         if b.check_click() != 0 :
-            if scelta == 'multiplayer':
-                for li in b.check_click():
-                    d2 = copy.deepcopy(li)
-                    dict_info.append(d2)
-            else:
-                dict_info_single = b.check_click()
+            dict_info_single = b.check_click()
+
+def draw_new_game():
+    for b in buttons:
+        b.draw()
+        if b.check_click() == 'no':
+            exit()
             
 ### inizio il gioco come in main ###
-pygame.init()
-window = pygame.display.set_mode((700,700))
-pygame.display.set_caption('Snake')
-clock = pygame.time.Clock()
-font = pygame.font.SysFont('Arial', 40, True)
+#pygame.init()
+#window = pygame.display.set_mode((700,700))
+#pygame.display.set_caption('Snake')
+
 ###
-#creo i bottoni che mi servono
-button1 = Button('Single Player',300,70,(50,300),5)
-button2 = Button('Multiplayer',300,70,(360,300),5)
+def snake_interface():
+    global scelta
+    scelta = False
+    
+    button1 = Button('Human Player',300,70,(50,300),5)
+    button2 = Button('Bot Player',300,70,(360,300),5)
 
-while not scelta:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    window.fill('#000000')
-    buttons_draw()
-    pygame.display.update()
-    clock.tick(60)
-for b in buttons:
-        b.draw()
-pygame.display.update()
-pygame.time.delay(200)
-
-buttons.pop(0)
-buttons.pop(0)
-
-button3 = Button('Human Player',300,70,(50,300),5)
-button4 = Button('Bot Player',300,70,(360,300),5)
-
-while scelta == "singleplayer":
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-    window.fill('#000000')
-    buttons_draw()
-    pygame.display.update()
-    clock.tick(60)
-if scelta == 'bot' or scelta == 'human':
+    while not scelta:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        window.fill('#000000')
+        buttons_draw()
+        pygame.display.update()
+        clock.tick(60)
     for b in buttons:
-            b.draw()
+        b.draw()
     pygame.display.update()
     pygame.time.delay(200)
 
-buttons.pop(0)
-buttons.pop(0)
+    buttons.pop(0)
+    buttons.pop(0)
 
-button3 = Button('A* search',310,70,(40,300),5)
-button4 = Button('Hamilton search',310,70,(370,300),5)
+    button3 = Button('A* search',310,70,(40,300),5)
+    button4 = Button('Hamilton search',310,70,(370,300),5)
 
-while scelta == 'bot':
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-    window.fill('#000000')
-    buttons_draw()
-    pygame.display.update()
-    clock.tick(60)
-if scelta == 'astart' or scelta == 'hamilton':
+    while scelta == 'bot':
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        window.fill('#000000')
+        buttons_draw()
+        pygame.display.update()
+        clock.tick(60)
     for b in buttons:
-            b.draw()
+        b.draw()
     pygame.display.update()
+    buttons.pop(0)
+    buttons.pop(0)
+
+def new_game():
+    global scelta
+    scelta = False
+   
+    button1 = Button('Yes',300,70,(50,300),5)
+    button2 = Button('No',300,70,(360,300),5)
+
+    while not scelta:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        window.fill('#000000')
+        draw_new_game()
+        text = font.render('Do you want to play again?', True, colors.RANDOM)
+        window.blit(text, (95, 170))
+        pygame.display.update()
+        clock.tick(60)
+    for b in buttons:
+        b.draw()
+    pygame.display.update()
+    pygame.time.delay(200)
+
+    buttons.pop(0)
+    buttons.pop(0)

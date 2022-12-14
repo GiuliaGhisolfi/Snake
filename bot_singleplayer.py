@@ -1,22 +1,20 @@
-import threading
 from directions import Directions
 from player import Player
 from search import *
 import copy
-
 import grid
 import snake
 import food
 from bot import BotS
 import colors
 from grid_problem import *
-from bottoni import *
+from button import *
 
 FIRST_IT_C = colors.RED
 TO_FOOD_C = colors.ORANGE
 DEF_C = colors.BLUE
 
-DETECTLOOPGENEROSITY = 3
+DETECTLOOPGENEROSITY = 5
 
 class Bot_singleplayer(BotS):
     # input anche lo snake
@@ -27,6 +25,7 @@ class Bot_singleplayer(BotS):
         #self.obstacles = obstacles
 
         self.snake = snake       
+        self.snake.color = colors.GREEN
         self.food = food 
 
         self.loop = 0
@@ -116,10 +115,15 @@ class Bot_singleplayer(BotS):
             if is_optimizable(self.snake.get_body()[-1], tg):
                 #cerchiamo il prossimo choke point
                 chokepoint = None
+                last_n = None
                 for c in self.default_path[:-1]:
+                    if c in tg and is_optimizable(c, tg):
+                        last_n = c
                     if c in tg and is_chokepoint(c, tg):
                         chokepoint = c
                         break
+                if chokepoint == None and last_n != None:
+                    chokepoint = last_n
                 if chokepoint != None:
                     choke_ind = self.default_path.index(chokepoint)
                     for choke_i in reversed(range(choke_ind + 1)):
@@ -174,8 +178,8 @@ class Bot_singleplayer(BotS):
 
         # inizio e basta
         if self.default_path == None and self.path_to_food == None:
-            if self.debug:
-                self.snake.color = FIRST_IT_C 
+            #if self.debug:
+            #    self.snake.color = FIRST_IT_C 
             
             snake_body = self.snake.get_body()
 
@@ -206,7 +210,7 @@ class Bot_singleplayer(BotS):
             return self.graphDir_to_gameDir(snake_body[-1], c) 
 
         snake_body = self.snake.get_body()
-        self.change_color()
+        #self.change_color()
         
         #ora inizia la parte difficile, qui possono accadere cose strane (strande inesistenti ecc...)       
         if len(self.path_to_food) > 0: #non siamo ancora arrivati alla mela
@@ -240,8 +244,9 @@ class Bot_singleplayer(BotS):
                 self.loop = 0
                 return self.graphDir_to_gameDir(snake_body[-1], move)
 
-        self.optimize_standard_path()
+        
         self.loop += 1
+        self.optimize_standard_path()
         if self.loop > self.max_loop:
             return None
         move = self.default_path.pop(0)
