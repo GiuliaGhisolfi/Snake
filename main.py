@@ -12,10 +12,10 @@ import directions
 import time
 
 FRAME_DELAY = 20
-OBSTACLES = True
+OBSTACLES = False
 ### if obstacle == True: X_BLOCKS = 15 and Y_BLOCKS = 16
-X_BLOCKS = 15
-Y_BLOCKS = 16
+X_BLOCKS = 7
+Y_BLOCKS = 6
 ###
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS, flag_obstacles=OBSTACLES)
@@ -234,9 +234,6 @@ def hamilton_start():
             ham_cycle = player.return_cycle(first_step=True)
         else:
             ham_cycle = player.return_cycle(first_step=False)
-        ham_cycle_changed  = player.return_ham_cycle_changed()
-        if steps == 1:
-            ham_cycle_changed = True
         
         end = False
         if lost:
@@ -270,7 +267,7 @@ def hamilton_start():
 
         if snake.length == grid.get_grid_free_area():
             toc = time.time()
-            grid.draw_cycle(pygame, button.window, ham_cycle, ham_cycle_changed)
+            grid.draw_cycle(pygame, button.window, ham_cycle, colors.WHITE, closed=True)
             snake.draw(pygame, button.window, grid)
             grid.draw_obstacles(pygame, button.window)
             
@@ -313,7 +310,7 @@ def hamilton_start():
             if mangiato:
                 food.respawn(snakes, grid)
             button.window.fill(colors.BLACK)
-            grid.draw_cycle(pygame, button.window, ham_cycle, ham_cycle_changed)
+            grid.draw_cycle(pygame, button.window, ham_cycle, colors.WHITE, True)
             snake.draw(pygame, button.window, grid)
             grid.draw_obstacles(pygame, button.window)
             food.draw(pygame, button.window, grid)

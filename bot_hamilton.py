@@ -37,7 +37,6 @@ class Bot_hamilton(BotS):
 
         if self.beta != 0: # DYNAMIC = True
             # ad ogni iter cerca un ciclo ham ottimo per quella mossa
-            self.ham_cycle_changed = False
             if len(self.body) < self.beta * self.grid_area:
                 self.change_cycle()
 
@@ -192,8 +191,6 @@ class Bot_hamilton(BotS):
                 self.ham_cycle[nn] = new_position[idx]
                 idx += 1
 
-            self.ham_cycle_changed = True
-
     def get_current_grid(self, snake_false_body):
         # eliminiamo dal grafo le celle occupate dal corpo dello snake
         new_grid = copy.deepcopy(self.grid.grid)
@@ -205,18 +202,13 @@ class Bot_hamilton(BotS):
 
     def return_cycle(self, first_step):
         if first_step: 
-            self.ham_cycle = self.grid.get_cycle()  
+            self.update_ham_cycle()
         return self.ham_cycle
 
     def update_ham_cycle(self):
         self.ham_cycle = self.grid.get_cycle()
 
-    def return_ham_cycle_changed(self):
-        return self.ham_cycle_changed
-
     def get_next_move(self, alpha, beta):
         self.alpha = alpha  # alpha: snake.length/grid_area s.t. stops greedy algh        
         self.beta = beta    # beta: snake.length/grid_area s.t. stops dynamic algh
-        if self.beta == 0: # not DYNAMIC
-            self.ham_cycle_changed = False
         return self.chosen_strat()
