@@ -2,10 +2,11 @@ import copy
 import random as rand
 import math
 import colors
+import button
 
 
 class Grid:
-    def __init__(self, size, x_blocks, y_blocks, flag_obstacles):
+    def __init__(self, size, x_blocks, y_blocks):
         self.size = size
         self.x_blocks = x_blocks
         self.y_blocks = y_blocks
@@ -14,39 +15,33 @@ class Grid:
         self.block_size = x_pixel/x_blocks
         self.full_grid = self.build_grid()
         self.grid = copy.deepcopy(self.full_grid)
-        self.flag_obstacle = flag_obstacles
         self.obstacles = []
 
         # MAPPE DEL GIOCO:
         self.configs = [
             [
-                (7, 3), (7, 4), (7, 5), (7, 6), (7, 7), (7,
-                                                         8), (7, 9), (7, 10), (7, 11), (7, 12),
+                (7, 3), (7, 4), (7, 5), (7, 6), (7, 7), (7, 8), (7, 9), (7, 10), (7, 11), (7, 12),
                 (3, 7), (4, 7), (5, 7), (6, 7), (8, 7), (9, 7), (10, 7), (11, 7)
-            ],  # ostacolo +
+            ], #ostacolo +
             [
                 (5, 0), (6, 0), (7, 0),
                 (4, 3), (4, 4), (4, 5),
                 (12, 2), (12, 3), (12, 4),
                 (8, 6), (8, 7), (9, 6), (9, 7),
                 (9, 10), (10, 10), (11, 10), (12, 10),
-                (3, 11), (4, 11), (5, 11), (3, 12), (4,
-                                                     12), (5, 12), (3, 13), (4, 13), (5, 13),
-            ],  # ostacoli a blocchi e a pareti
+                (3, 11), (4, 11), (5, 11), (3, 12), (4, 12), (5, 12), (3, 13), (4, 13), (5, 13),
+            ], #ostacoli a blocchi e a pareti
             [
-                (4, 3), (5, 3), (6, 3), (7, 3), (8, 3), (9, 3), (10, 3), (4,
-                                                                          4), (5, 4), (6, 4), (7, 4), (8, 4), (9, 4), (10, 4),
-                (4, 7), (5, 7), (6, 7), (7, 7), (8, 7), (9, 7), (10, 7), (4,
-                                                                          8), (5, 8), (6, 8), (7, 8), (8, 8), (9, 8), (10, 8),
-                (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (9, 11), (10, 11), (4,
-                                                                                 12), (5, 12), (6, 12), (7, 12), (8, 12), (9, 12), (10, 12)
+                (4, 3), (5, 3), (6, 3), (7, 3), (8, 3), (9, 3), (10, 3), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4), (9, 4), (10, 4),
+                (4, 7), (5, 7), (6, 7), (7, 7), (8, 7), (9, 7), (10, 7), (4, 8), (5, 8), (6, 8), (7, 8), (8, 8), (9, 8), (10, 8),
+                (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (9, 11), (10, 11), (4, 12), (5, 12), (6, 12), (7, 12), (8, 12), (9, 12), (10, 12)
             ],
             [
                 (5, 0), (5, 1), (5, 2), (5, 3), (5, 4), (5, 5),
                 (9, 4), (10, 4), (11, 4), (12, 4), (13, 4), (14, 4),
                 (0, 11), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11),
                 (9, 10), (9, 11), (9, 12), (9, 13), (9, 14), (9, 15)
-            ],  # spirale
+            ], #spirale
             [
             ]
         ]
@@ -120,9 +115,9 @@ class Grid:
                 (13, 0): 173, (13, 1): 188, (13, 2): 189, (13, 3): 168, (13, 5): 150, (13, 6): 151, (13, 7): 146, (13, 8): 135, (13, 9): 132, (13, 10): 131, (13, 11): 128, (13, 12): 127, (13, 13): 124, (13, 14): 123, (13, 15): 120,
                 (14, 0): 172, (14, 1): 171, (14, 2): 170, (14, 3): 169, (14, 5): 149, (14, 6): 148, (14, 7): 147, (14, 8): 134, (14, 9): 133, (14, 10): 130, (14, 11): 129, (14, 12): 126, (14, 13): 125, (14, 14): 122, (14, 15): 121
             },
-            self.create_hamilton_cycle()
+            self.create_hamilton_cycle()           
         ]
-
+        
     def create_hamilton_cycle(self):
         # cycle for grid without obstacle
         if (self.x_blocks % 2) != 0 and (self.y_blocks % 2) != 0:
@@ -161,6 +156,8 @@ class Grid:
                 value += 1
         return hamcycle
 
+
+
     def build_grid(self):
         def neighbors(x, y):
             directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
@@ -175,6 +172,7 @@ class Grid:
                 grid[(x, y)] = list(neighbors(x, y))
         return grid
 
+
     def draw_obstacles(self, game, window):
         for i in range(len(self.obstacles)):
             game.draw.rect(
@@ -182,35 +180,124 @@ class Grid:
                 self.obstacles[i].color,
                 ((self.obstacles[i].x_position) * self.block_size + 1, (self.obstacles[i].y_position) * self.block_size + 1, self.block_size-2, self.block_size-2))
 
-    def draw_cycle(self, game, window, cycle, color, closed=True):
-        points = []
-        shift = self.block_size/2
-        count = 0
-        while count < len(cycle):
-            for node in cycle:
-                if cycle[node] == count:
-                    points.append((node[0]*self.block_size + shift,
-                            node[1] * self.block_size + shift))
-                    count += 1
-        if len(points) > 1:
-            game.draw.lines(window, color, closed, points)
+    def hamilton_direction(self, x, y, xprec, yprec):
+        if x == xprec + 1:
+            return 0  # RIGHT
+        elif x == xprec - 1:
+            return 1  # LEFT
+        elif y == yprec + 1:
+            return 2  # DOWN
+        elif y == yprec - 1:
+            return 3  # UP
 
-    def draw_path(self, game, window, cycles, colors, closed):
+    def compute_hamilton_direction(self, cycle):
+        # direct[i] = direction from node with value = i to node (i + 1) in hamilton cycle
+        direct = []
+        for value in range(self.grid_area):
+            for node in cycle:
+                if cycle[node] == value:
+                    curr = node  # chiave del nodo che ha come valore value
+                    break
+            x, y = curr
+            if value != 0:
+                direct.append(self.hamilton_direction(x, y, xprec, yprec))
+            else:
+                x0 = x
+                y0 = y
+            xprec = x
+            yprec = y
+
+        direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
+        return direct
+    
+    def hamilton_direction(self, x, y, xprec, yprec):
+        if x == xprec + 1:
+            return 0  # RIGHT
+        elif x == xprec - 1:
+            return 1  # LEFT
+        elif y == yprec + 1:
+            return 2  # DOWN
+        elif y == yprec - 1:
+            return 3  # UP
+
+    def compute_hamilton_direction(self, cycle):
+        # direct[i] = direction from node with value = i to node (i + 1) in hamilton cycle
+        direct = []
+        for value in range(self.grid_area):
+            for node in cycle:
+                if cycle[node] == value:
+                    curr = node  # chiave del nodo che ha come valore value
+                    break
+            x, y = curr
+            if value != 0:
+                direct.append(self.hamilton_direction(x, y, xprec, yprec))
+            else:
+                x0 = x
+                y0 = y
+            xprec = x
+            yprec = y
+
+        direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
+        return direct
+
+    def draw_cycle(self, game, window, cycle, ham_cycle_changed):
+        self.grid_area = self.get_grid_free_area()
+        if ham_cycle_changed:
+            self.direct = self.compute_hamilton_direction(cycle)
+        add = math.floor(self.block_size / 2)
+
+        for node in cycle:
+            x, y = node
+            value = cycle[node]
+            dir = (self.direct[value - 1], self.direct[value])
+            
+            if dir == (0, 0) or dir == (1, 1):  # RIGHT to RIGHT or LEFT to LEFT:
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size), (y * self.block_size + add), self.block_size + 1, 1))
+
+            if dir == (2, 2) or dir == (3, 3):  # DOWN to DOWN or UP to UP:
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size + 1))
+
+            if dir == (1, 2) or dir == (3, 0):  # L to D or U to R
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size + add), 1, (self.block_size / 2) + 1))
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
+
+            if dir == (0, 2) or dir == (3, 1):  # R to D or U to L
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size + add), 1, (self.block_size / 2) + 1))
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
+
+            if dir == (0, 3) or dir == (2, 1):  # R to U or D to L
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size), 1, (self.block_size / 2) + 1))
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
+
+            if dir == (2, 0) or dir == (1, 3):  # D to R or L to U
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size), 1, (self.block_size / 2) + 1))
+                game.draw.rect(window, colors.WHITE,
+                               ((x * self.block_size + add), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
+
+    def draw_path(self, game, window, cycles, cl, closed):
         for i, c in enumerate(cycles):
+            
             points = []
             shift = self.block_size/2
             for n in c:
-                points.append((n[0]*self.block_size + shift,
-                              n[1] * self.block_size + shift))
+                points.append((n[0]*self.block_size + shift, n[1] * self.block_size + shift))
             if len(points) > 1:
-                game.draw.lines(window, colors[i], closed[i], points)
+                game.draw.lines(window, cl[i], closed[i], points)
 
     def spawn_obstacles(self):
         self.grid = copy.deepcopy(self.full_grid)
         self.obstacles.clear()
-
-        # prendo casualmente una delle varie mappe
-        self.current_config = rand.randint(0, 3)
+        
+        self.current_config = button.OBSTACLES #prendo casualmente una delle varie mappe
 
         # creo la lista di Obstacles e aggiorno la griglia
         for pos in self.configs[self.current_config]:
@@ -228,13 +315,11 @@ class Grid:
         return copy.deepcopy(self.obstacles)
 
     def get_cycle(self):
-        if not self.flag_obstacle:
-            self.current_config = 4
+        if button.OBSTACLES == "None": self.current_config = 4
         return copy.deepcopy(self.hamcycles[self.current_config])
 
     def get_grid_free_area(self):
         return (self.x_blocks * self.y_blocks) - len(self.obstacles)
-
 
 class Obstacle:
     def __init__(self, color, x, y):

@@ -11,18 +11,11 @@ import colors
 import directions
 import time
 
-FRAME_DELAY = 20
-OBSTACLES = False
-### if obstacle == True: X_BLOCKS = 15 and Y_BLOCKS = 16
-X_BLOCKS = 7
-Y_BLOCKS = 6
-###
 pygame.init()
-grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS, flag_obstacles=OBSTACLES)
-window = pygame.display.set_mode(grid.bounds)
+#button.snake_interface()
+grid = Grid(size=700, x_blocks=button.X_BLOCKS, y_blocks=button.Y_BLOCKS)
+button.window = pygame.display.set_mode(grid.bounds)
 pygame.display.set_caption("Snake")
-font = pygame.font.SysFont('Arial', 40, True)
-clock = pygame.time.Clock()
 
 def singleplayer_start():
     players_info = button.dict_info_single
@@ -36,7 +29,7 @@ def singleplayer_start():
 
     snake.respawn(grid)
     snakes.append(snake)
-    if OBSTACLES: grid.spawn_obstacles()
+    if button.OBSTACLES != "None": grid.spawn_obstacles()
 
     food = Food(colors.RED)
     food.respawn(snakes, grid)
@@ -53,7 +46,7 @@ def singleplayer_start():
             down_key=players_info["keys"]["down"],
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
-    elif players_info["type"] == "sbot":
+    elif players_info["type"] == "greedy":
         player = Bot_singleplayer(grid, snakes[0], food, True)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
@@ -70,7 +63,7 @@ def singleplayer_start():
         if len(snake.get_body()) != snake.length: print('ops')
         steps = steps + 1
 
-        pygame.time.delay(FRAME_DELAY)
+        pygame.time.delay(button.FRAME_DELAY)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -107,7 +100,7 @@ def singleplayer_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
+            if button.OBSTACLES != "None": grid.spawn_obstacles()
             food.respawn(snakes, grid)
 
             steps = 0
@@ -125,7 +118,7 @@ def singleplayer_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
+            if button.OBSTACLES != "None": grid.spawn_obstacles()
             food.respawn(snakes, grid)
 
             steps = 0
@@ -145,7 +138,7 @@ def singleplayer_start():
             pygame.time.delay(700)
             
             snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
+            if button.OBSTACLES != "None": grid.spawn_obstacles()
             food.respawn(snakes, grid)
             button.new_game()
         else:
@@ -173,7 +166,7 @@ def hamilton_start():
 
     snake.respawn(grid)
     snakes.append(snake)
-    if OBSTACLES: grid.spawn_obstacles()
+    if button.OBSTACLES != "None": grid.spawn_obstacles()
 
     food = Food(colors.RED)
     food.respawn(snakes, grid)
@@ -183,14 +176,7 @@ def hamilton_start():
     file.write("OUTCOME,LENGTH,STEPS\n")
 
     # bots
-    if players_info["type"] == "human":
-        player = HumanPlayer(
-            game=pygame,
-            up_key=players_info["keys"]["up"],
-            down_key=players_info["keys"]["down"],
-            right_key=players_info["keys"]["right"],
-            left_key=players_info["keys"]["left"])
-    elif players_info["type"] == "sbot":
+    if players_info["type"] == "hamilton":
         player = Bot_hamilton(grid, snakes[0], food)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
@@ -212,7 +198,7 @@ def hamilton_start():
         steps = steps + 1
         iter_tic = time.time()
 
-        pygame.time.delay(FRAME_DELAY)
+        pygame.time.delay(button.FRAME_DELAY)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -234,6 +220,9 @@ def hamilton_start():
             ham_cycle = player.return_cycle(first_step=True)
         else:
             ham_cycle = player.return_cycle(first_step=False)
+        #ham_cycle_changed  = player.return_ham_cycle_changed()
+        if steps == 1:
+            ham_cycle_changed = True
         
         end = False
         if lost:
@@ -259,7 +248,7 @@ def hamilton_start():
             GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
-            if OBSTACLES:
+            if button.OBSTACLES != "None":
                 grid.spawn_obstacles()
             player.update_ham_cycle()
             food.respawn(snakes, grid)
@@ -267,7 +256,7 @@ def hamilton_start():
 
         if snake.length == grid.get_grid_free_area():
             toc = time.time()
-            grid.draw_cycle(pygame, button.window, ham_cycle, colors.WHITE, closed=True)
+            grid.draw_cycle(pygame, button.window, ham_cycle, ham_cycle_changed)
             snake.draw(pygame, button.window, grid)
             grid.draw_obstacles(pygame, button.window)
             
@@ -301,7 +290,7 @@ def hamilton_start():
             tic = time.time()
             
             snake.respawn(grid)
-            if OBSTACLES:
+            if button.OBSTACLES != "None":
                 grid.spawn_obstacles()
                 player.update_ham_cycle()                
             food.respawn(snakes, grid)
@@ -310,18 +299,18 @@ def hamilton_start():
             if mangiato:
                 food.respawn(snakes, grid)
             button.window.fill(colors.BLACK)
-            grid.draw_cycle(pygame, button.window, ham_cycle, colors.WHITE, True)
+            grid.draw_cycle(pygame, button.window, ham_cycle, ham_cycle_changed)
             snake.draw(pygame, button.window, grid)
             grid.draw_obstacles(pygame, button.window)
             food.draw(pygame, button.window, grid)
             pygame.display.update()
 
 def select_start():
-    if button.scelta == 'hamilton':
+    if button.choise_made == 'hamilton':
         hamilton_start()
     else:
         singleplayer_start()
         
-### nuovo avvio del gioco ###
+### new game start ###
 button.snake_interface()
 select_start()
