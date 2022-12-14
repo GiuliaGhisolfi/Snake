@@ -1,5 +1,6 @@
 import random as rand
 
+
 class Food:
     def __init__(self, color):
         self.color = color
@@ -7,11 +8,11 @@ class Food:
 
     def draw(self, game, window, grid):
         """draw food"""
-        [x,y] = self.coord_from_graph(grid)
+        [x, y] = self.coord_from_graph(grid)
         radious = (grid.block_size / 2) - 3
         game.draw.circle(
             window, self.color, (x + radious + 3, y + radious + 3), radious)
-        
+
     def coord_from_graph(self, grid):
         """returns the coordinates on the window in pixels given the node in the graph"""
         node = self.position
@@ -35,8 +36,8 @@ class Food:
             return abs(n1[0]-n2[0]) + abs(n1[0] - n2[0])
 
         nodes = list(grid.grid.keys())
-        rand.shuffle(nodes) # random reorganize the order of the nodes
-        
+        rand.shuffle(nodes)  # random reorganize the order of the nodes
+
         possible_position = []
         for n in nodes:
             skip = False

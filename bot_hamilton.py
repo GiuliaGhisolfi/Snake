@@ -1,4 +1,3 @@
-from directions import Directions
 from bot import BotS
 from search import *
 from grid_problem import *
@@ -15,28 +14,30 @@ class Bot_hamilton(BotS):
         self.snake = snake
         self.food = food
 
-        self.ham_cycle = self.grid.get_cycle()        
+        self.ham_cycle = self.grid.get_cycle()
 
         if len(self.snake.get_body()) < 3:
-            print('LUNGHEZZA MINIMA SUPPORTATA: 3')
+            print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
 
-        self.chosen_strat = self.hamilton_strat  # strategia
+        self.chosen_strat = self.hamilton_strat  # strategy
 
     def start(self):
         self.chosen_strat()
 
-    def hamilton_strat(self):        
+    def hamilton_strat(self):
+        """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the 
+        game grid, if possible at each iteration it tries to generate an optimal cycle 
+        and/or to cut the current cycle to get as close as possible to the food position"""
         self.body = self.snake.get_body()
         self.head = self.body[-1]
         self.goal = self.food.position
 
         grid = self.get_current_grid(self.body[:-1])
         self.grid_area = self.grid.get_grid_free_area()
-        #grid_problem = GridProblem(self.head, self.goal, grid, False)
 
-        if self.beta != 0: # DYNAMIC = True
-            # ad ogni iter cerca un ciclo ham ottimo per quella mossa
+        if self.beta != 0:  # DYNAMIC = True
+            # at each iter it looks for an optimal Hamiltonian cycle for that move
             if len(self.body) < self.beta * self.grid_area:
                 self.change_cycle()
 
@@ -46,9 +47,9 @@ class Bot_hamilton(BotS):
             if ham_pos == (head_ham_pos + 1) % self.grid_area:
                 move = (coordinates[0], coordinates[1])
                 break
-        
-        if self.alpha != 0: # GREEDY = True
-            # ad ogni iter calcola se è possibile tagliare il ciclo
+
+        if self.alpha != 0:  # GREEDY = True
+            # at each iteration it calculates if it is possible to make a cut in the Hamiltonian cycle
             if len(self.body) < self.alpha * self.grid_area:
                 neighbours = grid[self.head]
                 min_ham_dis = np.inf
@@ -72,13 +73,12 @@ class Bot_hamilton(BotS):
         return self.next_move
 
     def change_cycle(self):
-        # valore della testa nel ciclo ham
-        head_idx = self.ham_cycle[self.head]
+        """calculate, if it is possible, a new optimal Hamiltonin cycle"""
+        head_idx = self.ham_cycle[self.head]  # head value in the ham cycle
         goal_idx = self.ham_cycle[self.goal]
         tail_idx = self.ham_cycle[self.body[0]]
-        # head_pos = 0
 
-        # distanza relativa goal da head su ham_cycle
+        # calculate position i.e. relative distance from head on ham_cycle
         goal_pos = (goal_idx - head_idx) % self.grid_area
         tail_pos = (tail_idx - head_idx) % self.grid_area
 
@@ -94,9 +94,11 @@ class Bot_hamilton(BotS):
                 if node_idx > (head_idx + 2) and node_idx < goal_idx:
                     for nn in self.ham_cycle:
                         if self.ham_cycle[nn] == (node_idx - 1):
-                            node_prec = nn  # elemento che ha value = (node_idx - 1) in ham_cycle
+                            # element that has value = (node_idx - 1) on ham_cycle
+                            node_prec = nn
                         if self.ham_cycle[nn] == (head_idx + 1):
-                            head_succ = nn  # elemento che ha value = (head_idx + 1) in ham cycle
+                            # element that has value = (head_idx + 1) on ham cycle
+                            head_succ = nn
                         if node_prec != None and head_succ != None:
                             break
                     if node_prec in self.grid.grid[head_succ]:
@@ -113,14 +115,14 @@ class Bot_hamilton(BotS):
                             n2_pos = (n2_idx - head_idx) % self.grid_area
                             if n2_pos == (n1_pos + 1):
                                 if n1_pos > 0 and n2_pos < node_pos:
-                                    flag = True 
+                                    flag = True
                                     break
                         if flag:
                             break
 
                     if flag:
                         flag = False
-                        for n1_coll in self.ham_cycle:  # qua fa un sacco di iterazioni
+                        for n1_coll in self.ham_cycle:
                             for n2_coll in self.ham_cycle:
                                 n1_coll_idx = self.ham_cycle[n1_coll]
                                 n2_coll_idx = self.ham_cycle[n2_coll]
@@ -139,10 +141,11 @@ class Bot_hamilton(BotS):
                     break
 
         if flag:
-            # cambio ciclo ham:
+            # change Hamiltonian cycle:
             position = np.array(list(self.ham_cycle.values()))
-            position = (position - head_idx) % self.grid_area  # head in first position
-            new_position = - np.ones((position.size,), dtype= int)
+            # considered head in position == 0
+            position = (position - head_idx) % self.grid_area 
+            new_position = - np.ones((position.size,), dtype=int)
 
             for i in range(position.size):
                 if position[i] == 0:
@@ -192,7 +195,7 @@ class Bot_hamilton(BotS):
                 idx += 1
 
     def get_current_grid(self, snake_false_body):
-        # eliminiamo dal grafo le celle occupate dal corpo dello snake
+        """delete from the graph th nodes occupied by snake's body"""
         new_grid = copy.deepcopy(self.grid.grid)
 
         for segment in snake_false_body:
@@ -201,14 +204,18 @@ class Bot_hamilton(BotS):
         return new_grid
 
     def return_cycle(self, first_step):
-        if first_step: 
+        "return the current hamiltonian cycle"
+        if first_step:
             self.update_ham_cycle()
         return self.ham_cycle
 
     def update_ham_cycle(self):
+        "update self.ham_cycle"
         self.ham_cycle = self.grid.get_cycle()
 
     def get_next_move(self, alpha, beta):
-        self.alpha = alpha  # alpha: snake.length/grid_area s.t. stops greedy algh        
-        self.beta = beta    # beta: snake.length/grid_area s.t. stops dynamic algh
+        # alpha: (snake.length / grid_area) s.t. stops greedy algh
+        self.alpha = alpha
+        # beta: (snake.length / grid_area) s.t. stops dynamic algh
+        self.beta = beta
         return self.chosen_strat()
