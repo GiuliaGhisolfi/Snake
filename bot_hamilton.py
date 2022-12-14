@@ -1,4 +1,4 @@
-from bot import BotS
+from bot import Bot
 from search import *
 from grid_problem import *
 import copy
@@ -7,25 +7,28 @@ import snake
 import food
 
 
-class Bot_hamilton(BotS):
+class Bot_hamilton(Bot):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
-        self.next_move = None
         self.grid = grid
         self.snake = snake
         self.food = food
-
+        self.alpha = None
+        self.beta = None
         self.ham_cycle = self.grid.get_cycle()
 
         if len(self.snake.get_body()) < 3:
             print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
 
-        self.chosen_strat = self.hamilton_strat  # strategy
+    def set_alpha(self, alpha):
+        # alpha: (snake.length / grid_area) s.t. stops greedy alg
+        self.alpha = alpha
+    
+    def set_beta(self, beta):
+        # beta: (snake.length / grid_area) s.t. stops dynamic alg
+        self.beta = beta
 
-    def start(self):
-        self.chosen_strat()
-
-    def hamilton_strat(self):
+    def get_next_move(self):
         """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the 
         game grid, if possible at each iteration it tries to generate an optimal cycle 
         and/or to cut the current cycle to get as close as possible to the food position"""
@@ -68,9 +71,9 @@ class Bot_hamilton(BotS):
                         if next_rel > head_rel and next_rel <= food_rel:
                             if food_rel - next_rel < min_ham_dis:
                                 move = next
-
-        self.next_move = self.graphDir_to_gameDir(self.head, move)
-        return self.next_move
+        
+        next_move = self.snake.dir_to_cell(move)
+        return next_move
 
     def change_cycle(self):
         """calculate, if it is possible, a new optimal Hamiltonin cycle"""
@@ -194,14 +197,14 @@ class Bot_hamilton(BotS):
                 self.ham_cycle[nn] = new_position[idx]
                 idx += 1
 
-    def get_current_grid(self, snake_false_body):
-        """delete from the graph th nodes occupied by snake's body"""
-        new_grid = copy.deepcopy(self.grid.grid)
+    def get_current_grid(self, snake_body):
+        """delete from the graph the nodes occupied by the snake's body"""
+        new_grid = copy.deepcopy(self.grid)
 
-        for segment in snake_false_body:
-            self.delete_cell(new_grid, segment)
+        for segment in snake_body:
+            new_grid.delete_cell(segment)
 
-        return new_grid
+        return new_grid.grid
 
     def return_cycle(self, first_step):
         "return the current hamiltonian cycle"
@@ -212,10 +215,3 @@ class Bot_hamilton(BotS):
     def update_ham_cycle(self):
         "update self.ham_cycle"
         self.ham_cycle = self.grid.get_cycle()
-
-    def get_next_move(self, alpha, beta):
-        # alpha: (snake.length / grid_area) s.t. stops greedy algh
-        self.alpha = alpha
-        # beta: (snake.length / grid_area) s.t. stops dynamic algh
-        self.beta = beta
-        return self.chosen_strat()

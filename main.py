@@ -220,9 +220,14 @@ def hamilton_start():
                 file.close()
                 GAMEOVER_FILE.close()
 
-        dir = player.get_next_move(alpha=0.5, beta=0.5)
+        # IRENE: eventualmente eliminare questi metodi e modificare i valori
+        # dentro il bot (tenendo un contatore interno del numero di invocazioni)
+        player.set_alpha(alpha=0.5)
+        player.set_beta(beta=0.5)
         # alpha: snake.length/grid_area s.t. stops greedy algh        
         # beta: snake.length/grid_area s.t. stops dynamic algh
+
+        dir = player.get_next_move()
         
         mangiato = snake.move(dir, food)
 

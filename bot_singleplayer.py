@@ -5,7 +5,7 @@ import copy
 import grid
 import snake
 import food
-from bot import BotS
+from bot import Bot
 import colors
 from grid_problem import *
 from button import *
@@ -16,7 +16,11 @@ DEF_C = colors.BLUE
 
 DETECTLOOPGENEROSITY = 5
 
-class Bot_singleplayer(BotS):
+# IRENE: sarebbe possibile sostituire le invocazoni di self.graphDir_to_gameDir() con 
+# dir_to_cell(), metodo della classe Snake?
+# Così possiamo eliminare del tutto il metodo graphDir_to_gameDir che ha poco a che fare con la classe Bot...
+
+class Bot_singleplayer(Bot):
     # input anche lo snake
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False):
 
@@ -154,17 +158,21 @@ class Bot_singleplayer(BotS):
     def get_best_food(self):
         return self.food.position
     
-    def get_true_graph(self, snake_false_body, grid={}):
+    # IRENE: siccome è uguale al metodo get_current_grid in bot_hamilton,
+    #  se lo spostassimo nella classe bot facendo un costruttore con gli 
+    # attributi comuni a entrambi da invocare nel costruttore delle sotto classi?
+    def get_true_graph(self, snake_false_body, grid=None): # IRENE: possiamo togliere il parametro grid? (non viene mai passato)
         if not grid:
-            grid = self.grid.grid # da controllare
+            grid = self.grid # da controllare IRENE: grid adesso è un oggetto grid, non più un dict
 
         #eliminiamo dal grafo le celle occupate da noi
         new_grid = copy.deepcopy(grid) #forse ci va messo grid?
 
         for segment in snake_false_body: #manca la testa
-            self.delete_cell(new_grid, segment)
+            #self.delete_cell(new_grid, segment) # IRENE: questo metodo non esiste più
+            new_grid.delete_cell(segment)
 
-        return new_grid
+        return new_grid.grid
 
     def change_color(self):
         if self.debug:
@@ -255,5 +263,7 @@ class Bot_singleplayer(BotS):
         return ret
 
     def get_next_move(self):
-        return self.chosen_strat()
+        return self.chosen_strat() 
+        # IRENE: se qui invocassimo direttamente la strategia visto che ne abbiamo implementata una sola?
+        # ciò renderebbe il codice più uniforme a bot_hamilton
     
