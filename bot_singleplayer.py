@@ -152,7 +152,7 @@ class Bot_singleplayer(BotS):
                     return
                         
     def get_best_food(self):
-        return self.food.get_positions()[0] #una mela a caso, per ora
+        return self.food.position
     
     def get_true_graph(self, snake_false_body, grid={}):
         if not grid:

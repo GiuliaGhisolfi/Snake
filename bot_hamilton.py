@@ -29,7 +29,7 @@ class Bot_hamilton(BotS):
     def hamilton_strat(self):        
         self.body = self.snake.get_body()
         self.head = self.body[-1]
-        self.goal = self.food.get_positions()[0]
+        self.goal = self.food.position
 
         grid = self.get_current_grid(self.body[:-1])
         self.grid_area = self.grid.get_grid_free_area()

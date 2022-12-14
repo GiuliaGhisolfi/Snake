@@ -114,7 +114,7 @@ class Snake:
         self.length += 1
 
     def can_eat(self, food):
-        return self.body[-1] == food.position[0]  # confronto tra nodi
+        return self.body[-1] == food.position  # confronto tra nodi
 
     def tail_collision(self):
         head = self.body[-1]
