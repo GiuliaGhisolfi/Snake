@@ -5,7 +5,7 @@ import colors
 
 
 class Grid:
-    def __init__(self, size, x_blocks, y_blocks):
+    def __init__(self, size, x_blocks, y_blocks, flag_obstacles):
         self.size = size
         self.x_blocks = x_blocks
         self.y_blocks = y_blocks
@@ -14,6 +14,7 @@ class Grid:
         self.block_size = x_pixel/x_blocks
         self.full_grid = self.build_grid()
         self.grid = copy.deepcopy(self.full_grid)
+        self.flag_obstacle = flag_obstacles
         self.obstacles = []
 
         # MAPPE DEL GIOCO:
@@ -40,7 +41,9 @@ class Grid:
                 (9, 4), (10, 4), (11, 4), (12, 4), (13, 4), (14, 4),
                 (0, 11), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11),
                 (9, 10), (9, 11), (9, 12), (9, 13), (9, 14), (9, 15)
-            ] #spirale
+            ], #spirale
+            [
+            ]
         ]
 
         self.hamcycles = [
@@ -111,8 +114,49 @@ class Grid:
                 (12, 0): 174, (12, 1): 187, (12, 2): 190, (12, 3): 167, (12, 5): 153, (12, 6): 152, (12, 7): 145, (12, 8): 136, (12, 9): 113, (12, 10): 114, (12, 11): 115, (12, 12): 116, (12, 13): 117, (12, 14): 118, (12, 15): 119,
                 (13, 0): 173, (13, 1): 188, (13, 2): 189, (13, 3): 168, (13, 5): 150, (13, 6): 151, (13, 7): 146, (13, 8): 135, (13, 9): 132, (13, 10): 131, (13, 11): 128, (13, 12): 127, (13, 13): 124, (13, 14): 123, (13, 15): 120,
                 (14, 0): 172, (14, 1): 171, (14, 2): 170, (14, 3): 169, (14, 5): 149, (14, 6): 148, (14, 7): 147, (14, 8): 134, (14, 9): 133, (14, 10): 130, (14, 11): 129, (14, 12): 126, (14, 13): 125, (14, 14): 122, (14, 15): 121
-            }
+            },
+            self.create_hamilton_cycle()           
         ]
+        
+    def create_hamilton_cycle(self):
+        # cycle for grid without obstacle
+        if (self.x_blocks % 2) != 0 and (self.y_blocks % 2) != 0:
+            print("Grid dimension not allowed")
+            exit()
+
+        hamcycle = {(0, 0): 0}
+        value = 1
+
+        if (self.x_blocks % 2) == 0:  # x_blocks PARI
+            for i in range(self.x_blocks-1):
+                i += 1
+                for j in range(self.y_blocks-1):
+                    if i % 2 == 1:  # colonne dispari
+                        hamcycle[(i, j)] = value
+                    else:
+                        hamcycle[(i, self.y_blocks-2-j)] = value
+                    value += 1
+            for i in range(self.x_blocks):
+                hamcycle[(self.x_blocks-1-i, self.y_blocks-1)] = value
+                value += 1
+            for j in range(self.y_blocks-2):
+                hamcycle[(0, self.y_blocks-2-j)] = value
+                value += 1
+
+        else:  # x_blocks DISPARI
+            for i in range(self.y_blocks):  # i scorro le righe
+                for j in range(self.x_blocks-1):
+                    if i % 2 == 0:  # righe pari
+                        hamcycle[(j+1, i)] = value
+                    else:  # righe dispari
+                        hamcycle[(self.x_blocks-1-j, i)] = value
+                    value += 1
+            for i in range(self.y_blocks-1):
+                hamcycle[(0, self.y_blocks-1-i)] = value
+                value += 1
+        return hamcycle
+
+
 
     def build_grid(self):
         def neighbors(x, y):
@@ -261,7 +305,6 @@ class Grid:
             self.obstacles.append(obstacle)
             self.delete_cell(pos)
 
-
     def delete_cell(self, del_key):
         self.grid.pop(del_key, None)
         for key in self.grid:
@@ -272,6 +315,7 @@ class Grid:
         return copy.deepcopy(self.obstacles)
 
     def get_cycle(self):
+        if not self.flag_obstacle: self.current_config = 4
         return copy.deepcopy(self.hamcycles[self.current_config])
 
     def get_grid_free_area(self):

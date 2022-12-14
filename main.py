@@ -11,18 +11,18 @@ import colors
 import directions
 import time
 
-FRAME_DELAY = 2
+FRAME_DELAY = 20
 OBSTACLES = True
-
-### NON MODIFICARE!
+### if obstacle == True: X_BLOCKS = 15 and Y_BLOCKS = 16
 X_BLOCKS = 15
 Y_BLOCKS = 16
-#GRID_AREA = X_BLOCKS*Y_BLOCKS
 ###
 pygame.init()
-grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
-button.window = pygame.display.set_mode(grid.bounds)
-mangiato = False
+grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS, flag_obstacles=OBSTACLES)
+window = pygame.display.set_mode(grid.bounds)
+pygame.display.set_caption("Snake")
+font = pygame.font.SysFont('Arial', 40, True)
+clock = pygame.time.Clock()
 
 def singleplayer_start():
     players_info = button.dict_info_single
@@ -164,6 +164,7 @@ def hamilton_start():
     players_info = button.dict_info_single
 
     snakes = []
+    steps_time = [] # crea una lista con il tempo per ogni iterazione -> per ora non si usa
 
     # creo gli snake, poi il cibo e poi il o i bot, necessario per il bot sigleplayer
     snake = Snake(
@@ -201,12 +202,15 @@ def hamilton_start():
     # avvia il bot corretto
     GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
     GAMEOVER_FILE.write('COMPLETE, CONFIGURATION, TIME, STEPS\n')
+    ITERATION_TIME = open('IterationTime.cvs', 'w+')
+    ITERATION_TIME.write('STEPS, TIME\n')
 
     mangiato = False
     tic = time.time()
 
     while run:
         steps = steps + 1
+        iter_tic = time.time()
 
         pygame.time.delay(FRAME_DELAY)
 
@@ -216,15 +220,20 @@ def hamilton_start():
                 file.close()
                 GAMEOVER_FILE.close()
 
+        dir = player.get_next_move(alpha=0.5, beta=0.5)
+        # alpha: snake.length/grid_area s.t. stops greedy algh        
+        # beta: snake.length/grid_area s.t. stops dynamic algh
         
-        dir = player.get_next_move()
         mangiato = snake.move(dir, food)
 
         lost = snake.bounds_collision(grid) or \
             snake.tail_collision()
 
         ham_cycle = {}
-        ham_cycle = player.return_cycle()
+        if steps == 1:
+            ham_cycle = player.return_cycle(first_step=True)
+        else:
+            ham_cycle = player.return_cycle(first_step=False)
         ham_cycle_changed  = player.return_ham_cycle_changed()
         if steps == 1:
             ham_cycle_changed = True
@@ -239,6 +248,13 @@ def hamilton_start():
             pygame.display.update()
             pygame.time.delay(700)
             file.write("%s,%s\n" % (snake.length, steps))
+            
+            iter_toc = time.time()
+            steps_time.append(iter_toc - iter_tic)
+            ITERATION_TIME.write(str(steps))
+            ITERATION_TIME.write(', ')
+            ITERATION_TIME.write(str(iter_toc - iter_tic))
+            ITERATION_TIME.write('\n')
 
             GAMEOVER_FILE.write(str(snake.body))
             GAMEOVER_FILE.write(',')
@@ -248,7 +264,7 @@ def hamilton_start():
             snake.respawn(grid)
             if OBSTACLES:
                 grid.spawn_obstacles()
-                player.update_ham_cycle()
+            player.update_ham_cycle()
             food.respawn(snakes, grid)
             button.new_game()
 
@@ -260,6 +276,17 @@ def hamilton_start():
             
             text = button.font.render('COMPLETE', True, colors.FUXIA)
             button.window.blit(text, (180, 270))
+            
+            iter_toc = time.time()
+            steps_time.append(iter_toc - iter_tic)
+
+            pygame.display.update()
+            steps_time = []
+
+            ITERATION_TIME.write(str(steps))
+            ITERATION_TIME.write(', ')
+            ITERATION_TIME.write(str(iter_toc - iter_tic))
+            ITERATION_TIME.write('\n')
             
             GAMEOVER_FILE.write('Complete')
             GAMEOVER_FILE.write(', ')

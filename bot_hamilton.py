@@ -7,52 +7,6 @@ import grid
 import snake
 import food
 
-DYNAMIC = True
-GREEDY = True
-
-# ciclo ham per griglia senza ostacoli
-
-
-def get_cycle(grid):
-    x_blocks = grid.x_blocks
-    y_blocks = grid.y_blocks
-
-    if (x_blocks % 2) != 0 and (y_blocks % 2) != 0:
-        print("Grid dimension not allowed")
-        exit()
-
-    hamcycle = {(0, 0): 0}
-    value = 1
-
-    if (x_blocks % 2) == 0:  # x_blocks PARI
-        for i in range(x_blocks-1):
-            i += 1
-            for j in range(y_blocks-1):
-                if i % 2 == 1:  # colonne dispari
-                    hamcycle[(i, j)] = value
-                else:
-                    hamcycle[(i, y_blocks-2-j)] = value
-                value += 1
-        for i in range(x_blocks):
-            hamcycle[(x_blocks-1-i, y_blocks-1)] = value
-            value += 1
-        for j in range(y_blocks-2):
-            hamcycle[(0, y_blocks-2-j)] = value
-            value += 1
-
-    else:  # x_blocks DISPARI
-        for i in range(y_blocks):  # i scorro le righe
-            for j in range(x_blocks-1):
-                if i % 2 == 0:  # righe pari
-                    hamcycle[(j+1, i)] = value
-                else:  # righe dispari
-                    hamcycle[(x_blocks-1-j, i)] = value
-                value += 1
-        for i in range(y_blocks-1):
-            hamcycle[(0, y_blocks-1-i)] = value
-            value += 1
-    return hamcycle
-
 
 class Bot_hamilton(BotS):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
@@ -61,10 +15,7 @@ class Bot_hamilton(BotS):
         self.snake = snake
         self.food = food
 
-        self.ham_cycle = self.grid.get_cycle()
-        # self.ham_cycle = get_cycle(self.grid)
-        if not DYNAMIC:
-            self.ham_cycle_changed = False
+        self.ham_cycle = self.grid.get_cycle()        
 
         if len(self.snake.get_body()) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
@@ -84,10 +35,10 @@ class Bot_hamilton(BotS):
         self.grid_area = self.grid.get_grid_free_area()
         #grid_problem = GridProblem(self.head, self.goal, grid, False)
 
-        if DYNAMIC:
+        if self.beta != 0: # DYNAMIC = True
             # ad ogni iter cerca un ciclo ham ottimo per quella mossa
             self.ham_cycle_changed = False
-            if len(self.body) < 0.7 * self.grid_area:
+            if len(self.body) < self.beta * self.grid_area:
                 self.change_cycle()
 
         head_ham_pos = self.ham_cycle[self.head]
@@ -97,9 +48,9 @@ class Bot_hamilton(BotS):
                 move = (coordinates[0], coordinates[1])
                 break
         
-        if GREEDY:
+        if self.alpha != 0: # GREEDY = True
             # ad ogni iter calcola se è possibile tagliare il ciclo
-            if len(self.body) < 0.5 * self.grid_area:
+            if len(self.body) < self.alpha * self.grid_area:
                 neighbours = grid[self.head]
                 min_ham_dis = np.inf
                 for next in neighbours:
@@ -252,7 +203,9 @@ class Bot_hamilton(BotS):
 
         return new_grid
 
-    def return_cycle(self):
+    def return_cycle(self, first_step):
+        if first_step: 
+            self.ham_cycle = self.grid.get_cycle()  
         return self.ham_cycle
 
     def update_ham_cycle(self):
@@ -261,5 +214,9 @@ class Bot_hamilton(BotS):
     def return_ham_cycle_changed(self):
         return self.ham_cycle_changed
 
-    def get_next_move(self):
+    def get_next_move(self, alpha, beta):
+        self.alpha = alpha  # alpha: snake.length/grid_area s.t. stops greedy algh        
+        self.beta = beta    # beta: snake.length/grid_area s.t. stops dynamic algh
+        if self.beta == 0: # not DYNAMIC
+            self.ham_cycle_changed = False
         return self.chosen_strat()
