@@ -2,7 +2,6 @@ import pygame, sys
 from concurrent.futures import ThreadPoolExecutor
 from grid import Grid
 from human_player import HumanPlayer
-from bot_twoplayers import Bot_twoplayers
 from bot_singleplayer import Bot_singleplayer
 from bot_hamilton import Bot_hamilton
 from snake import Snake
@@ -12,7 +11,7 @@ import colors
 import directions
 import time
 
-FRAME_DELAY = 15
+FRAME_DELAY = 2
 OBSTACLES = True
 
 ### NON MODIFICARE!
