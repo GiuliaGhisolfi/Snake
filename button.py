@@ -70,7 +70,7 @@ class Button:
         if self.top_rect.collidepoint(mouse_pos):# mouse ontop the button
             self.top_color = colors.ORANGE
             if pygame.mouse.get_pressed()[0]: # if i've pressed the mouse it returns true
-                print(pygame.mouse.get_pressed())
+                #print(pygame.mouse.get_pressed())
                 self.dynamic_elecation = 0
                 self.pressed = True
                 if self.text == 'Human Player': # select the correct dictonary for each player
@@ -125,7 +125,7 @@ class Button:
                 elif self.text == "Done":
                     done = True
             else:
-                print(pygame.mouse.get_pressed())
+                #print(pygame.mouse.get_pressed())
                 self.dynamic_elecation = self.elevation
                 if self.pressed == True:
                     self.pressed = False
@@ -345,7 +345,7 @@ def grid_not_allowed():
             window.fill('#000000')
             text = font.render("Grid dimensions not allowed,", True, colors.WHITE)
             text2 = font.render(" please try again", True,colors.WHITE )
-            window.blit(text, (window.get_size()[0]/10, window.get_size()[0]/4))
-            window.blit(text2, (window.get_size()[0]/4,window.get_size()[0]/3))
+            window.blit(text, (window.get_size()[0]/10, window.get_size()[1]/4))
+            window.blit(text2, (window.get_size()[0]/4,window.get_size()[1]/2))
             pygame.display.update()
             clock.tick(60)

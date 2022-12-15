@@ -161,7 +161,6 @@ class Grid:
 
     def get_cycle(self):
         if button.OBSTACLES == "None": 
-            #self.hamcycles[4] = self.create_hamilton_cycle()
             self.current_config = 4
         obc = Obstacles_configurations(self)
         return copy.deepcopy(obc.hamcycles[self.current_config])

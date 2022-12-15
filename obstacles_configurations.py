@@ -1,3 +1,5 @@
+import button
+
 class Obstacles_configurations:
 
     def __init__(self, grid):
@@ -113,7 +115,7 @@ class Obstacles_configurations:
         ''' create hamiltonian cycle for grid without obstacles '''
 
         if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:
-            print("Grid dimension not allowed")
+            button.grid_not_allowed()
             exit()
 
         hamcycle = {(0, 0): 0}
