@@ -5,6 +5,8 @@ X_BLOCKS = 15
 Y_BLOCKS = 16
 FRAME_DELAY = 20
 OBSTACLES = "to_be_setup"
+done = False
+SIZE = 700
 # general dictonary to use in the bot dictonary creation
 dictonary = { 
     "type": ["human", "greedy","hamilton"],
@@ -19,15 +21,16 @@ dictonary = {
 } 
 #initialize game, window size and font
 pygame.init()
-window = pygame.display.set_mode((700,700))
+window = pygame.display.set_mode((SIZE,SIZE))
 pygame.display.set_caption("Snake")
 font = pygame.font.SysFont('Arial', 40, True)
 clock = pygame.time.Clock()
+FONT = pygame.font.Font(None, 32)
 # global variables to use in main file
 choise_made = False
 buttons = []
 dict_info_single = {}
-""" class that implements the button in the game interface"""
+""" class that implements buttons in the game interface"""
 class Button:
     def __init__(self,text,width,height,pos,elevation):
         #Core attributes 
@@ -62,11 +65,11 @@ class Button:
         window.blit(self.text_surf, self.text_rect)
 
     def check_click(self): # check which button i click, the do the respective action
-        global choise_made, FRAME_DELAY, OBSTACLES, X_BLOCKS, Y_BLOCKS, dict_info_single
+        global choise_made, FRAME_DELAY, OBSTACLES, X_BLOCKS, Y_BLOCKS, dict_info_single,done
         mouse_pos = pygame.mouse.get_pos()
-        if self.top_rect.collidepoint(mouse_pos):
+        if self.top_rect.collidepoint(mouse_pos):# mouse ontop the button
             self.top_color = colors.ORANGE
-            if pygame.mouse.get_pressed()[0]:
+            if pygame.mouse.get_pressed()[0]: # if i've pressed the mouse it returns true
                 print(pygame.mouse.get_pressed())
                 self.dynamic_elecation = 0
                 self.pressed = True
@@ -119,6 +122,8 @@ class Button:
                     OBSTACLES = 3
                 elif self.text == "None":
                     OBSTACLES = "None"
+                elif self.text == "Done":
+                    done = True
             else:
                 print(pygame.mouse.get_pressed())
                 self.dynamic_elecation = self.elevation
@@ -130,6 +135,55 @@ class Button:
             self.top_color = colors.GREEN
             return 0
 
+""" class that implements input box in the game """
+class InputBox:
+
+    def __init__(self, x, y, w, h, name,text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = colors.GREEN
+        self.text = text
+        self.txt_surface = FONT.render(text, True, self.color)
+        self.active = False
+        self.name = name
+
+    def handle_event(self, event):
+        global X_BLOCKS,Y_BLOCKS
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(event.pos):
+                # Toggle the active variable.
+                self.active = not self.active
+            else:
+                self.active = False
+            # Change the current color of the input box.
+            self.color = colors.ORANGE if self.active else colors.GREEN
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    if self.name == "X":
+                        X_BLOCKS = int(self.text)
+                    elif self.name == "Y":
+                        Y_BLOCKS = int(self.text)
+                    else: print("error: no such input box")
+                    self.text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                # Re-render the text.
+                self.txt_surface = FONT.render(self.text, True, self.color)
+
+    def update(self):
+        # Resize the box if the text is too long.
+        width = max(200, self.txt_surface.get_width()+10)
+        self.rect.w = width
+
+    def draw(self, screen):
+        # Blit the text.
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        # Blit the rect.
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
 # draw buttons & retrieve bot dictonary
 def buttons_draw():
     global dict_info_single
@@ -137,7 +191,7 @@ def buttons_draw():
         b.draw()
         b.check_click()
 
-# start game option configuration menu
+# start-game option configuration menu
 def snake_interface():
     global choise_made,OBSTACLES
     choise_made = False
@@ -166,7 +220,7 @@ def snake_interface():
     # choose which bot to use
     button2_1 = Button('A* search',310,70,(40,300),5)
     button3_1 = Button('Hamilton search',310,70,(370,300),5)
-    while choise_made == 'bot':
+    while choise_made == 'bot': #loop only if have selected bot previously
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -207,22 +261,62 @@ def snake_interface():
     for b in buttons:
         b.draw()
     pygame.display.update()
+    pygame.time.delay(200)
     #drop previous used buttons
     while len(buttons)>0: buttons.pop(0)
 
+    # choose grid dimension if no obstacles selected
+    input_box1 = InputBox(window.get_size()[0]/10, window.get_size()[1]/3*1.5, 140, 32, "X")
+    input_box2 = InputBox(window.get_size()[0]/10*6, window.get_size()[1]/3*1.5, 140, 32, "Y")
+    input_boxes = [input_box1, input_box2]
+    button7 = Button('Done',300,70,(185,500),5)
+    global done
+    while not done and OBSTACLES == "None": #loop only if i've selectd no obstacles
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            for box in input_boxes:
+                box.handle_event(event)
+        for box in input_boxes:
+            box.update()
+        window.fill('#000000')
+        for box in input_boxes:
+            box.draw(window)
+        buttons_draw()
+        text = font.render('Insert the grid dimensions, ', True, colors.WHITE)
+        text4 = font.render('and press enter.',True,colors.WHITE)
+        text1 = font.render('At the end press the button.',True, colors.WHITE)
+        window.blit(text, (window.get_size()[0]/12*1.5, window.get_size()[1]/12))
+        window.blit(text4, (window.get_size()[0]/4, window.get_size()[1]/12*2))
+        window.blit(text1,(window.get_size()[0]/12*1.5, window.get_size()[1]/12*3))
+        text2 = font.render('X', True, colors.WHITE)
+        text3 = font.render('Y',True, colors.WHITE)
+        window.blit(text2, (window.get_size()[0]/10*2.2, window.get_size()[1]/3*1.2))
+        window.blit(text3, (window.get_size()[0]/10*7.3, window.get_size()[1]/3*1.2))
+        pygame.display.flip()
+        clock.tick(30)
+    if OBSTACLES == "None":
+        for b in buttons:
+            b.draw()
+    pygame.display.update()
+    while len(buttons)>0: buttons.pop(0)
+
+# draw button in new_game
 def draw_new_game():
     for b in buttons:
         b.draw()
         if b.check_click() == 'no':
             pygame.quit()
             sys.exit()
-# non funziona correttamente
+
+# window that appears in the endgame, it asks if you want to play again at the same game
 def new_game():
     global choise_made
     choise_made = False
    
-    button10 = Button('Yes',300,70,(50,300),5)
-    button20 = Button('No',300,70,(360,300),5)
+    button10 = Button('Yes',window.get_size()[0]/4,window.get_size()[1]/10,(window.get_size()[0]/10*2, window.get_size()[1]/2),5)
+    button20 = Button('No',window.get_size()[0]/4,window.get_size()[1]/10,(window.get_size()[0]/10*5.5, window.get_size()[1]/2),5)
 
     while not choise_made:
         for event in pygame.event.get():
@@ -232,7 +326,7 @@ def new_game():
         window.fill('#000000')
         draw_new_game()
         text = font.render('Do you want to play again?', True, colors.WHITE)
-        window.blit(text, (95, 170))
+        window.blit(text, (window.get_size()[0]/9*1.2, window.get_size()[1]/4))
         pygame.display.update()
         clock.tick(60)
     for b in buttons:
@@ -240,3 +334,18 @@ def new_game():
     pygame.display.update()
     pygame.time.delay(200)
     while len(buttons)>0: buttons.pop(0)
+
+# halt if the grid dimensions are not allowed for hamilton bot
+def grid_not_allowed():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            window.fill('#000000')
+            text = font.render("Grid dimensions not allowed,", True, colors.WHITE)
+            text2 = font.render(" please try again", True,colors.WHITE )
+            window.blit(text, (window.get_size()[0]/10, window.get_size()[0]/4))
+            window.blit(text2, (window.get_size()[0]/4,window.get_size()[0]/3))
+            pygame.display.update()
+            clock.tick(60)

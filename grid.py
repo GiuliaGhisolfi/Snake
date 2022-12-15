@@ -3,7 +3,7 @@ import random as rand
 import math
 import colors
 import button
-
+import pygame
 
 class Grid:
     def __init__(self, size, x_blocks, y_blocks):
@@ -121,8 +121,7 @@ class Grid:
     def create_hamilton_cycle(self):
         # cycle for grid without obstacle
         if (self.x_blocks % 2) != 0 and (self.y_blocks % 2) != 0:
-            print("Grid dimension not allowed")
-            exit()
+            button.grid_not_allowed()
 
         hamcycle = {(0, 0): 0}
         value = 1
@@ -155,8 +154,6 @@ class Grid:
                 hamcycle[(0, self.y_blocks-1-i)] = value
                 value += 1
         return hamcycle
-
-
 
     def build_grid(self):
         def neighbors(x, y):
@@ -296,10 +293,7 @@ class Grid:
     def spawn_obstacles(self):
         self.grid = copy.deepcopy(self.full_grid)
         self.obstacles.clear()
-        
-        self.current_config = button.OBSTACLES #prendo casualmente una delle varie mappe
-
-        # creo la lista di Obstacles e aggiorno la griglia
+        self.current_config = button.OBSTACLES 
         for pos in self.configs[self.current_config]:
             obstacle = Obstacle("gray", pos[0], pos[1])
             self.obstacles.append(obstacle)
@@ -315,11 +309,23 @@ class Grid:
         return copy.deepcopy(self.obstacles)
 
     def get_cycle(self):
-        if button.OBSTACLES == "None": self.current_config = 4
+        if button.OBSTACLES == "None": 
+            self.hamcycles[4] = self.create_hamilton_cycle()
+            self.current_config = 4
         return copy.deepcopy(self.hamcycles[self.current_config])
 
     def get_grid_free_area(self):
         return (self.x_blocks * self.y_blocks) - len(self.obstacles)
+    
+    def update_grid_dimensions(self,X,Y):
+        self.x_blocks = X
+        self.y_blocks = Y
+        x_pixel = self.size-(self.size % self.x_blocks)
+        self.bounds = (x_pixel, x_pixel*self.y_blocks/self.x_blocks)
+        self.block_size = x_pixel/self.x_blocks
+        self.full_grid = self.build_grid()
+        self.grid = copy.deepcopy(self.full_grid)
+        button.window = pygame.display.set_mode(self.bounds)
 
 class Obstacle:
     def __init__(self, color, x, y):
