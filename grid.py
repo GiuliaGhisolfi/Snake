@@ -176,6 +176,8 @@ class Grid:
         self.block_size = x_pixel/self.x_blocks
         self.full_grid = self.build_grid()
         self.grid = copy.deepcopy(self.full_grid)
+        pygame.display.quit()
+        pygame.init()
         button.window = pygame.display.set_mode(self.bounds)
 
 class Obstacle:
