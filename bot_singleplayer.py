@@ -155,7 +155,10 @@ class Bot_singleplayer(Bot):
             else: return dummy
         elif self.chosen_search == 2:
             grid_problem = GridProblem(start, goal, graph, False)
-            dummy = astar_search_opportunistic(grid_problem, self.snake, self.grid.x_blocks*self.grid.y_blocks, self.choice_sensibility, self.weights)
+            if self.snake.length >= (self.grid.x_blocks*self.grid.y_blocks /self.choice_sensibility):
+                dummy = astar_search_saving_spaces(grid_problem, self.weights)
+            else:
+                dummy = astar_search_min_turns(grid_problem, self.weights)
 
             if dummy != None:
                 return dummy.solution()
@@ -228,7 +231,7 @@ class Bot_singleplayer(Bot):
                         #senza testa
                         #patch = get_ham_path(self.snake.fast_get_body()[-1], chokepoint, true_g)
                         patch = self.opt_search(self.snake.get_body()[-1], chokepoint, true_g)
-                        if patch != [] or patch != None:
+                        if patch != None:
                             self.default_path = patch + self.default_path[choke_i + 1:]
                             self.nnto = self.default_path[choke_i + 1]
                             return #esce dal for

@@ -6,7 +6,6 @@ import grid
 import snake
 import food
 
-
 class Bot_hamilton(Bot):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
         self.grid = grid
@@ -31,7 +30,7 @@ class Bot_hamilton(Bot):
     def get_next_move(self):
         """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the 
         game grid, if possible at each iteration it tries to generate an optimal cycle 
-        and/or to cut the current cycle to get as close as possible to the food position"""
+        and/or to cut the current cycle to get as close as possible to the food position."""
         self.body = self.snake.get_body()
         self.head = self.body[-1]
         self.goal = self.food.position
@@ -39,6 +38,7 @@ class Bot_hamilton(Bot):
         grid = self.get_current_grid(self.body[:-1])
         self.grid_area = self.grid.get_grid_free_area()
 
+        # TODO: None?
         if self.beta != 0:  # DYNAMIC = True
             # at each iter it looks for an optimal Hamiltonian cycle for that move
             if len(self.body) < self.beta * self.grid_area:
@@ -48,35 +48,42 @@ class Bot_hamilton(Bot):
 
         for coordinates, ham_pos in self.ham_cycle.items():
             if ham_pos == (head_ham_pos + 1) % self.grid_area:
-                move = (coordinates[0], coordinates[1])
+                move = coordinates # (coordinates[0], coordinates[1]) # TODO: giusto?
                 break
 
+        # TODO: None?
         if self.alpha != 0:  # GREEDY = True
-            # at each iteration it calculates if it is possible to make a cut in the Hamiltonian cycle
+            # when the snake is long we do not take shortcuts to avoid crashes
             if len(self.body) < self.alpha * self.grid_area:
-                neighbours = grid[self.head]
+                neighbors = grid[self.head]
                 min_ham_dis = np.inf
-                for next in neighbours:
+                for next in neighbors:
                     next_ham_pos = self.ham_cycle[next]
                     tail_ham_pos = self.ham_cycle[self.body[0]]
                     food_ham_pos = self.ham_cycle[self.goal]
+                    # if the food is adjacent to the tail we do not take shortcuts 
+                    # to avoid eating the tail
                     if not (self.goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
-                        head_rel = (head_ham_pos -
-                                    tail_ham_pos) % self.grid_area
-                        next_rel = (next_ham_pos -
-                                    tail_ham_pos) % self.grid_area
-                        food_rel = (food_ham_pos -
-                                    tail_ham_pos) % self.grid_area
-
-                        if next_rel > head_rel and next_rel <= food_rel:
-                            if food_rel - next_rel < min_ham_dis:
-                                move = next
+                        head_rel = (head_ham_pos - tail_ham_pos) % self.grid_area
+                        next_rel = (next_ham_pos - tail_ham_pos) % self.grid_area
+                        food_rel = (food_ham_pos - tail_ham_pos) % self.grid_area
+                        # if next precedes the head's snake, succeds the food
+                        # and is nearer to the food on the cycle, 
+                        # moving there it's a shortcut
+                        if next_rel > head_rel and \
+                            next_rel <= food_rel and \
+                            food_rel - next_rel < min_ham_dis: # TODO: giusto?
+                            move = next
+                            break
+                            #if food_rel - next_rel < min_ham_dis:
+                                #move = next
+                                #break
         
         next_move = self.snake.dir_to_cell(move)
         return next_move
 
     def change_cycle(self):
-        """calculate, if it is possible, a new optimal Hamiltonin cycle"""
+        """Computes, if possible, a new optimal Hamiltonin cycle"""
         head_idx = self.ham_cycle[self.head]  # head value in the ham cycle
         goal_idx = self.ham_cycle[self.goal]
         tail_idx = self.ham_cycle[self.body[0]]
@@ -197,8 +204,9 @@ class Bot_hamilton(Bot):
                 self.ham_cycle[nn] = new_position[idx]
                 idx += 1
 
+    # TODO: da uniformare con bot_singleplayer
     def get_current_grid(self, snake_body):
-        """delete from the graph the nodes occupied by the snake's body"""
+        """Delete from the graph the nodes occupied by the snake's body"""
         new_grid = copy.deepcopy(self.grid)
 
         for segment in snake_body:
@@ -206,12 +214,13 @@ class Bot_hamilton(Bot):
 
         return new_grid.grid
 
+    # TODO: si può fare meglio?
     def return_cycle(self, first_step):
-        "return the current hamiltonian cycle"
+        "Return the current hamiltonian cycle"
         if first_step:
             self.update_ham_cycle()
         return self.ham_cycle
 
     def update_ham_cycle(self):
-        "update self.ham_cycle"
+        "Update self.ham_cycle"
         self.ham_cycle = self.grid.get_cycle()
