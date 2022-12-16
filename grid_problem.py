@@ -1,7 +1,5 @@
 from search import *
 
-PESI = (1,0.1,0.1,0.1) #path_cost, h??????, turn, n_neighbours
-
 class GridProblem(Problem):
     def __init__(self, initial, goal, grid, horizontal_orientation):
         super().__init__(initial, goal)
@@ -141,14 +139,14 @@ def best_first_grid_search_dummy(problem, f, t, display=False):
                     frontier.append(child)
     return None
 
-def astar_search_opportunistic(problem, snake, grid_area):
+def astar_search_opportunistic(problem, snake, grid_area, SENSIBILITA,  PESI):
     # prima approssimazione: la strategia cambia quando lo snake è lungo almeno un quarto dell'area della grid
-    if(snake.length >= (grid_area / 4)):
-        return astar_search_saving_spaces(problem)
+    if(snake.length >= (grid_area / SENSIBILITA)):
+        return astar_search_saving_spaces(problem, PESI)
     else:
-        return astar_search_min_turns(problem)
+        return astar_search_min_turns(problem, PESI)
 
-def astar_search_min_turns(problem):
+def astar_search_min_turns(problem, PESI):
     h = memoize(problem.h, 'h')
     return best_first_grid_search_dummy(
         problem, 
@@ -157,7 +155,7 @@ def astar_search_min_turns(problem):
     )
 
 # individua il cammino che rimane più vicino al corpo
-def astar_search_saving_spaces(problem):
+def astar_search_saving_spaces(problem, PESI):
     h = memoize(problem.h, 'h')
     return best_first_grid_search_dummy(
         problem, 

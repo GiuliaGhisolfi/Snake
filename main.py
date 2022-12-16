@@ -11,11 +11,11 @@ import colors
 import directions
 import time
 
-FRAME_DELAY = 20
+FRAME_DELAY = 1
 OBSTACLES = False
 ### if obstacle == True: X_BLOCKS = 15 and Y_BLOCKS = 16
-X_BLOCKS = 7
-Y_BLOCKS = 6
+X_BLOCKS = 16
+Y_BLOCKS = 16
 ###
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS, flag_obstacles=OBSTACLES)
@@ -54,17 +54,13 @@ def singleplayer_start():
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
     elif players_info["type"] == "sbot":
-        player = Bot_singleplayer(grid, snakes[0], food, True)
+        player = Bot_singleplayer(grid, snakes[0], food)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
 
     steps = 0
     run = True
-
-    # avvia il bot corretto
-    GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
-    GAMEOVER_FILE.write('CORPO,CIBO\n')
 
     while run:
         if len(snake.get_body()) != snake.length: print('ops')
@@ -76,23 +72,20 @@ def singleplayer_start():
             if event.type == pygame.QUIT:
                 run = False
                 file.close()
-                GAMEOVER_FILE.close()
    
         dir = player.get_next_move()
-        #print(dir, food.fast_get_positions())
-        if dir != directions.Directions.CLOSE:
-            
-            mangiato = snake.move(dir, food)
+        mangiato = snake.move(dir, food)
 
-            lost = snake.bounds_collision(grid) or \
-                snake.tail_collision()
+        lost = snake.bounds_collision(grid) or \
+            snake.tail_collision()
 
-            end = False
-            if lost:
-                end = True
-                text = button.font.render('GAME OVER', True, colors.FUXIA)
-                button.window.blit(text, (180, 270))
+        end = False
+        if lost:
+            end = True
+            text = button.font.render('GAME OVER', True, colors.FUXIA)
+            button.window.blit(text, (180, 270))
 
+        '''
         else:
             text = button.font.render('LOOP', True, colors.GREEN)
             button.window.blit(text, (250, 270))
@@ -101,28 +94,18 @@ def singleplayer_start():
             pygame.time.delay(700)
             file.write("%s,%s\n" % (snake.length, steps))
 
-            GAMEOVER_FILE.write(str(snake.get_body()))
-            GAMEOVER_FILE.write(',')
-            GAMEOVER_FILE.write(str(food.position))
-            GAMEOVER_FILE.write('\n')
-            
             snake.respawn(grid)
             if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
 
             steps = 0
             end = False
-            button.new_game()
+            button.new_game()'''
             
         if end:
             pygame.display.update()
             pygame.time.delay(700)
             file.write("%s,%s\n" % (snake.length, steps))
-
-            GAMEOVER_FILE.write(str(snake.get_body()))
-            GAMEOVER_FILE.write(',')
-            GAMEOVER_FILE.write(str(food.position))
-            GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
             if OBSTACLES: grid.spawn_obstacles()
