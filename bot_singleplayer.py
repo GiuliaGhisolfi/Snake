@@ -8,6 +8,7 @@ import food
 import colors
 from grid_problem import *
 from button import *
+import time
 
 from bot import Bot
 
@@ -16,7 +17,9 @@ TO_FOOD_C = colors.ORANGE
 DEF_C = colors.BLUE
 
 # higher = more step before stop
-DETECTLOOPGENEROSITY = 2.5
+DETECTLOOPGENEROSITY = 2.1
+DECIMALDIGIT = 4
+FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 
 # IRENE: sarebbe possibile sostituire le invocazoni di self.graphDir_to_gameDir() con 
 # dir_to_cell(), metodo della classe Snake?
@@ -26,7 +29,7 @@ DETECTLOOPGENEROSITY = 2.5
 class Bot_singleplayer(Bot):
 
     # to create the bot
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='sigleplayer.config'):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='singleplayer.config', logname='singleplayer_log.csv', info=''):
 
         # the grid with the obstacles
         self.grid = grid
@@ -50,24 +53,88 @@ class Bot_singleplayer(Bot):
         # next node to optimize
         self.nnto = None 
 
-        # hyper parameters of the bot
-        # default search algorithm
-        # 0 -> a min turns, 1 -> save space, 2 -> combined, 3 -> longest path???
-        self.chosen_search = 2 
-        # safe path strategy
-        # 0 -> no, 1 -> yes
-        self.safe_cycle = 1
-        # space optimization search
-        # 0 -> nothing, 1-> longest path
-        self.chosen_optimization = 1
+        self.parse_config(config)
+ 
+        
+        bot_type = 'singleplayer_bot [' + str(self.chosen_search) + '|' + str(self.safe_cycle)  +  '|' + str(self.chosen_optimization) + '|' + str(self.weights) + '|' + str(self.choice_sensibility) + ']' + info
 
-        self.weights = [1,0,0,0] #weight for the A* heuristic
-        self.choice_sensibility = 4 #parameter to choose when change strategy
+        self.data_to_save = [bot_type, 0, False, 0, []]
+        self.logname = logname
+        
+        self.total_bot_time = 0
+        self.total_iteration = 0
 
+    def parse_config(self, file):
+        param = {}
+        with open(file, 'r') as c:
+            for i, line in enumerate(c):
+                if line.startswith('#') or len(line) == 1:
+                    continue
+                else:
+                    try:
+                        sl = line.replace('\n', '').replace(' ', '').split('=')
+                        param[sl[0]] = sl[1]
+                    except:
+                        print('errore file config linea: '  + str(i))
 
+        try:
+            self.chosen_search = int(param['chosen_search'])
+            # safe path strategy
+            # 0 -> no, 1 -> yes
+            self.safe_cycle = int(param['safe_cycle'])
+            # space optimization search
+            # 0 -> nothing, 1-> longest path
+            self.chosen_optimization = int(param['chosen_optimization'])
 
-        # Hyper Parameters
+            self.weights = [] #weight for the A* heuristic
+            for s in param['weights'][1:-1].split(','):
+                self.weights.append(float(s))
+            self.choice_sensibility = int(param['choice_sensibility'])
 
+        except Exception as e:
+            print(e)
+            print('parameter value error')
+            print('initialization with default values')
+
+            self.chosen_search = 2 
+            self.safe_cycle = 1
+            self.chosen_optimization = 1
+            self.weights = [1,0,0,0]
+            self.choice_sensibility = 4
+
+    def save_data(self, result):
+
+        self.data_to_save[1] = self.total_bot_time
+        self.data_to_save[2] = result
+        self.data_to_save[3] = self.total_iteration
+
+        with open(self.logname, 'a+') as log:
+            line = self.data_to_save[0]
+            line += ','
+
+            line += FLOATTOKEN % self.data_to_save[1]
+            line += ','
+
+            line += str(self.data_to_save[2])
+            line += ','
+
+            line += FLOATTOKEN % self.data_to_save[3]
+            line += ','
+
+            line += '['
+            first = True
+            for a,b in self.data_to_save[4]:
+                if first:
+                    first = False
+                    line += '(' + FLOATTOKEN % a + ',' + str(b) + ')'
+                else:
+                    line += ',(' + FLOATTOKEN % a + ',' + str(b) + ')'
+            line += ']\n'
+
+            log.write( line )
+
+        self.total_iteration = 0
+        self.total_bot_time = 0
 
     #PER CAMBIATE LA CHIAMATA DU FUNZIONE AD A* O COSE SIMILI CAMBIARE QUESTA FUNZIONE E self.chosen_search
     def graph_search(self, start, goal, graph):
@@ -203,6 +270,7 @@ class Bot_singleplayer(Bot):
 
     # funzione usata per chiedere la prossima mossa dello snake
     def apple_cicle_opt_strat(self):
+            
         
         snake_body = self.snake.get_body()
         if self.debug: self.change_color()
@@ -270,7 +338,19 @@ class Bot_singleplayer(Bot):
                 return Directions.random_direction()
 
     def get_next_move(self):
-        return self.apple_cicle_opt_strat() 
+      
+        snake_body_len = len(self.snake.body)
+        start_iteration_time = time.time()
+
+        self.total_iteration += 1
+
+        ret =  self.apple_cicle_opt_strat() 
+
+        end_iteration_time = time.time()
+        self.data_to_save[4].append((end_iteration_time - start_iteration_time, snake_body_len))
+
+        self.total_bot_time += end_iteration_time - start_iteration_time
+        return ret
         # IRENE: se qui invocassimo direttamente la strategia visto che ne abbiamo implementata una sola?
         # ciò renderebbe il codice più uniforme a bot_hamilton
         # 
@@ -282,5 +362,5 @@ class Bot_singleplayer(Bot):
         # Stupendo, Passionale, 
         # Terrificante, Bello, 
         # Forte Bianco Principe GECO:
-        # va bien
+        # oora è utile per i dati, magari conviene farlo anche in ham?
     

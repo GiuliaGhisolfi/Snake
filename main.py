@@ -11,12 +11,15 @@ import colors
 import directions
 import time
 
-FRAME_DELAY = 1
+FRAME_DELAY = 20
 OBSTACLES = False
+AUTOSTART = True
+
 ### if obstacle == True: X_BLOCKS = 15 and Y_BLOCKS = 16
-X_BLOCKS = 16
-Y_BLOCKS = 16
+X_BLOCKS = 6
+Y_BLOCKS = 6
 ###
+info_string = '[' + str(X_BLOCKS) + '|' + str(Y_BLOCKS) + '|' + str(OBSTACLES) + '|' + str(FRAME_DELAY) + ']'
 pygame.init()
 grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS, flag_obstacles=OBSTACLES)
 window = pygame.display.set_mode(grid.bounds)
@@ -54,7 +57,7 @@ def singleplayer_start():
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
     elif players_info["type"] == "sbot":
-        player = Bot_singleplayer(grid, snakes[0], food)
+        player = Bot_singleplayer(grid, snakes[0], food, info=info_string)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
@@ -84,23 +87,6 @@ def singleplayer_start():
             end = True
             text = button.font.render('GAME OVER', True, colors.FUXIA)
             button.window.blit(text, (180, 270))
-
-        '''
-        else:
-            text = button.font.render('LOOP', True, colors.GREEN)
-            button.window.blit(text, (250, 270))
-            
-            pygame.display.update()
-            pygame.time.delay(700)
-            file.write("%s,%s\n" % (snake.length, steps))
-
-            snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
-            food.respawn(snakes, grid)
-
-            steps = 0
-            end = False
-            button.new_game()'''
             
         if end:
             pygame.display.update()
@@ -110,9 +96,10 @@ def singleplayer_start():
             snake.respawn(grid)
             if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
+            if players_info["type"] == 'sbot': player.save_data(False)
 
             steps = 0
-            button.new_game()
+            if not AUTOSTART: button.new_game()
         
         if snake.length == grid.get_grid_free_area():
             
@@ -130,7 +117,8 @@ def singleplayer_start():
             snake.respawn(grid)
             if OBSTACLES: grid.spawn_obstacles()
             food.respawn(snakes, grid)
-            button.new_game()
+            if players_info["type"] == 'sbot': player.save_data(True)
+            if not AUTOSTART: button.new_game()
         else:
             if mangiato:
                 food.respawn(snakes, grid)
