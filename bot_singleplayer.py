@@ -5,29 +5,41 @@ import copy
 import grid
 import snake
 import food
-from bot import BotS
 import colors
 from grid_problem import *
 from button import *
+import time
+
+from bot import Bot
 
 FIRST_IT_C = colors.RED
 TO_FOOD_C = colors.ORANGE
 DEF_C = colors.BLUE
 
-DETECTLOOPGENEROSITY = 5
+# higher = more step before stop
+DETECTLOOPGENEROSITY = 2.1
+DECIMALDIGIT = 4
+FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 
-class Bot_singleplayer(BotS):
-    # input anche lo snake
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False):
+# IRENE: sarebbe possibile sostituire le invocazoni di self.graphDir_to_gameDir() con 
+# dir_to_cell(), metodo della classe Snake?
+# Così possiamo eliminare del tutto il metodo graphDir_to_gameDir che ha poco a che fare con la classe Bot...
+# ma certo! bella idea
 
+class Bot_singleplayer(Bot):
+
+    # to create the bot
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='singleplayer.config', logname='singleplayer_log.csv', info=''):
+
+        # the grid with the obstacles
         self.grid = grid
+        # debug variable ( default=False )
         self.debug = debug
-        #self.obstacles = obstacles
 
         self.snake = snake       
-        self.snake.color = colors.GREEN
         self.food = food 
 
+        # simple method to check if we are in a loop
         self.loop = 0
         self.max_loop = self.grid.x_blocks*self.grid.y_blocks*DETECTLOOPGENEROSITY
 
@@ -35,37 +47,118 @@ class Bot_singleplayer(BotS):
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
             exit() #boom
 
-        self.default_path = None
-        self.path_to_food = None
+        # paths memorized
+        self.default_path = []
+        self.path_to_food = []
+        # next node to optimize
+        self.nnto = None 
 
-        #strategia attuale
-        self.chosen_strat = self.mela_cicle_strat
-        self.chosen_search = 2 # 0->a min turns, 1-> salva spazio, 2->mista, 3-> bonk
-        self.chosen_optimization = 0 #0-> longest path
+        self.parse_config(config)
+ 
+        
+        bot_type = 'singleplayer_bot [' + str(self.chosen_search) + '|' + str(self.safe_cycle)  +  '|' + str(self.chosen_optimization) + '|' + str(self.weights) + '|' + str(self.choice_sensibility) + ']' + info
 
-        self.nnto = None #next node to optimize
+        self.data_to_save = [bot_type, 0, False, 0, []]
+        self.logname = logname
+        
+        self.total_bot_time = 0
+        self.total_iteration = 0
 
+    def parse_config(self, file):
+        param = {}
+        with open(file, 'r') as c:
+            for i, line in enumerate(c):
+                if line.startswith('#') or len(line) == 1:
+                    continue
+                else:
+                    try:
+                        sl = line.replace('\n', '').replace(' ', '').split('=')
+                        param[sl[0]] = sl[1]
+                    except:
+                        print('errore file config linea: '  + str(i))
+
+        try:
+            self.chosen_search = int(param['chosen_search'])
+            # safe path strategy
+            # 0 -> no, 1 -> yes
+            self.safe_cycle = int(param['safe_cycle'])
+            # space optimization search
+            # 0 -> nothing, 1-> longest path
+            self.chosen_optimization = int(param['chosen_optimization'])
+
+            self.weights = [] #weight for the A* heuristic
+            for s in param['weights'][1:-1].split(','):
+                self.weights.append(float(s))
+            self.choice_sensibility = int(param['choice_sensibility'])
+
+        except Exception as e:
+            print(e)
+            print('parameter value error')
+            print('initialization with default values')
+
+            self.chosen_search = 2 
+            self.safe_cycle = 1
+            self.chosen_optimization = 1
+            self.weights = [1,0,0,0]
+            self.choice_sensibility = 4
+
+    def save_data(self, result):
+
+        self.data_to_save[1] = self.total_bot_time
+        self.data_to_save[2] = result
+        self.data_to_save[3] = self.total_iteration
+
+        with open(self.logname, 'a+') as log:
+            line = self.data_to_save[0]
+            line += ','
+
+            line += FLOATTOKEN % self.data_to_save[1]
+            line += ','
+
+            line += str(self.data_to_save[2])
+            line += ','
+
+            line += FLOATTOKEN % self.data_to_save[3]
+            line += ','
+
+            line += '['
+            first = True
+            for a,b in self.data_to_save[4]:
+                if first:
+                    first = False
+                    line += '(' + FLOATTOKEN % a + ',' + str(b) + ')'
+                else:
+                    line += ',(' + FLOATTOKEN % a + ',' + str(b) + ')'
+            line += ']\n'
+
+            log.write( line )
+
+        self.total_iteration = 0
+        self.total_bot_time = 0
 
     #PER CAMBIATE LA CHIAMATA DU FUNZIONE AD A* O COSE SIMILI CAMBIARE QUESTA FUNZIONE E self.chosen_search
     def graph_search(self, start, goal, graph):
         
         if self.chosen_search == 0:
             grid_problem = GridProblem(start, goal, graph, False)
-            dummy = astar_search_min_turns(grid_problem)
+            dummy = astar_search_min_turns(grid_problem, self.weights)
 
             if dummy != None:
                 return dummy.solution()
             else: return dummy
         elif self.chosen_search == 1:
             grid_problem = GridProblem(start, goal, graph, False)
-            dummy = astar_search_saving_spaces(grid_problem)
+            dummy = astar_search_saving_spaces(grid_problem, self.weights)
 
             if dummy != None:
                 return dummy.solution()
             else: return dummy
         elif self.chosen_search == 2:
             grid_problem = GridProblem(start, goal, graph, False)
-            dummy = astar_search_opportunistic(grid_problem, self.snake, self.grid.x_blocks*self.grid.y_blocks)
+            if self.snake.length >= (self.grid.x_blocks*self.grid.y_blocks /self.choice_sensibility):
+                dummy = astar_search_saving_spaces(grid_problem, self.weights)
+            else:
+                dummy = astar_search_min_turns(grid_problem, self.weights)
 
             if dummy != None:
                 return dummy.solution()
@@ -79,7 +172,7 @@ class Bot_singleplayer(BotS):
             exit()
     
     def opt_search(self, start, goal, graph):
-        if self.chosen_optimization == 0:
+        if self.chosen_optimization == 1:
             return longest_path(graph, start, goal)
         else:
             print('Strategia ancora non implementata!!')
@@ -87,7 +180,8 @@ class Bot_singleplayer(BotS):
 
     #TODO: magari attuare questa strategia solo se abbastanza lunghi?
     def optimize_standard_path(self, tg={}):
-        #i dizionari sono valutati false se vuoti
+        # no space optimization
+        if self.chosen_optimization == 0: return
         
         #restituisce il numero di archi uscenti che non conducono in nodi occupati o presenti
         #in defaulth path
@@ -137,7 +231,7 @@ class Bot_singleplayer(BotS):
                         #senza testa
                         #patch = get_ham_path(self.snake.fast_get_body()[-1], chokepoint, true_g)
                         patch = self.opt_search(self.snake.get_body()[-1], chokepoint, true_g)
-                        if patch != [] or patch != None:
+                        if patch != None:
                             self.default_path = patch + self.default_path[choke_i + 1:]
                             self.nnto = self.default_path[choke_i + 1]
                             return #esce dal for
@@ -154,68 +248,40 @@ class Bot_singleplayer(BotS):
     def get_best_food(self):
         return self.food.position
     
-    def get_true_graph(self, snake_false_body, grid={}):
-        if not grid:
-            grid = self.grid.grid # da controllare
+    # IRENE: siccome è uguale al metodo get_current_grid in bot_hamilton,
+    #  se lo spostassimo nella classe bot facendo un costruttore con gli 
+    # attributi comuni a entrambi da invocare nel costruttore delle sotto classi?
 
+    # facciamo! 
+    def get_true_graph(self, snake_false_body): # IRENE: possiamo togliere il parametro grid? (non viene mai passato)
+        
+        grid = self.grid
         #eliminiamo dal grafo le celle occupate da noi
-        new_grid = copy.deepcopy(grid) #forse ci va messo grid?
+        new_grid = copy.deepcopy(grid)
 
         for segment in snake_false_body: #manca la testa
-            self.delete_cell(new_grid, segment)
 
-        return new_grid
+            new_grid.delete_cell(segment)
+
+        return new_grid.grid
 
     def change_color(self):
-        if self.debug:
-            if len(self.path_to_food) > 0:
-                self.snake.color = TO_FOOD_C
-            else:
-                self.snake.color = DEF_C
+        if len(self.path_to_food) > 0:
+            self.snake.color = TO_FOOD_C
+        else:
+            self.snake.color = DEF_C
 
     # funzione usata per chiedere la prossima mossa dello snake
-    def mela_cicle_strat(self):
-
-        # inizio e basta
-        if self.default_path == None and self.path_to_food == None:
-            #if self.debug:
-            #    self.snake.color = FIRST_IT_C 
+    def apple_cicle_opt_strat(self):
             
-            snake_body = self.snake.get_body()
-
-            # posizione mela migliore e testa snake
-            goal = self.get_best_food()
-            start = snake_body[-1]
-
-            #elimino tutto il corpo tranne la testa del serpente dal grafo
-            dummy_g = self.get_true_graph(snake_body[:-1])
-            computed_path_toFood = self.graph_search(start, goal, dummy_g)
         
-            #aggiornando il grafo con la posizione futura
-            next_pos = (snake_body + computed_path_toFood)[-len(snake_body) - 1:]
-            goal = next_pos[0] #futura coda
-            start = next_pos[-1] #futura testa
-
-            #ora calcoliamo dalla mela (mangiata) alla coda, elimino coda e testa dello snake
-            dummy_g = self.get_true_graph(next_pos[1:-1])
-            computed_cicle = self.graph_search(start, goal, dummy_g)
-
-            self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
-            self.nnto = self.default_path[1]
-            self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
-            
-            #la mossa è stata presa, aggiorniamo
-            #calcolo direzione verso la mela
-            c = self.path_to_food.pop(0)
-            return self.graphDir_to_gameDir(snake_body[-1], c) 
-
         snake_body = self.snake.get_body()
-        #self.change_color()
+        if self.debug: self.change_color()
         
         #ora inizia la parte difficile, qui possono accadere cose strane (strande inesistenti ecc...)       
         if len(self.path_to_food) > 0: #non siamo ancora arrivati alla mela
             move = self.path_to_food.pop(0)
-            dir = self.graphDir_to_gameDir(snake_body[-1], move)
+            dir = self.snake.dir_to_cell(move)
             return dir
 
         # posizione mela migliore e testa snake
@@ -230,30 +296,74 @@ class Bot_singleplayer(BotS):
         if computed_path_toFood != None: #trovato il primo
             #uguale a prima con una accortezza di differenza
             next_pos = (snake_body + computed_path_toFood)[-len(snake_body) - 1:]
-            goal = next_pos[0] #futura coda
-            start = next_pos[-1] #futura testa
-            dummy_g = self.get_true_graph(next_pos[1:-1]) #non eliminiamo la coda
-            computed_cicle = self.graph_search(start, goal, dummy_g)
 
-            if computed_cicle != None: #incredibile !!! trovato anche il secondo, abbiamo finito allora
-                self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
-                self.nnto = self.default_path[1]
-                self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
-
+            # we are in a cycle, so we eat the last apple before we lose
+            if self.loop > self.max_loop:
+                self.path_to_food = computed_path_toFood
                 move = self.path_to_food.pop(0)
                 self.loop = 0
-                return self.graphDir_to_gameDir(snake_body[-1], move)
+                return self.snake.dir_to_cell(move)
 
-        
-        self.loop += 1
-        self.optimize_standard_path()
-        if self.loop > self.max_loop:
-            return None
-        move = self.default_path.pop(0)
-        ret = self.graphDir_to_gameDir(snake_body[-1], move) # è un ciclo
-        self.default_path.append(move)
-        return ret
+            if self.safe_cycle == 1:
+                goal = next_pos[0] #futura coda
+                start = next_pos[-1] #futura testa
+                dummy_g = self.get_true_graph(next_pos[1:-1]) #non eliminiamo la coda
+                computed_cicle = self.graph_search(start, goal, dummy_g)
+
+                if computed_cicle != None: #incredibile !!! trovato anche il secondo, abbiamo finito allora
+
+                    self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
+                    self.nnto = self.default_path[1]
+                    self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
+
+                    move = self.path_to_food.pop(0)
+                    self.loop = 0
+                    return self.snake.dir_to_cell(move)
+            else:
+                self.path_to_food = computed_path_toFood
+                move = self.path_to_food.pop(0)
+                self.loop = 0
+                return self.snake.dir_to_cell(move)
+            
+
+        if self.safe_cycle == 1:
+            self.loop += 1
+            self.optimize_standard_path()
+            move = self.default_path.pop(0)
+            ret = self.snake.dir_to_cell(move) # è un ciclo
+            self.default_path.append(move)
+            return ret
+        else:
+            possible_dir = self.grid.grid[self.snake.body[-1]]
+            if len(possible_dir) > 0:
+                return self.snake.dir_to_cell(possible_dir[0])
+            else:
+                return Directions.random_direction()
 
     def get_next_move(self):
-        return self.chosen_strat()
+      
+        snake_body_len = len(self.snake.body)
+        start_iteration_time = time.time()
+
+        self.total_iteration += 1
+
+        ret =  self.apple_cicle_opt_strat() 
+
+        end_iteration_time = time.time()
+        self.data_to_save[4].append((end_iteration_time - start_iteration_time, snake_body_len))
+
+        self.total_bot_time += end_iteration_time - start_iteration_time
+        return ret
+        # IRENE: se qui invocassimo direttamente la strategia visto che ne abbiamo implementata una sola?
+        # ciò renderebbe il codice più uniforme a bot_hamilton
+        # 
+        # GIACOMO si ma non solo...
+        # Invincibile, Impavido, 
+        # Sensuale, Misterioso, 
+        # Ammaliante, Vigoroso, 
+        # Diligente, Travolgente, 
+        # Stupendo, Passionale, 
+        # Terrificante, Bello, 
+        # Forte Bianco Principe GECO:
+        # oora è utile per i dati, magari conviene farlo anche in ham?
     

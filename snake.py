@@ -142,3 +142,13 @@ class Snake:
     def fast_get_body(self):
         return self.body
 
+    def dir_to_cell(self, cell):
+        head = self.body[-1]
+        if cell[0] < head[0]:  # x shift
+            return Directions.LEFT
+        elif cell[0] > head[0]:
+            return Directions.RIGHT
+        elif cell[1] < head[1]:  # y shift
+            return Directions.UP
+        else:
+            return Directions.DOWN

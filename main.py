@@ -10,6 +10,16 @@ import colors
 import directions
 import time
 
+#FRAME_DELAY = 20
+#OBSTACLES = False
+AUTOSTART = True
+
+### if obstacle == True: X_BLOCKS = 15 and Y_BLOCKS = 16
+#X_BLOCKS = 6
+#Y_BLOCKS = 6
+###
+info_string = '' #'[' + str(X_BLOCKS) + '|' + str(Y_BLOCKS) + '|' + str(OBSTACLES) + '|' + str(FRAME_DELAY) + ']'
+
 pygame.init()
 grid = Grid(size=button.SIZE, x_blocks=button.X_BLOCKS, y_blocks=button.Y_BLOCKS)
 button.window = pygame.display.set_mode(grid.bounds)
@@ -39,6 +49,8 @@ def human_start():
             down_key=players_info["keys"]["down"],
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
+    #elif players_info["type"] == "sbot":
+    #    player = Bot_singleplayer(grid, snakes[0], food, info=info_string)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
@@ -46,9 +58,6 @@ def human_start():
     steps = 0
     run = True
 
-    GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
-    GAMEOVER_FILE.write('CORPO,CIBO\n')
-    # while until I exit the game
     while run:
         if len(snake.get_body()) != snake.length: print('ops')
         steps = steps + 1
@@ -58,6 +67,20 @@ def human_start():
             if event.type == pygame.QUIT:
                 run = False
                 file.close()
+   
+        """dir = player.get_next_move()
+        mangiato = snake.move(dir, food)
+
+        lost = snake.bounds_collision(grid) or \
+            snake.tail_collision()
+
+        end = False
+        if lost:
+            end = True
+            text = button.font.render('GAME OVER', True, colors.FUXIA)
+            button.window.blit(text, (180, 270))
+            
+        if end:"""
                 GAMEOVER_FILE.close()
         # retrieve next move
         dir = player.get_next_move()
@@ -176,22 +199,24 @@ def greedy_start():
         else:
             text = button.font.render('LOOP', True, colors.RED)
             button.window.blit(text, (button.window.get_size()[0]/3, button.window.get_size()[1]/3))
+
             pygame.display.update()
             pygame.time.delay(700)
             file.write("%s,%s\n" % (snake.length, steps))
-
-            GAMEOVER_FILE.write(str(snake.get_body()))
-            GAMEOVER_FILE.write(',')
-            GAMEOVER_FILE.write(str(food.position))
-            GAMEOVER_FILE.write('\n')
             
             snake.respawn(grid)
             if button.OBSTACLES != "None":
                 grid.spawn_obstacles()
             food.respawn(snakes, grid)
+            """if players_info["type"] == 'sbot': player.save_data(False)
+
+            steps = 0
+            if not AUTOSTART: button.new_game()"""
+        
             steps = 0
             button.new_game()     
         # check if I win
+
         if snake.length == grid.get_grid_free_area():
             grid.draw_path(pygame, button.window, [player.path_to_food, player.default_path], [colors.YELLOW, colors.WHITE], [False, True])
             snake.draw(pygame, button.window, grid)
@@ -205,7 +230,8 @@ def greedy_start():
             if button.OBSTACLES != "None": 
                 grid.spawn_obstacles()
             food.respawn(snakes, grid)
-            button.new_game()
+            if players_info["type"] == 'sbot': player.save_data(True)
+            if not AUTOSTART: button.new_game()
         else:
             if eaten:
                 food.respawn(snakes, grid)
@@ -262,6 +288,19 @@ def hamilton_start():
                 run = False
                 file.close()
                 GAMEOVER_FILE.close()
+
+        """# IRENE: eventualmente eliminare questi metodi e modificare i valori
+        # dentro il bot (tenendo un contatore interno del numero di invocazioni)
+        player.set_alpha(alpha=0.5)
+        player.set_beta(beta=0.5)
+        # alpha: snake.length/grid_area s.t. stops greedy algh        
+        # beta: snake.length/grid_area s.t. stops dynamic algh
+
+        dir = player.get_next_move()
+        
+        mangiato = snake.move(dir, food)"""
+
+
         # compute next move
         dir = player.get_next_move(alpha=0.5, beta=0.5)
         # alpha: snake.length/grid_area s.t. stops greedy algh        
@@ -269,6 +308,7 @@ def hamilton_start():
         # check if snake eat
         eaten = snake.move(dir, food)
         # check if lose
+
         lost = snake.bounds_collision(grid) or \
             snake.tail_collision()
         #retrieve hamilton cycle
