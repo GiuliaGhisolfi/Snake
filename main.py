@@ -25,7 +25,7 @@ def start():
     players_info = gui.dict_info_single # retrieve the dictonary for the selected bot
     # create snake, food and obstacles if selected
     players_info = { 
-    "type": 'blind',
+    "type": 'random',
     "color": colors.ORANGE,
     "start_location": "top-left",
     "keys": {
@@ -84,7 +84,7 @@ def start():
         # check if eaten
         eaten = snake.move(dir, food)
         # check if lose
-        lost = False
+        # lost = False
         lost = snake.bounds_collision(grid) or \
             snake.tail_collision()
 
