@@ -29,7 +29,7 @@ FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 class Bot_greedy(Bot):
 
     # to create the bot
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='greedy.config', logname='singleplayer_log.csv', info=''):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='greedy.config', info=''):
 
         super().__init__(grid, snake, food)
 
@@ -53,10 +53,11 @@ class Bot_greedy(Bot):
         self.parse_config(config)
  
         
-        bot_type = 'singleplayer_bot [' + str(self.chosen_search) + '|' + str(self.safe_cycle)  +  '|' + str(self.chosen_optimization) + '|' + str(self.weights) + '|' + str(self.choice_sensibility) + ']' + info
+        bot_type = 'singleplayer_bot [' + str(self.chosen_search) + '|' + str(self.safe_cycle)  +  '|' + str(self.chosen_optimization) + '|' + str(self.weights) + '|' + str(self.choice_sensibility) + ']'
 
-        self.data_to_save = [bot_type, 0, False, 0, []]
-        self.logname = logname
+        self.data_to_save = [bot_type, info, False, 0, 0, 0, []]
+        self.general_log = 'greedy_general_data.csv'
+        self.iterations_log = 'greedy_iterations_data.csv'
         
         self.total_bot_time = 0
         self.total_iteration = 0
@@ -101,33 +102,37 @@ class Bot_greedy(Bot):
 
     def save_data(self, result):
 
-        self.data_to_save[1] = self.total_bot_time
+        self.data_to_save[4] = self.total_bot_time
         self.data_to_save[2] = result
-        self.data_to_save[3] = self.total_iteration
+        self.data_to_save[3] = self.snake.length
+        self.data_to_save[5] = self.total_iteration
 
-        with open(self.logname, 'a+') as log:
+        with open(self.general_log, 'a+') as log:
             line = self.data_to_save[0]
             line += ','
 
-            line += FLOATTOKEN % self.data_to_save[1]
+            line = self.data_to_save[1]
             line += ','
 
-            line += str(self.data_to_save[2])
+            line = str(self.data_to_save[2])
             line += ','
 
-            line += FLOATTOKEN % self.data_to_save[3]
+            line = str(self.data_to_save[3])
+            line += ','
+
+            line += FLOATTOKEN % self.data_to_save[4]
+            line += ','
+
+            line += str(self.data_to_save[5])
             line += ','
 
             line += '['
-            first = True
-            for a,b in self.data_to_save[4]:
-                if first:
-                    first = False
-                    line += '(' + FLOATTOKEN % a + ',' + str(b) + ')'
-                else:
-                    line += ',(' + FLOATTOKEN % a + ',' + str(b) + ')'
-            line += ']\n'
+            log.write( line )
 
+        with open(self.iterations_log, 'a+') as log:
+            line = ''
+            for a,b in self.data_to_save[6]:
+                line += FLOATTOKEN % b + ',' + str(a) + '\n'
             log.write( line )
 
         self.total_iteration = 0
@@ -334,7 +339,7 @@ class Bot_greedy(Bot):
         ret =  self.apple_cicle_opt_strat() 
 
         end_iteration_time = time.time()
-        self.data_to_save[4].append((end_iteration_time - start_iteration_time, snake_body_len))
+        self.data_to_save[6].append((snake_body_len, end_iteration_time - start_iteration_time))
 
         self.total_bot_time += end_iteration_time - start_iteration_time
         return ret

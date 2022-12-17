@@ -24,6 +24,7 @@ def start():
 
     players_info = gui.dict_info_single # retrieve the dictonary for the selected bot
     # create snake, food and obstacles if selected
+    '''
     players_info = { 
     "type": 'random',
     "color": colors.ORANGE,
@@ -34,7 +35,7 @@ def start():
         "right": pygame.K_RIGHT,
         "left": pygame.K_LEFT
     } 
-} 
+    } '''
 
     snake = Snake(
             color=players_info["color"],
