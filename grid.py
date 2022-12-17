@@ -2,7 +2,7 @@ import copy
 import random as rand
 import math
 import colors
-import button
+import gui
 import pygame
 from obstacles_configurations import Obstacles_configurations
 
@@ -42,92 +42,29 @@ class Grid:
                 self.obstacles[i].color,
                 ((self.obstacles[i].x_position) * self.block_size + 1, (self.obstacles[i].y_position) * self.block_size + 1, self.block_size-2, self.block_size-2))
 
-    def hamilton_direction(self, x, y, xprec, yprec):
-        if x == xprec + 1:
-            return 0  # RIGHT
-        elif x == xprec - 1:
-            return 1  # LEFT
-        elif y == yprec + 1:
-            return 2  # DOWN
-        elif y == yprec - 1:
-            return 3  # UP
+    def draw_cycle(self, game, window, cycle, color, closed=True):
 
-    def compute_hamilton_direction(self, cycle):
-        '''returns new direcrtion based on the hamiltonian cycle followed by the snake'''
-        direct = [] # direct[i] = direction from node with value = i to node (i + 1) in hamilton cycle
-        for value in range(self.grid_area):
+        # 
+
+        points = []
+        shift = self.block_size/2
+        count = 0
+        while count < len(cycle):
             for node in cycle:
-                if cycle[node] == value:
-                    curr = node  # node's key where node's value = value
-                    break
-            x, y = curr
-            if value != 0:
-                direct.append(self.hamilton_direction(x, y, xprec, yprec))
-            else:
-                x0 = x
-                y0 = y
-            xprec = x
-            yprec = y
+                if cycle[node] == count:
+                    points.append((node[0]*self.block_size + shift,
+                            node[1] * self.block_size + shift))
+                    count += 1
+        if len(points) > 1:
+            game.draw.lines(window, color, closed, points)
 
-        direct.append(self.hamilton_direction(x0, y0, xprec, yprec))
-        return direct
-    
-    def hamilton_direction(self, x, y, xprec, yprec):
-        if x == xprec + 1:
-            return 0  # RIGHT
-        elif x == xprec - 1:
-            return 1  # LEFT
-        elif y == yprec + 1:
-            return 2  # DOWN
-        elif y == yprec - 1:
-            return 3  # UP
-
-    def draw_cycle(self, game, window, cycle, ham_cycle_changed):
-        '''draw the path of the hamiltonian cycle'''
-        self.grid_area = self.get_grid_free_area()
-        if ham_cycle_changed:
-            self.direct = self.compute_hamilton_direction(cycle)
-        add = math.floor(self.block_size / 2)
-
-        for node in cycle:
-            x, y = node
-            value = cycle[node]
-            dir = (self.direct[value - 1], self.direct[value])
-            
-            if dir == (0, 0) or dir == (1, 1):  # RIGHT to RIGHT or LEFT to LEFT:
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size), (y * self.block_size + add), self.block_size + 1, 1))
-
-            if dir == (2, 2) or dir == (3, 3):  # DOWN to DOWN or UP to UP:
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size), 1, self.block_size + 1))
-
-            if dir == (1, 2) or dir == (3, 0):  # L to D or U to R
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size + add), 1, (self.block_size / 2) + 1))
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
-
-            if dir == (0, 2) or dir == (3, 1):  # R to D or U to L
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size + add), 1, (self.block_size / 2) + 1))
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
-
-            if dir == (0, 3) or dir == (2, 1):  # R to U or D to L
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size), 1, (self.block_size / 2) + 1))
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
-
-            if dir == (2, 0) or dir == (1, 3):  # D to R or L to U
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size), 1, (self.block_size / 2) + 1))
-                game.draw.rect(window, colors.WHITE,
-                               ((x * self.block_size + add), (y * self.block_size + add), (self.block_size / 2) + 1, 1))
-
-    def draw_path(self, game, window, cycles, cl, closed):
+    def draw_path(self, game, window, items): #cycles, cl, closed):
         '''draw the calculated path in greedy strategy'''
+
+        cycles = items[0]
+        cl = items[1]
+        closed = items[2]
+
         for i, c in enumerate(cycles):
             points = []
             shift = self.block_size/2
@@ -140,7 +77,7 @@ class Grid:
         '''create the obstacle's configuration of the grid'''
         self.grid = copy.deepcopy(self.full_grid)
         self.obstacles.clear()
-        self.current_config = button.OBSTACLES
+        self.current_config = gui.OBSTACLES
 
         # create the Obstacles' list and update the grid
         obc = Obstacles_configurations(self)
@@ -160,7 +97,7 @@ class Grid:
         return copy.deepcopy(self.obstacles)
 
     def get_cycle(self):
-        if button.OBSTACLES == "None": 
+        if gui.OBSTACLES == "None": 
             self.current_config = 4
         obc = Obstacles_configurations(self)
         return copy.deepcopy(obc.hamcycles[self.current_config])
@@ -178,7 +115,7 @@ class Grid:
         self.grid = copy.deepcopy(self.full_grid)
         pygame.display.quit()
         pygame.init()
-        button.window = pygame.display.set_mode(self.bounds)
+        gui.window = pygame.display.set_mode(self.bounds)
 
 class Obstacle:
     def __init__(self, color, x, y):

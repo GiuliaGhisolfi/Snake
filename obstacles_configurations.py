@@ -1,4 +1,4 @@
-import button
+import gui
 
 class Obstacles_configurations:
 
@@ -115,7 +115,7 @@ class Obstacles_configurations:
         ''' create hamiltonian cycle for grid without obstacles '''
 
         if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:
-            button.grid_not_allowed()
+            gui.grid_not_allowed()
             exit()
 
         hamcycle = {(0, 0): 0}

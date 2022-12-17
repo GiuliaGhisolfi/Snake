@@ -7,8 +7,6 @@ class Directions(Enum):
   LEFT = 2
   RIGHT = 3
 
-  CLOSE = -1
-
   def random_direction():
     return r.randint(0, 3)
 

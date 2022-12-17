@@ -129,7 +129,7 @@ class GridNode(Node):
         return next_node
 
 
-def best_first_grid_search(problem, f, t, display=False): # TODO: same as the other
+def best_first_grid_search(problem, f, t, display=False):
     """Search the nodes of the grid with the lowest f scores first, breaking ties 
     with t scores (in case of a tie the nodes with minimum t score are seached 
     first).
@@ -179,8 +179,7 @@ def astar_search_min_turns(problem, weights):
     t(n) is 1 if the snake turned itself to reach node n, 0 otherwise. 
     The function used to break ties is -g(n).
     This algorithm finds the opthimal path which minimizes the number of turns
-    the snake needs to make.
-    """ # TODO: t ha senso?
+    the snake needs to make.""" # TODO: t'ha senso?
     h = memoize(problem.h, 'h')
     return best_first_grid_search(
         problem, 
@@ -203,14 +202,6 @@ def astar_search_saving_spaces(problem, weights):
         problem, 
         lambda n: weights[0]*n.path_cost + weights[1]*h(n) + weights[3]*n.n_neighbors,
         lambda n: -(n.path_cost)
-    )
-
-# TODO: da eliminare, giusto?
-def astar_search_inverse(problem):
-    return best_first_grid_search(
-        problem, 
-        lambda n: -n.path_cost,
-        lambda n: n.turn
     )
 
 def longest_path(grid, start, goal):

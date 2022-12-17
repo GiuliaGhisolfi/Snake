@@ -18,19 +18,19 @@ class Food:
         node = self.position
         return (node[0]*grid.block_size, node[1]*grid.block_size)
 
-    def is_overlapped(self, position, snakes, grid):
+    def is_overlapped(self, position, snake, grid):
         """returns true if the food position is on the snake or on an obstacle"""
-        for s in snakes:
-            for segment in s.get_body():
-                if segment == position:
-                    return True
+
+        for segment in snake.get_body():
+            if segment == position:
+                return True
         for p in grid.get_obstacles():
             obstacle = (p.x_position, p.y_position)
             if position == obstacle:
                 return True
         return False
 
-    def respawn(self, snakes, grid):
+    def respawn(self, snake, grid):
         """generete new food position s.t. it is inside the game grid, not overlapping the snake or obstacles"""
         def distance(n1, n2):
             return abs(n1[0]-n2[0]) + abs(n1[0] - n2[0])
@@ -41,11 +41,10 @@ class Food:
         possible_position = []
         for n in nodes:
             skip = False
-            for s in snakes:
-                if distance(n, s.get_body()[1]) <= 1:
-                    skip = True
-                    possible_position.append(n)
-            if n != self.position and not self.is_overlapped(n, snakes, grid):
+            if distance(n, snake.get_body()[1]) <= 1:
+                skip = True
+                possible_position.append(n)
+            if n != self.position and not self.is_overlapped(n, snake, grid):
                 self.position = n
                 return
 
