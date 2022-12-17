@@ -7,7 +7,7 @@ import snake
 import food
 import colors
 from grid_problem import *
-from button import *
+from gui import *
 import time
 
 from bot import Bot
@@ -26,18 +26,15 @@ FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 # Così possiamo eliminare del tutto il metodo graphDir_to_gameDir che ha poco a che fare con la classe Bot...
 # ma certo! bella idea
 
-class Bot_singleplayer(Bot):
+class Bot_greedy(Bot):
 
     # to create the bot
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='singleplayer.config', logname='singleplayer_log.csv', info=''):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='greedy.config', logname='singleplayer_log.csv', info=''):
 
-        # the grid with the obstacles
-        self.grid = grid
+        super().__init__(grid, snake, food)
+
         # debug variable ( default=False )
         self.debug = debug
-
-        self.snake = snake       
-        self.food = food 
 
         # simple method to check if we are in a loop
         self.loop = 0
@@ -226,7 +223,7 @@ class Bot_singleplayer(Bot):
                         to_remove = []
                         if len(self.default_path) > choke_i + 2:
                             to_remove = self.default_path[choke_i + 1:-1]
-                        true_g = self.get_true_graph(to_remove)
+                        true_g = self.get_current_grid(to_remove)
 
                         #senza testa
                         #patch = get_ham_path(self.snake.fast_get_body()[-1], chokepoint, true_g)
@@ -236,7 +233,7 @@ class Bot_singleplayer(Bot):
                             self.nnto = self.default_path[choke_i + 1]
                             return #esce dal for
             
-            #tg = self.get_true_graph(self.snake.fast_get_body()[-1:], tg) #solo ultima posizione
+            #tg = self.get_current_grid(self.snake.fast_get_body()[-1:], tg) #solo ultima posizione
             #calcoliamo il prossimo nodo che è ottimizzabile
             for node in self.default_path[:-1]:
                 if node in tg and is_optimizable(node,self.grid.grid):
@@ -247,23 +244,6 @@ class Bot_singleplayer(Bot):
                         
     def get_best_food(self):
         return self.food.position
-    
-    # IRENE: siccome è uguale al metodo get_current_grid in bot_hamilton,
-    #  se lo spostassimo nella classe bot facendo un costruttore con gli 
-    # attributi comuni a entrambi da invocare nel costruttore delle sotto classi?
-
-    # facciamo! 
-    def get_true_graph(self, snake_false_body): # IRENE: possiamo togliere il parametro grid? (non viene mai passato)
-        
-        grid = self.grid
-        #eliminiamo dal grafo le celle occupate da noi
-        new_grid = copy.deepcopy(grid)
-
-        for segment in snake_false_body: #manca la testa
-
-            new_grid.delete_cell(segment)
-
-        return new_grid.grid
 
     def change_color(self):
         if len(self.path_to_food) > 0:
@@ -273,7 +253,6 @@ class Bot_singleplayer(Bot):
 
     # funzione usata per chiedere la prossima mossa dello snake
     def apple_cicle_opt_strat(self):
-            
         
         snake_body = self.snake.get_body()
         if self.debug: self.change_color()
@@ -289,7 +268,7 @@ class Bot_singleplayer(Bot):
         start = snake_body[-1]
 
         #elimino tutto il corpo tranne la testa del serpente dal grafo
-        dummy_g = self.get_true_graph(snake_body[:-1])
+        dummy_g = self.get_current_grid(snake_body[:-1])
         #restituisce il cammino se esiste, più pulito di prima
         computed_path_toFood = self.graph_search(start, goal, dummy_g)
 
@@ -307,7 +286,7 @@ class Bot_singleplayer(Bot):
             if self.safe_cycle == 1:
                 goal = next_pos[0] #futura coda
                 start = next_pos[-1] #futura testa
-                dummy_g = self.get_true_graph(next_pos[1:-1]) #non eliminiamo la coda
+                dummy_g = self.get_current_grid(next_pos[1:-1]) #non eliminiamo la coda
                 computed_cicle = self.graph_search(start, goal, dummy_g)
 
                 if computed_cicle != None: #incredibile !!! trovato anche il secondo, abbiamo finito allora
@@ -335,10 +314,15 @@ class Bot_singleplayer(Bot):
             return ret
         else:
             possible_dir = self.grid.grid[self.snake.body[-1]]
+            for node in self.snake.body:
+                try: possible_dir.remove(node)
+                except: pass
+
             if len(possible_dir) > 0:
-                return self.snake.dir_to_cell(possible_dir[0])
+                return self.snake.dir_to_cell(possible_dir[random.randrange(len(possible_dir))])
             else:
                 return Directions.random_direction()
+
 
     def get_next_move(self):
       
@@ -367,3 +351,5 @@ class Bot_singleplayer(Bot):
         # Forte Bianco Principe GECO:
         # oora è utile per i dati, magari conviene farlo anche in ham?
     
+    def get_path_to_draw(self):
+        return ([self.default_path, self.path_to_food] , [colors.YELLOW, colors.WHITE], [True, False])

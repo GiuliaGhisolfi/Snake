@@ -5,14 +5,13 @@ import copy
 import grid
 import snake
 import food
+import colors
 
 class Bot_hamilton(Bot):
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
-        self.grid = grid
-        self.snake = snake
-        self.food = food
-        self.alpha = None
-        self.beta = None
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, alpha=0.5, beta=0.5):
+        super().__init__(grid, snake, food)
+        self.alpha = alpha
+        self.beta = beta
         self.ham_cycle = self.grid.get_cycle()
 
         if len(self.snake.get_body()) < 3:
@@ -204,23 +203,11 @@ class Bot_hamilton(Bot):
                 self.ham_cycle[nn] = new_position[idx]
                 idx += 1
 
-    # TODO: da uniformare con bot_singleplayer
-    def get_current_grid(self, snake_body):
-        """Delete from the graph the nodes occupied by the snake's body"""
-        new_grid = copy.deepcopy(self.grid)
-
-        for segment in snake_body:
-            new_grid.delete_cell(segment)
-
-        return new_grid.grid
-
-    # TODO: si può fare meglio?
-    def return_cycle(self, first_step):
-        "Return the current hamiltonian cycle"
-        if first_step:
-            self.update_ham_cycle()
-        return self.ham_cycle
-
     def update_ham_cycle(self):
         "Update self.ham_cycle"
         self.ham_cycle = self.grid.get_cycle()
+
+    def get_path_to_draw(self):
+        ord_list = sorted(self.ham_cycle.keys(), key=lambda k: self.ham_cycle[k])
+        
+        return ([ord_list] , [colors.WHITE], [True])
