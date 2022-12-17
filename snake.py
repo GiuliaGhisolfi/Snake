@@ -93,13 +93,13 @@ class Snake:
         next_head = (x, y)
         self.body.append(next_head)
 
-        mangiato = self.can_eat(food)
-        if mangiato: self.eat()
+        can_eat = self.can_eat(food)
+        if can_eat: self.eat()
 
         if self.length < len(self.body):
             self.body.pop(0)
 
-        return mangiato
+        return can_eat
 
     def __steer(self, direction):
         '''check if the new direction is not the opposite of the current one'''
