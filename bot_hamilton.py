@@ -5,13 +5,15 @@ import grid
 import snake
 import food
 import colors
+from gui import *
+import time
 
 DECIMALDIGIT = 4
 FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 
 
 class Bot_hamilton(Bot):
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config='hamilton.config', logname='hamilton_log.csv', info=''):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config='hamilton.config', info=''):
         super().__init__(grid, snake, food)
         self.ham_cycle = self.grid.get_cycle()
 
@@ -22,10 +24,11 @@ class Bot_hamilton(Bot):
         self.parse_config(config)
 
         bot_type = 'hamilton_bot [' + \
-            str(self.alpha) + '|' + str(self.beta) + ']' + info
+            str(self.alpha) + '|' + str(self.beta) + ']'
 
-        self.data_to_save = [bot_type, 0, False, 0, []]
-        self.logname = logname
+        self.data_to_save = [bot_type, info, False, 0, 0, 0, []]
+        self.general_log = 'hamilton_general_data.csv'
+        self.iterations_log = 'hamilton_iterations_data.csv'
 
         self.total_bot_time = 0
         self.total_iteration = 0
@@ -57,39 +60,58 @@ class Bot_hamilton(Bot):
 
     def save_data(self, result):
 
-        self.data_to_save[1] = self.total_bot_time
+        self.data_to_save[4] = self.total_bot_time
         self.data_to_save[2] = result
-        self.data_to_save[3] = self.total_iteration
+        self.data_to_save[3] = self.snake.length
+        self.data_to_save[5] = self.total_iteration
 
-        with open(self.logname, 'a+') as log:
+        with open(self.general_log, 'a+') as log:
             line = self.data_to_save[0]
             line += ','
 
-            line += FLOATTOKEN % self.data_to_save[1]
+            line = self.data_to_save[1]
             line += ','
 
-            line += str(self.data_to_save[2])
+            line = str(self.data_to_save[2])
             line += ','
 
-            line += FLOATTOKEN % self.data_to_save[3]
+            line = str(self.data_to_save[3])
+            line += ','
+
+            line += FLOATTOKEN % self.data_to_save[4]
+            line += ','
+
+            line += str(self.data_to_save[5])
             line += ','
 
             line += '['
-            first = True
-            for a, b in self.data_to_save[4]:
-                if first:
-                    first = False
-                    line += '(' + FLOATTOKEN % a + ',' + str(b) + ')'
-                else:
-                    line += ',(' + FLOATTOKEN % a + ',' + str(b) + ')'
-            line += ']\n'
+            log.write( line )
 
-            log.write(line)
+        with open(self.iterations_log, 'a+') as log:
+            line = ''
+            for a,b in self.data_to_save[6]:
+                line += FLOATTOKEN % b + ',' + str(a) + '\n'
+            log.write( line )
 
         self.total_iteration = 0
         self.total_bot_time = 0
-
+        
     def get_next_move(self):
+      
+        snake_body_len = len(self.snake.body)
+        start_iteration_time = time.time()
+
+        self.total_iteration += 1
+
+        ret =  self.hamilton_strat() 
+
+        end_iteration_time = time.time()
+        self.data_to_save[6].append((snake_body_len, end_iteration_time - start_iteration_time))
+
+        self.total_bot_time += end_iteration_time - start_iteration_time
+        return ret
+
+    def hamilton_strat(self):
         """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the
         game grid, if possible at each iteration it tries to generate an optimal cycle
         and/or to cut the current cycle to get as close as possible to the food position."""
