@@ -105,7 +105,7 @@ class Grid:
     def get_grid_free_area(self):
         return (self.x_blocks * self.y_blocks) - len(self.obstacles)
     
-    def update_grid_dimensions(self,X,Y):
+    def update_grid_dimensions(self, X, Y):
         self.x_blocks = X
         self.y_blocks = Y
         x_pixel = self.size-(self.size % self.x_blocks)
