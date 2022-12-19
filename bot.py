@@ -1,20 +1,22 @@
 from player import Player
 from directions import Directions
+import grid
+import food
+import snake
+import copy
 
-class BotS(Player):
-    def delete_cell(self, grid, del_key):
-        grid.pop(del_key, None)
-        for key in grid:
-            if del_key in grid[key]:
-                grid[key].remove(del_key)
+class Bot(Player):
 
-    # restituisce la posizione della cella targhet rispetto alla cella head
-    def graphDir_to_gameDir(self, head_pos, target_pos):
-        if target_pos[0] < head_pos[0]:  # x shift
-            return Directions.LEFT
-        elif target_pos[0] > head_pos[0]:
-            return Directions.RIGHT
-        elif target_pos[1] < head_pos[1]:  # y shift
-            return Directions.UP
-        else:
-            return Directions.DOWN
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food):
+        self.grid = grid
+        self.snake = snake       
+        self.food = food 
+
+    def get_current_grid(self, cells_to_delete): # IRENE: possiamo togliere il parametro grid? (non viene mai passato)
+        
+        #eliminiamo dal grafo le celle occupate da noi
+        new_grid = copy.deepcopy(self.grid)
+        for segment in cells_to_delete: #manca la testa
+
+            new_grid.delete_cell(segment)
+        return new_grid.grid

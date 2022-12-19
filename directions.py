@@ -1,4 +1,5 @@
 from enum import Enum
+import random as r
 
 class Directions(Enum):
   UP = 0
@@ -6,6 +7,7 @@ class Directions(Enum):
   LEFT = 2
   RIGHT = 3
 
-  CLOSE = -1
+  def random_direction():
+    return Directions(r.randint(0, 3))
 
 

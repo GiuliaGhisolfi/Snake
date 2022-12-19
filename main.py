@@ -1,51 +1,44 @@
-import pygame, sys
-from concurrent.futures import ThreadPoolExecutor
+import pygame
 from grid import Grid
 from human_player import HumanPlayer
-from bot_singleplayer import Bot_singleplayer
+from bot_greedy import Bot_greedy
 from bot_hamilton import Bot_hamilton
+from bot_blind import *
+from bot_random import *
 from snake import Snake
 from food import Food
-import button
+import gui
 import colors
-import directions
-import time
 
-FRAME_DELAY = 2
-OBSTACLES = True
 
-### NON MODIFICARE!
-X_BLOCKS = 15
-Y_BLOCKS = 16
-#GRID_AREA = X_BLOCKS*Y_BLOCKS
-###
-pygame.init()
-grid = Grid(size=700, x_blocks=X_BLOCKS, y_blocks=Y_BLOCKS)
-button.window = pygame.display.set_mode(grid.bounds)
-mangiato = False
+def start():
+    #create the window for the game
+    pygame.init()
+    grid = Grid(size=gui.SIZE, x_blocks=gui.X_BLOCKS, y_blocks=gui.Y_BLOCKS)
+    gui.window = pygame.display.set_mode(grid.bounds)
+    pygame.display.set_caption("Snake")
 
-def singleplayer_start():
-    players_info = button.dict_info_single
+    info_string = '[' + str(gui.X_BLOCKS) + '|' + str(gui.Y_BLOCKS) + '|' + str(gui.OBSTACLES) + '|' + str(gui.FRAME_DELAY) + ']'
 
-    snakes = []
+    if gui.OBSTACLES == "None":
+        grid.update_grid_dimensions(gui.X_BLOCKS, gui.Y_BLOCKS)
 
-    # creo gli snake, poi il cibo e poi il o i bot, necessario per il bot sigleplayer
+    players_info = gui.dict_info_single # retrieve the dictonary for the selected bot
+    
+    
+    # create SNAKE, OBSTACLES if selected and FOOD
     snake = Snake(
-            color=players_info["color"],
-            start_location=players_info["start_location"])
-
+            color = players_info["color"],
+            start_location = players_info["start_location"])
     snake.respawn(grid)
-    snakes.append(snake)
-    if OBSTACLES: grid.spawn_obstacles()
-
+    
+    if gui.OBSTACLES != "None": 
+        grid.spawn_obstacles()   
+    
     food = Food(colors.RED)
-    food.respawn(snakes, grid)
+    food.respawn(snake, grid)
 
-    # logs
-    file = open("player0"+"_logfile.csv", "w")
-    file.write("OUTCOME,LENGTH,STEPS\n")
-
-    # bots
+    # bot selection
     if players_info["type"] == "human":
         player = HumanPlayer(
             game=pygame,
@@ -53,251 +46,78 @@ def singleplayer_start():
             down_key=players_info["keys"]["down"],
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
-    elif players_info["type"] == "sbot":
-        player = Bot_singleplayer(grid, snakes[0], food, True)
+    elif players_info['type'] == "greedy":
+        player = Bot_greedy(grid, snake, food, info = info_string)
+    elif players_info['type'] == 'hamilton':
+        player = Bot_hamilton(grid, snake, food)
+    elif players_info['type'] == 'blind':
+        player = Bot_blind(grid, snake, food)
+    elif players_info['type'] == 'random':
+        player = Bot_random(grid, snake, food)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
 
+    # variables used in the while loop
     steps = 0
     run = True
 
-    # avvia il bot corretto
-    GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
-    GAMEOVER_FILE.write('CORPO,CIBO\n')
-
     while run:
-        if len(snake.get_body()) != snake.length: print('ops')
         steps = steps + 1
-
-        pygame.time.delay(FRAME_DELAY)
-
+        pygame.time.delay(gui.FRAME_DELAY)
+        # exit the game if I click the x button
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                file.close()
-                GAMEOVER_FILE.close()
-   
+
+        # retrieve next move
         dir = player.get_next_move()
-        #print(dir, food.fast_get_positions())
-        if dir != directions.Directions.CLOSE:
-            
-            mangiato = snake.move(dir, food)
-
-            lost = snake.bounds_collision(grid) or \
-                snake.tail_collision()
-
-            end = False
-            if lost:
-                end = True
-                text = button.font.render('GAME OVER', True, colors.FUXIA)
-                button.window.blit(text, (180, 270))
-
-        else:
-            text = button.font.render('LOOP', True, colors.GREEN)
-            button.window.blit(text, (250, 270))
-            
-            pygame.display.update()
-            pygame.time.delay(700)
-            file.write("%s,%s\n" % (snake.length, steps))
-
-            GAMEOVER_FILE.write(str(snake.get_body()))
-            GAMEOVER_FILE.write(',')
-            GAMEOVER_FILE.write(str(food.position))
-            GAMEOVER_FILE.write('\n')
-            
-            snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
-            food.respawn(snakes, grid)
-
-            steps = 0
-            end = False
-            button.new_game()
-            
-        if end:
-            pygame.display.update()
-            pygame.time.delay(700)
-            file.write("%s,%s\n" % (snake.length, steps))
-
-            GAMEOVER_FILE.write(str(snake.get_body()))
-            GAMEOVER_FILE.write(',')
-            GAMEOVER_FILE.write(str(food.position))
-            GAMEOVER_FILE.write('\n')
-            
-            snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
-            food.respawn(snakes, grid)
-
-            steps = 0
-            button.new_game()
         
-        if snake.length == grid.get_grid_free_area():
-            
-            grid.draw_path(pygame, button.window, [player.path_to_food, player.default_path], [colors.YELLOW, colors.WHITE], [False, True])
-            snake.draw(pygame, button.window, grid)
-            grid.draw_obstacles(pygame, button.window)
-            snake.draw(pygame, button.window, grid)
-            
-            text = button.font.render('COMPLETE', True, colors.FUXIA)
-            button.window.blit(text, (180, 270))
-            
-            pygame.display.update()
-            pygame.time.delay(700)
-            
-            snake.respawn(grid)
-            if OBSTACLES: grid.spawn_obstacles()
-            food.respawn(snakes, grid)
-            button.new_game()
-        else:
-            if mangiato:
-                food.respawn(snakes, grid)
-
-            button.window.fill(colors.BLACK)
-            if players_info["type"] == "sbot":
-                grid.draw_path(pygame, button.window, [player.default_path, player.path_to_food], [colors.YELLOW, colors.RED], [True, False])
-            snake.draw(pygame, button.window, grid)
-            grid.draw_obstacles(pygame, button.window)
-            food.draw(pygame, button.window, grid)
-            pygame.display.update()
-
-def hamilton_start():
-    players_info = button.dict_info_single
-
-    snakes = []
-
-    # creo gli snake, poi il cibo e poi il o i bot, necessario per il bot sigleplayer
-    snake = Snake(
-            color=players_info["color"],
-            start_location=players_info["start_location"])
-
-    snake.respawn(grid)
-    snakes.append(snake)
-    if OBSTACLES: grid.spawn_obstacles()
-
-    food = Food(colors.RED)
-    food.respawn(snakes, grid)
-
-    # logs
-    file = open("player0"+"_logfile.csv", "w")
-    file.write("OUTCOME,LENGTH,STEPS\n")
-
-    # bots
-    if players_info["type"] == "human":
-        player = HumanPlayer(
-            game=pygame,
-            up_key=players_info["keys"]["up"],
-            down_key=players_info["keys"]["down"],
-            right_key=players_info["keys"]["right"],
-            left_key=players_info["keys"]["left"])
-    elif players_info["type"] == "sbot":
-        player = Bot_hamilton(grid, snakes[0], food)
-    else:
-        print('PLAYERS INFO ERROR: player type not recognized')
-        exit(1)
-
-    steps = 0
-    run = True
-
-    # avvia il bot corretto
-    GAMEOVER_FILE = open('gameOverLog.cvs', 'w+')
-    GAMEOVER_FILE.write('COMPLETE, CONFIGURATION, TIME, STEPS\n')
-
-    mangiato = False
-    tic = time.time()
-
-    while run:
-        steps = steps + 1
-
-        pygame.time.delay(FRAME_DELAY)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                file.close()
-                GAMEOVER_FILE.close()
-
+        # check if eaten
+        eaten = snake.move(dir, food)
         
-        dir = player.get_next_move()
-        mangiato = snake.move(dir, food)
-
+        # check if lose
         lost = snake.bounds_collision(grid) or \
             snake.tail_collision()
-
-        ham_cycle = {}
-        ham_cycle = player.return_cycle()
-        ham_cycle_changed  = player.return_ham_cycle_changed()
-        if steps == 1:
-            ham_cycle_changed = True
-        
-        end = False
         if lost:
-            end = True
-            text = button.font.render('GAME OVER', True, colors.FUXIA)
-            button.window.blit(text, (180, 270))
-
-        if end:
+            text = gui.font.render('GAME OVER', True, colors.RED)
+            gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/3))  
             pygame.display.update()
-            pygame.time.delay(700)
-            file.write("%s,%s\n" % (snake.length, steps))
-
-            GAMEOVER_FILE.write(str(snake.body))
-            GAMEOVER_FILE.write(',')
-            GAMEOVER_FILE.write(str(food.position))
-            GAMEOVER_FILE.write('\n')
+            pygame.time.delay(gui.DEATH_DELAY)
             
+            player.save_data(0)
             snake.respawn(grid)
-            if OBSTACLES:
-                grid.spawn_obstacles()
-                player.update_ham_cycle()
-            food.respawn(snakes, grid)
-            button.new_game()
-
-        if snake.length == grid.get_grid_free_area():
-            toc = time.time()
-            grid.draw_cycle(pygame, button.window, ham_cycle, ham_cycle_changed)
-            snake.draw(pygame, button.window, grid)
-            grid.draw_obstacles(pygame, button.window)
-            
-            text = button.font.render('COMPLETE', True, colors.FUXIA)
-            button.window.blit(text, (180, 270))
-            
-            GAMEOVER_FILE.write('Complete')
-            GAMEOVER_FILE.write(', ')
-            GAMEOVER_FILE.write(str(grid.current_config))
-            GAMEOVER_FILE.write(', ')
-            GAMEOVER_FILE.write(str(toc - tic))
-            GAMEOVER_FILE.write(', ')
-            GAMEOVER_FILE.write(str(steps))
-            GAMEOVER_FILE.write('\n')
-            
-            pygame.display.update()
-            pygame.time.delay(700)
-            
+            if gui.OBSTACLES != "None" : grid.spawn_obstacles()
+            food.respawn(snake, grid)
             steps = 0
-            tic = time.time()
+            if not gui.AUTOSTART: gui.new_game()
+
+        # check if win
+        if snake.length == grid.get_grid_free_area():
+            snake.draw(pygame, gui.window, grid)
+            grid.draw_obstacles(pygame, gui.window)
+            snake.draw(pygame, gui.window, grid)
+            text = gui.font.render('COMPLETE', True, colors.RED)
+            gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/2))
+            pygame.display.update()
+            pygame.time.delay(gui.DEATH_DELAY)
             
+            player.save_data(1)
             snake.respawn(grid)
-            if OBSTACLES:
-                grid.spawn_obstacles()
-                player.update_ham_cycle()                
-            food.respawn(snakes, grid)
-            button.new_game()
+            if gui.OBSTACLES != "None": grid.spawn_obstacles()
+            food.respawn(snake, grid)
+            if not gui.AUTOSTART: gui.new_game()
         else:
-            if mangiato:
-                food.respawn(snakes, grid)
-            button.window.fill(colors.BLACK)
-            grid.draw_cycle(pygame, button.window, ham_cycle, ham_cycle_changed)
-            snake.draw(pygame, button.window, grid)
-            grid.draw_obstacles(pygame, button.window)
-            food.draw(pygame, button.window, grid)
+            if eaten : food.respawn(snake, grid)
+            gui.window.fill(colors.BLACK)
+
+            grid.draw_path(pygame, gui.window, player.get_path_to_draw()) # display the path wich the snake is following
+            snake.draw(pygame, gui.window, grid)
+            grid.draw_obstacles(pygame, gui.window)
+            food.draw(pygame, gui.window, grid)
             pygame.display.update()
 
-def select_start():
-    if button.scelta == 'hamilton':
-        hamilton_start()
-    else:
-        singleplayer_start()
-        
-### nuovo avvio del gioco ###
-button.snake_interface()
-select_start()
+
+### game start ###
+gui.snake_interface()
+start()

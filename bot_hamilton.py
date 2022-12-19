@@ -1,134 +1,93 @@
-from directions import Directions
-from bot import BotS
+from bot import Bot
 from search import *
 from grid_problem import *
 import copy
 import grid
 import snake
 import food
+import colors
 
-DYNAMIC = True
-GREEDY = True
-
-# ciclo ham per griglia senza ostacoli
-
-
-def get_cycle(grid):
-    x_blocks = grid.x_blocks
-    y_blocks = grid.y_blocks
-
-    if (x_blocks % 2) != 0 and (y_blocks % 2) != 0:
-        print("Grid dimension not allowed")
-        exit()
-
-    hamcycle = {(0, 0): 0}
-    value = 1
-
-    if (x_blocks % 2) == 0:  # x_blocks PARI
-        for i in range(x_blocks-1):
-            i += 1
-            for j in range(y_blocks-1):
-                if i % 2 == 1:  # colonne dispari
-                    hamcycle[(i, j)] = value
-                else:
-                    hamcycle[(i, y_blocks-2-j)] = value
-                value += 1
-        for i in range(x_blocks):
-            hamcycle[(x_blocks-1-i, y_blocks-1)] = value
-            value += 1
-        for j in range(y_blocks-2):
-            hamcycle[(0, y_blocks-2-j)] = value
-            value += 1
-
-    else:  # x_blocks DISPARI
-        for i in range(y_blocks):  # i scorro le righe
-            for j in range(x_blocks-1):
-                if i % 2 == 0:  # righe pari
-                    hamcycle[(j+1, i)] = value
-                else:  # righe dispari
-                    hamcycle[(x_blocks-1-j, i)] = value
-                value += 1
-        for i in range(y_blocks-1):
-            hamcycle[(0, y_blocks-1-i)] = value
-            value += 1
-    return hamcycle
-
-
-class Bot_hamilton(BotS):
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food):
-        self.next_move = None
-        self.grid = grid
-        self.snake = snake
-        self.food = food
-
+class Bot_hamilton(Bot):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, alpha=0.5, beta=0.5):
+        super().__init__(grid, snake, food)
+        self.alpha = alpha
+        self.beta = beta
         self.ham_cycle = self.grid.get_cycle()
-        # self.ham_cycle = get_cycle(self.grid)
-        if not DYNAMIC:
-            self.ham_cycle_changed = False
 
         if len(self.snake.get_body()) < 3:
-            print('LUNGHEZZA MINIMA SUPPORTATA: 3')
+            print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
 
-        self.chosen_strat = self.hamilton_strat  # strategia
+    def set_alpha(self, alpha):
+        # alpha: (snake.length / grid_area) s.t. stops greedy alg
+        self.alpha = alpha
+    
+    def set_beta(self, beta):
+        # beta: (snake.length / grid_area) s.t. stops dynamic alg
+        self.beta = beta
 
-    def start(self):
-        self.chosen_strat()
-
-    def hamilton_strat(self):        
+    def get_next_move(self):
+        """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the 
+        game grid, if possible at each iteration it tries to generate an optimal cycle 
+        and/or to cut the current cycle to get as close as possible to the food position."""
         self.body = self.snake.get_body()
         self.head = self.body[-1]
-        self.goal = self.food.get_positions()[0]
+        self.goal = self.food.position
 
         grid = self.get_current_grid(self.body[:-1])
         self.grid_area = self.grid.get_grid_free_area()
-        #grid_problem = GridProblem(self.head, self.goal, grid, False)
 
-        if DYNAMIC:
-            # ad ogni iter cerca un ciclo ham ottimo per quella mossa
-            self.ham_cycle_changed = False
-            if len(self.body) < 0.7 * self.grid_area:
+        # TODO: None?
+        if self.beta != 0:  # DYNAMIC = True
+            # at each iter it looks for an optimal Hamiltonian cycle for that move
+            if len(self.body) < self.beta * self.grid_area:
                 self.change_cycle()
 
         head_ham_pos = self.ham_cycle[self.head]
 
         for coordinates, ham_pos in self.ham_cycle.items():
             if ham_pos == (head_ham_pos + 1) % self.grid_area:
-                move = (coordinates[0], coordinates[1])
+                move = coordinates # (coordinates[0], coordinates[1]) # TODO: giusto?
                 break
-        
-        if GREEDY:
-            # ad ogni iter calcola se è possibile tagliare il ciclo
-            if len(self.body) < 0.5 * self.grid_area:
-                neighbours = grid[self.head]
+
+        # TODO: None?
+        if self.alpha != 0:  # GREEDY = True
+            # when the snake is long we do not take shortcuts to avoid crashes
+            if len(self.body) < self.alpha * self.grid_area:
+                neighbors = grid[self.head]
                 min_ham_dis = np.inf
-                for next in neighbours:
+                for next in neighbors:
                     next_ham_pos = self.ham_cycle[next]
                     tail_ham_pos = self.ham_cycle[self.body[0]]
                     food_ham_pos = self.ham_cycle[self.goal]
+                    # if the food is adjacent to the tail we do not take shortcuts 
+                    # to avoid eating the tail
                     if not (self.goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
-                        head_rel = (head_ham_pos -
-                                    tail_ham_pos) % self.grid_area
-                        next_rel = (next_ham_pos -
-                                    tail_ham_pos) % self.grid_area
-                        food_rel = (food_ham_pos -
-                                    tail_ham_pos) % self.grid_area
-
-                        if next_rel > head_rel and next_rel <= food_rel:
-                            if food_rel - next_rel < min_ham_dis:
-                                move = next
-
-        self.next_move = self.graphDir_to_gameDir(self.head, move)
-        return self.next_move
+                        head_rel = (head_ham_pos - tail_ham_pos) % self.grid_area
+                        next_rel = (next_ham_pos - tail_ham_pos) % self.grid_area
+                        food_rel = (food_ham_pos - tail_ham_pos) % self.grid_area
+                        # if next precedes the head's snake, succeds the food
+                        # and is nearer to the food on the cycle, 
+                        # moving there it's a shortcut
+                        if next_rel > head_rel and \
+                            next_rel <= food_rel and \
+                            food_rel - next_rel < min_ham_dis: # TODO: giusto?
+                            move = next
+                            break
+                            #if food_rel - next_rel < min_ham_dis:
+                                #move = next
+                                #break
+        
+        next_move = self.snake.dir_to_cell(move)
+        return next_move
 
     def change_cycle(self):
-        # valore della testa nel ciclo ham
-        head_idx = self.ham_cycle[self.head]
+        """Computes, if possible, a new optimal Hamiltonin cycle"""
+        head_idx = self.ham_cycle[self.head]  # head value in the ham cycle
         goal_idx = self.ham_cycle[self.goal]
         tail_idx = self.ham_cycle[self.body[0]]
-        # head_pos = 0
 
-        # distanza relativa goal da head su ham_cycle
+        # calculate position i.e. relative distance from head on ham_cycle
         goal_pos = (goal_idx - head_idx) % self.grid_area
         tail_pos = (tail_idx - head_idx) % self.grid_area
 
@@ -144,9 +103,11 @@ class Bot_hamilton(BotS):
                 if node_idx > (head_idx + 2) and node_idx < goal_idx:
                     for nn in self.ham_cycle:
                         if self.ham_cycle[nn] == (node_idx - 1):
-                            node_prec = nn  # elemento che ha value = (node_idx - 1) in ham_cycle
+                            # element that has value = (node_idx - 1) on ham_cycle
+                            node_prec = nn
                         if self.ham_cycle[nn] == (head_idx + 1):
-                            head_succ = nn  # elemento che ha value = (head_idx + 1) in ham cycle
+                            # element that has value = (head_idx + 1) on ham cycle
+                            head_succ = nn
                         if node_prec != None and head_succ != None:
                             break
                     if node_prec in self.grid.grid[head_succ]:
@@ -163,14 +124,14 @@ class Bot_hamilton(BotS):
                             n2_pos = (n2_idx - head_idx) % self.grid_area
                             if n2_pos == (n1_pos + 1):
                                 if n1_pos > 0 and n2_pos < node_pos:
-                                    flag = True 
+                                    flag = True
                                     break
                         if flag:
                             break
 
                     if flag:
                         flag = False
-                        for n1_coll in self.ham_cycle:  # qua fa un sacco di iterazioni
+                        for n1_coll in self.ham_cycle:
                             for n2_coll in self.ham_cycle:
                                 n1_coll_idx = self.ham_cycle[n1_coll]
                                 n2_coll_idx = self.ham_cycle[n2_coll]
@@ -189,10 +150,11 @@ class Bot_hamilton(BotS):
                     break
 
         if flag:
-            # cambio ciclo ham:
+            # change Hamiltonian cycle:
             position = np.array(list(self.ham_cycle.values()))
-            position = (position - head_idx) % self.grid_area  # head in first position
-            new_position = - np.ones((position.size,), dtype= int)
+            # considered head in position == 0
+            position = (position - head_idx) % self.grid_area 
+            new_position = - np.ones((position.size,), dtype=int)
 
             for i in range(position.size):
                 if position[i] == 0:
@@ -241,25 +203,11 @@ class Bot_hamilton(BotS):
                 self.ham_cycle[nn] = new_position[idx]
                 idx += 1
 
-            self.ham_cycle_changed = True
-
-    def get_current_grid(self, snake_false_body):
-        # eliminiamo dal grafo le celle occupate dal corpo dello snake
-        new_grid = copy.deepcopy(self.grid.grid)
-
-        for segment in snake_false_body:
-            self.delete_cell(new_grid, segment)
-
-        return new_grid
-
-    def return_cycle(self):
-        return self.ham_cycle
-
     def update_ham_cycle(self):
+        "Update self.ham_cycle"
         self.ham_cycle = self.grid.get_cycle()
 
-    def return_ham_cycle_changed(self):
-        return self.ham_cycle_changed
-
-    def get_next_move(self):
-        return self.chosen_strat()
+    def get_path_to_draw(self):
+        ord_list = sorted(self.ham_cycle.keys(), key=lambda k: self.ham_cycle[k])
+        
+        return ([ord_list] , [colors.WHITE], [True])
