@@ -24,8 +24,7 @@ def start():
         grid.update_grid_dimensions(gui.X_BLOCKS, gui.Y_BLOCKS)
 
     players_info = gui.dict_info_single # retrieve the dictonary for the selected bot
-    
-    
+
     # create SNAKE, OBSTACLES if selected and FOOD
     snake = Snake(
             color = players_info["color"],
