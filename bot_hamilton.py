@@ -55,7 +55,7 @@ class Bot_hamilton(Bot):
             self.gamma = 0.45
             self.beta = 0.65
 
-    def save_data(self, result):
+    def save_data(self):
         with open(self.iterations_log, 'a+') as log:
             line = '[\n'
             flag = True

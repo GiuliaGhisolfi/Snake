@@ -10,8 +10,8 @@ from food import Food
 import gui
 import colors
 
-config = 'hamilton.config'
-iterations_log = 'log1.json'
+config = '.\dati_hamilton\c1.config'
+iterations_log = '.\dati_hamilton\log1.json'
 
 def start():
     #create the window for the game
