@@ -73,11 +73,11 @@ class Grid:
             if len(points) > 1:
                 game.draw.lines(window, cl[i], closed[i], points)
 
-    def spawn_obstacles(self):
+    def spawn_obstacles(self, obstacles):
         '''create the obstacle's configuration of the grid'''
         self.grid = copy.deepcopy(self.full_grid)
         self.obstacles.clear()
-        self.current_config = gui.OBSTACLES
+        self.current_config = obstacles
 
         # create the Obstacles' list and update the grid
         obc = Obstacles_configurations(self)
@@ -96,8 +96,8 @@ class Grid:
     def get_obstacles(self):
         return copy.deepcopy(self.obstacles)
 
-    def get_cycle(self):
-        if gui.OBSTACLES == "None": 
+    def get_cycle(self, obstacles):
+        if obstacles == "None": 
             self.current_config = 4
         obc = Obstacles_configurations(self)
         return copy.deepcopy(obc.hamcycles[self.current_config])

@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 from grid import Grid
 from human_player import HumanPlayer
 from bot_greedy import Bot_greedy
@@ -11,10 +12,8 @@ import gui
 import colors
 
 TEST_MODE = True
-config = '.\dati_hamilton\c11.config'
-iterations_log = '.\dati_hamilton\log11.json'
 
-def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart):
+def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions, dict_info, bot_config, iterations_log):
     #create the window for the game
     pygame.init()
     grid = Grid(size, x_blocks, y_blocks)
@@ -24,7 +23,7 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart):
     if obstacle == "None":
         grid.update_grid_dimensions(x_blocks, y_blocks)
 
-    players_info = gui.dict_info_single # retrieve the dictonary for the selected bot
+    players_info = dict_info # retrieve the dictonary for the selected bot
 
     # create SNAKE, OBSTACLES if selected and FOOD
     snake = Snake(
@@ -33,7 +32,7 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart):
     snake.respawn(grid)
     
     if obstacle != "None": 
-        grid.spawn_obstacles()   
+        grid.spawn_obstacles(obstacle)
     
     food = Food(colors.RED)
     food.respawn(snake, grid)
@@ -47,9 +46,9 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart):
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
     elif players_info['type'] == "greedy":
-        player = Bot_greedy(grid, snake, food, config, iterations_log)
+        player = Bot_greedy(grid, snake, food, bot_config, iterations_log)
     elif players_info['type'] == 'hamilton':
-        player = Bot_hamilton(grid, snake, food, config, iterations_log)
+        player = Bot_hamilton(grid, snake, food, bot_config, iterations_log, obstacle)
     elif players_info['type'] == 'blind':
         player = Bot_blind(grid, snake, food)
     elif players_info['type'] == 'random':
@@ -60,10 +59,9 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart):
 
     # variables used in the while loop
     steps = 0
-    run = True
 
-    while run:
-        steps = steps + 1
+    while steps <= repetitions:
+        if repetitions != np.inf : steps = steps + 1
         pygame.time.delay(frame_delay)
         # exit the game if I click the x button
         for event in pygame.event.get():
@@ -87,7 +85,7 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart):
             
             player.save_data()
             snake.respawn(grid)
-            if obstacle != "None" : grid.spawn_obstacles()
+            if obstacle != "None" : grid.spawn_obstacles(obstacle)
             food.respawn(snake, grid)
             steps = 0
             if not autostart: gui.new_game()
@@ -104,7 +102,7 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart):
             
             player.save_data()
             snake.respawn(grid)
-            if obstacle != "None": grid.spawn_obstacles()
+            if obstacle != "None": grid.spawn_obstacles(obstacle)
             food.respawn(snake, grid)
             if not autostart: gui.new_game()
         else:
@@ -137,6 +135,7 @@ def parse_config(file):
             frame_delay = int(param['frame_delay'])
             obstacle = str(param['obstacle']) 
             autostart = bool(param['autostart'])
+            repetitions = int(param['repetitions'])
 
         except Exception as e:
             print(e)
@@ -149,13 +148,106 @@ def parse_config(file):
             frame_delay = 1
             obstacle = 'None'
             autostart = True
+            repetitions = 30
         
-        return size, x_blocks, y_blocks, frame_delay, obstacle, autostart
+        return size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions
+
+
+greedy_fold = './dati_greedy/'
+greedy_configs = [
+    greedy_fold+'c1.config', 
+    greedy_fold+'c2.config', 
+    greedy_fold+'c3.config',
+    greedy_fold+'c4.config',
+    greedy_fold+'c5.config',
+    greedy_fold+'c6.config',
+    greedy_fold+'c7.config'
+    ]
+greedy_logs = [
+    greedy_fold+'log1.json', 
+    greedy_fold+'log2.json', 
+    greedy_fold+'log3.json',
+    greedy_fold+'log4.json',
+    greedy_fold+'log5.json',
+    greedy_fold+'log6.json',
+    greedy_fold+'log7.json'
+    ]
+ham_fold = './dati_hamilton/'
+ham_configs = [
+    ham_fold+'c1.config', 
+    ham_fold+'c2.config', 
+    ham_fold+'c3.config',
+    ham_fold+'c4.config',
+    ham_fold+'c5.config',
+    ham_fold+'c6.config',
+    ham_fold+'c7.config',
+    ham_fold+'c8.config',
+    ham_fold+'c9.config',
+    ham_fold+'c10.config',
+    ham_fold+'c11.config'
+    ]
+ham_logs = [
+    ham_fold+'log1.json', 
+    ham_fold+'log2.json', 
+    ham_fold+'log3.json',
+    ham_fold+'log4.json',
+    ham_fold+'log5.json',
+    ham_fold+'log6.json',
+    ham_fold+'log7.json',
+    ham_fold+'log8.json',
+    ham_fold+'log9.json',
+    ham_fold+'log10.json',
+    ham_fold+'log11.json'
+    ]
+
 
 ### game start ###
 if not TEST_MODE:
-    gui.snake_interface()    
-    start(size=gui.SIZE, x_blocks=gui.X_BLOCKS, y_blocks=gui.Y_BLOCKS, frame_delay=gui.FRAME_DELAY, obstacle=gui.OBSTACLES, autostart=gui.AUTOSTART)
+    if gui.dict_info_single['type']=='greedy':
+        config = './dati_greedy/c7.config'
+        iterations_log = './dati_greedy/log7.json'
+    if gui.dict_info_single['type']=='hamilton':
+        config = './dati_hamilton/c11.config'
+        iterations_log = './dati_hamilton/log11.json'
+
+    gui.snake_interface()
+    start(size=gui.SIZE, 
+    x_blocks=gui.X_BLOCKS, 
+    y_blocks=gui.Y_BLOCKS, 
+    frame_delay=gui.FRAME_DELAY, 
+    obstacle=gui.OBSTACLES, 
+    autostart=gui.AUTOSTART, 
+    repetitions=np.inf, 
+    dict_info=gui.dict_info_single,
+    iterations_log=iterations_log
+    )
 else:
-    size, x_blocks, y_blocks, frame_delay, obstacle, autostart = parse_config('.\dati_hamilton\main.config')
-    start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart)
+    for conf, log in zip(greedy_configs, greedy_logs):
+        dictionary = { 
+            "type": "greedy",
+            "color": colors.GREEN,
+            "start_location": "top-left",
+            "keys": {
+                "up": pygame.K_UP,
+                "down": pygame.K_DOWN,
+                "right": pygame.K_RIGHT,
+                "left": pygame.K_LEFT
+            } 
+        }
+        size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions = parse_config('./dati_greedy/main.config')
+        start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions, dictionary, conf, log)
+
+    for conf, log in zip(ham_configs, ham_logs):
+        dictionary = { 
+            "type": "hamilton",
+            "color": colors.GREEN,
+            "start_location": "top-left",
+            "keys": {
+                "up": pygame.K_UP,
+                "down": pygame.K_DOWN,
+                "right": pygame.K_RIGHT,
+                "left": pygame.K_LEFT
+            } 
+        }
+        size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions = parse_config('./dati_hamilton/main.config')
+        start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions, dictionary, conf, log)

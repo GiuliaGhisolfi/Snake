@@ -13,9 +13,9 @@ FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 
 
 class Bot_hamilton(Bot):
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config, iterations_log):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config, iterations_log, obstacle):
         super().__init__(grid, snake, food)
-        self.ham_cycle = self.grid.get_cycle()
+        self.ham_cycle = self.grid.get_cycle(obstacle)
 
         if len(self.snake.get_body()) < 3:
             print('MINIMUM LENGTH SUPPORTED: 3')
@@ -254,9 +254,9 @@ class Bot_hamilton(Bot):
                 self.ham_cycle[nn] = new_position[idx]
                 idx += 1
 
-    def update_ham_cycle(self):
+    """def update_ham_cycle(self):
         "Update self.ham_cycle"
-        self.ham_cycle = self.grid.get_cycle()
+        self.ham_cycle = self.grid.get_cycle()"""
 
     def get_path_to_draw(self):
         ord_list = sorted(self.ham_cycle.keys(),
