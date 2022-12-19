@@ -324,6 +324,7 @@ class Bot_greedy(Bot):
 
         end_iteration_time = time.time()
         self.data_to_save.append((snake_body_len, end_iteration_time - start_iteration_time))
+        
         return ret
     
     # graphic method

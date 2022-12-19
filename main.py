@@ -10,8 +10,8 @@ from food import Food
 import gui
 import colors
 
-config = '.\dati_greedy\c1.config'
-iterations_log = '.\dati_greedy\log1.json'
+config = 'hamilton.config'
+iterations_log = 'log1.json'
 
 def start():
     #create the window for the game
@@ -48,7 +48,7 @@ def start():
     elif players_info['type'] == "greedy":
         player = Bot_greedy(grid, snake, food, config, iterations_log)
     elif players_info['type'] == 'hamilton':
-        player = Bot_hamilton(grid, snake, food)
+        player = Bot_hamilton(grid, snake, food, config, iterations_log)
     elif players_info['type'] == 'blind':
         player = Bot_blind(grid, snake, food)
     elif players_info['type'] == 'random':
