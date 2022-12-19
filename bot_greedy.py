@@ -1,7 +1,5 @@
 from directions import Directions
-from player import Player
 from search import *
-import copy
 import grid
 import snake
 import food
