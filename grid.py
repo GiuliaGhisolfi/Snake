@@ -58,8 +58,8 @@ class Grid:
         if len(points) > 1:
             game.draw.lines(window, color, closed, points)
 
-    def draw_path(self, game, window, items): #cycles, cl, closed):
-        '''draw the calculated path in greedy strategy'''
+    def draw_path(self, game, window, items):
+        '''draw the calculated path'''
 
         cycles = items[0]
         cl = items[1]
