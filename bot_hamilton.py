@@ -24,7 +24,7 @@ class Bot_hamilton(Bot):
         self.parse_config(config)
 
         bot_type = 'hamilton_bot [' + \
-            str(self.alpha) + '|' + str(self.beta) + ']'
+            str(self.alpha) + '|' + str(self.gamma) + '|' + str(self.beta) + ']'
 
         self.data_to_save = [bot_type, info, False, 0, 0, 0, []]
         self.general_log = 'hamilton_general_data.csv'
@@ -48,6 +48,7 @@ class Bot_hamilton(Bot):
 
         try:
             self.alpha = float(param['alpha'])
+            self.gamma = float(param['gamma'])
             self.beta = float(param['beta'])
 
         except Exception as e:
@@ -56,6 +57,7 @@ class Bot_hamilton(Bot):
             print('initialization with default values')
 
             self.alpha = 0.5
+            self.gamma = 0.45
             self.beta = 0.65
 
     def save_data(self, result):
@@ -155,7 +157,7 @@ class Bot_hamilton(Bot):
                         break
 
         # DYNAMIC: at each iter it looks for an optimal Hamiltonian cycle for that move
-        if self.alpha * self.grid_area < len(self.body) < self.beta * self.grid_area:
+        if self.gamma * self.grid_area < len(self.body) < self.beta * self.grid_area:
             self.change_cycle()
 
         next_move = self.snake.dir_to_cell(move)
