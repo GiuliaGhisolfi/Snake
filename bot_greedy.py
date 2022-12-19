@@ -12,34 +12,34 @@ import time
 
 from bot import Bot
 
+# debug colors
 FIRST_IT_C = colors.RED
 TO_FOOD_C = colors.ORANGE
 DEF_C = colors.BLUE
 
 # higher = more step before stop
 DETECTLOOPGENEROSITY = 2.1
+# for saving data
 DECIMALDIGIT = 4
 FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 
-# IRENE: sarebbe possibile sostituire le invocazoni di self.graphDir_to_gameDir() con 
-# dir_to_cell(), metodo della classe Snake?
-# Così possiamo eliminare del tutto il metodo graphDir_to_gameDir che ha poco a che fare con la classe Bot...
-# ma certo! bella idea
 
 class Bot_greedy(Bot):
 
     # to create the bot
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='greedy.config', info=''):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='greedy.config', info='', general_log= 'greedy_general_data.csv', iterations_log='greedy_iterations_data.csv'):
 
+        # to save these variables
         super().__init__(grid, snake, food)
 
-        # debug variable ( default=False )
+        # debug mode ( default=False )
         self.debug = debug
 
         # simple method to check if we are in a loop
         self.loop = 0
         self.max_loop = self.grid.x_blocks*self.grid.y_blocks*DETECTLOOPGENEROSITY
-
+        
+        # min lenght
         if len(self.snake.get_body()) < 3:
             print('LUNGHEZZA MINIMA SUPPORTATA: 3')
             exit() #boom
@@ -50,18 +50,20 @@ class Bot_greedy(Bot):
         # next node to optimize
         self.nnto = None 
 
+        # parse the config file to save the hyperparameters
         self.parse_config(config)
- 
-        
+
+        # bot configuration
         bot_type = 'singleplayer_bot [' + str(self.chosen_search) + '|' + str(self.safe_cycle)  +  '|' + str(self.chosen_optimization) + '|' + str(self.weights) + '|' + str(self.choice_sensibility) + ']'
 
+        # collecting data
         self.data_to_save = [bot_type, info, False, 0, 0, 0, []]
-        self.general_log = 'greedy_general_data.csv'
-        self.iterations_log = 'greedy_iterations_data.csv'
-        
+        self.general_log = general_log
+        self.iterations_log = iterations_log
         self.total_bot_time = 0
         self.total_iteration = 0
 
+    # method for parsing the cinfiguration file to memorize the hyperparameters
     def parse_config(self, file):
         param = {}
         with open(file, 'r') as c:
@@ -100,6 +102,7 @@ class Bot_greedy(Bot):
             self.weights = [1,0,0,0]
             self.choice_sensibility = 4
 
+    # method for saving all the collected data of one iteration of the bot in a file
     def save_data(self, result):
 
         self.data_to_save[4] = self.total_bot_time
@@ -124,9 +127,8 @@ class Bot_greedy(Bot):
             line += ','
 
             line += str(self.data_to_save[5])
-            line += ','
+            line += '\n'
 
-            line += '['
             log.write( line )
 
         with open(self.iterations_log, 'a+') as log:
@@ -138,7 +140,7 @@ class Bot_greedy(Bot):
         self.total_iteration = 0
         self.total_bot_time = 0
 
-    #PER CAMBIATE LA CHIAMATA DU FUNZIONE AD A* O COSE SIMILI CAMBIARE QUESTA FUNZIONE E self.chosen_search
+    # method that uses the correct graph research algorithm
     def graph_search(self, start, goal, graph):
         
         if self.chosen_search == 0:
@@ -173,6 +175,7 @@ class Bot_greedy(Bot):
             print('Strategia ancora non implementata!!')
             exit()
     
+    # method that uses the correct optimization algorithm (only one implemented)
     def opt_search(self, start, goal, graph):
         if self.chosen_optimization == 1:
             return longest_path(graph, start, goal)
@@ -180,7 +183,7 @@ class Bot_greedy(Bot):
             print('Strategia ancora non implementata!!')
             exit()
 
-    #TODO: magari attuare questa strategia solo se abbastanza lunghi?
+    # method which is called at each failed iteration and takes care of space optimization
     def optimize_standard_path(self, tg={}):
         # no space optimization
         if self.chosen_optimization == 0: return
@@ -246,39 +249,41 @@ class Bot_greedy(Bot):
                     self.nnto = node
                     #print(self.nnto)
                     return
-                        
+
+    # returns the position of the food. Useful in cases of multiple apples               
     def get_best_food(self):
         return self.food.position
 
+    # debug method
     def change_color(self):
         if len(self.path_to_food) > 0:
             self.snake.color = TO_FOOD_C
         else:
             self.snake.color = DEF_C
 
-    # funzione usata per chiedere la prossima mossa dello snake
+    # core of the strategy
     def apple_cicle_opt_strat(self):
         
         snake_body = self.snake.get_body()
         if self.debug: self.change_color()
         
-        #ora inizia la parte difficile, qui possono accadere cose strane (strande inesistenti ecc...)       
-        if len(self.path_to_food) > 0: #non siamo ancora arrivati alla mela
+        # if we've memorized a path to the apple, we just follow it            
+        if len(self.path_to_food) > 0:
             move = self.path_to_food.pop(0)
             dir = self.snake.dir_to_cell(move)
             return dir
 
-        # posizione mela migliore e testa snake
+        # Otherwise we have to find a "path to food"
         goal = self.get_best_food()
         start = snake_body[-1]
 
-        #elimino tutto il corpo tranne la testa del serpente dal grafo
+        # we eliminate the body from the graph except the head
         dummy_g = self.get_current_grid(snake_body[:-1])
-        #restituisce il cammino se esiste, più pulito di prima
+        # returns the shortest path, if it exists
         computed_path_toFood = self.graph_search(start, goal, dummy_g)
 
-        if computed_path_toFood != None: #trovato il primo
-            #uguale a prima con una accortezza di differenza
+        if computed_path_toFood != None: # if it exist....
+            # we calculate the position of the snake when it will eat the apple
             next_pos = (snake_body + computed_path_toFood)[-len(snake_body) - 1:]
 
             # we are in a cycle, so we eat the last apple before we lose
@@ -288,36 +293,43 @@ class Bot_greedy(Bot):
                 self.loop = 0
                 return self.snake.dir_to_cell(move)
 
+            # if the strategy is active...
             if self.safe_cycle == 1:
-                goal = next_pos[0] #futura coda
-                start = next_pos[-1] #futura testa
-                dummy_g = self.get_current_grid(next_pos[1:-1]) #non eliminiamo la coda
-                computed_cicle = self.graph_search(start, goal, dummy_g)
+                # before following the calculated route, we check if there is a safe cycle
+                goal = next_pos[0] #futura tail
+                start = next_pos[-1] #futura head
+                dummy_g = self.get_current_grid(next_pos[1:-1]) 
+                computed_cicle = self.graph_search(start, goal, dummy_g) # safe cycle
 
-                if computed_cicle != None: #incredibile !!! trovato anche il secondo, abbiamo finito allora
+                if computed_cicle != None:
+                    # if this also exists, we save the two paths and finish
 
-                    self.default_path = computed_cicle + next_pos[1:] #ciclo privo di rischi
-                    self.nnto = self.default_path[1]
-                    self.path_to_food = computed_path_toFood #path verso la mela, da percorrere prima di usare default path
+                    self.default_path = computed_cicle + next_pos[1:] # safe cycle
+                    self.nnto = self.default_path[1] # next optimizable cell
+                    self.path_to_food = computed_path_toFood # path to food
 
                     move = self.path_to_food.pop(0)
                     self.loop = 0
                     return self.snake.dir_to_cell(move)
             else:
+                # the strategy is not active, so we follow the path to food
                 self.path_to_food = computed_path_toFood
                 move = self.path_to_food.pop(0)
                 self.loop = 0
                 return self.snake.dir_to_cell(move)
             
-
+        # if safe cycle is active
         if self.safe_cycle == 1:
+            # we have not found a suitable path
             self.loop += 1
-            self.optimize_standard_path()
+            self.optimize_standard_path() # we try to optimize the path we are following
             move = self.default_path.pop(0)
             ret = self.snake.dir_to_cell(move) # è un ciclo
             self.default_path.append(move)
             return ret
         else:
+            
+            # random move
             possible_dir = self.grid.grid[self.snake.body[-1]]
             for node in self.snake.body:
                 try: possible_dir.remove(node)
@@ -328,9 +340,10 @@ class Bot_greedy(Bot):
             else:
                 return Directions.random_direction()
 
-
+    # the method called for the bot's next move
     def get_next_move(self):
-      
+        
+        # only data collection and the call to the real strategy
         snake_body_len = len(self.snake.body)
         start_iteration_time = time.time()
 
@@ -343,18 +356,7 @@ class Bot_greedy(Bot):
 
         self.total_bot_time += end_iteration_time - start_iteration_time
         return ret
-        # IRENE: se qui invocassimo direttamente la strategia visto che ne abbiamo implementata una sola?
-        # ciò renderebbe il codice più uniforme a bot_hamilton
-        # 
-        # GIACOMO si ma non solo...
-        # Invincibile, Impavido, 
-        # Sensuale, Misterioso, 
-        # Ammaliante, Vigoroso, 
-        # Diligente, Travolgente, 
-        # Stupendo, Passionale, 
-        # Terrificante, Bello, 
-        # Forte Bianco Principe GECO:
-        # oora è utile per i dati, magari conviene farlo anche in ham?
     
+    # graphic method
     def get_path_to_draw(self):
         return ([self.default_path, self.path_to_food] , [colors.YELLOW, colors.WHITE], [True, False])
