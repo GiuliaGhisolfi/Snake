@@ -12,9 +12,9 @@ from food import Food
 import gui
 import colors
 
-TEST_MODE = False
+TEST_MODE = True
 
-def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, dict_info, bot_config, iterations_log):
+def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, max_repetitions, dict_info, bot_config, iterations_log):
     #create the window for the game
     pygame.init()
     grid = Grid(size, x_blocks, y_blocks)
@@ -58,10 +58,9 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, dict_info,
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
 
-    # variables used in the while loop
-    steps = 0
+    repetitions = 0
 
-    while True:
+    while repetitions < max_repetitions:
         pygame.time.delay(frame_delay)
         # exit the game if I click the x button
         for event in pygame.event.get():
@@ -84,10 +83,10 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, dict_info,
             pygame.time.delay(gui.DEATH_DELAY)
             
             player.save_data()
+            repetitions += 1
             snake.respawn(grid)
             if obstacle != "None" : grid.spawn_obstacles(obstacle)
             food.respawn(snake, grid)
-            steps = 0
             if not autostart: gui.new_game()
 
         # check if win
@@ -101,6 +100,7 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, dict_info,
             pygame.time.delay(gui.DEATH_DELAY)
             
             player.save_data()
+            repetitions += 1
             snake.respawn(grid)
             if obstacle != "None": grid.spawn_obstacles(obstacle)
             food.respawn(snake, grid)
@@ -115,100 +115,6 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, dict_info,
             food.draw(pygame, gui.window, grid)
             pygame.display.update()
 
-def start_test(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, dict_info, bot_config, iterations_log):
-    #create the window for the game
-    #pygame.init()
-    grid = Grid(size, x_blocks, y_blocks)
-    #gui.window = pygame.display.set_mode(grid.bounds)
-    #pygame.display.set_caption("Snake")
-
-    #if obstacle == "None":
-        #grid.update_grid_dimensions(x_blocks, y_blocks)
-
-    players_info = dict_info # retrieve the dictonary for the selected bot
-
-    # create SNAKE, OBSTACLES if selected and FOOD
-    snake = Snake(
-            color = players_info["color"],
-            start_location = players_info["start_location"])
-    snake.respawn(grid)
-    
-    if obstacle != "None": 
-        grid.spawn_obstacles(obstacle)
-    
-    food = Food(colors.RED)
-    food.respawn(snake, grid)
-
-    # bot selection
-    if players_info['type'] == "greedy":
-        player = Bot_greedy(grid, snake, food, bot_config, iterations_log)
-    elif players_info['type'] == 'hamilton':
-        player = Bot_hamilton(grid, snake, food, bot_config, iterations_log, obstacle)
-    elif players_info['type'] == 'blind':
-        player = Bot_blind(grid, snake, food)
-    elif players_info['type'] == 'random':
-        player = Bot_random(grid, snake, food)
-    else:
-        print('PLAYERS INFO ERROR: player type not recognized')
-        exit(1)
-
-    # variables used in the while loop
-    steps = 0
-
-    while True: 
-        time.sleep(frame_delay)
-        #pygame.time.delay(frame_delay)
-        # exit the game if I click the x button
-        #for event in pygame.event.get():
-            #if event.type == pygame.QUIT:
-                #run = False
-
-        # retrieve next move
-        dir = player.get_next_move()
-        
-        # check if eaten
-        eaten = snake.move(dir, food)
-        
-        # check if lose
-        lost = snake.bounds_collision(grid) or \
-            snake.tail_collision()
-        if lost:
-            #text = gui.font.render('GAME OVER', True, colors.RED)
-            #gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/3))  
-            #pygame.display.update()
-            #pygame.time.delay(gui.DEATH_DELAY)
-            
-            player.save_data()
-            snake.respawn(grid)
-            if obstacle != "None" : grid.spawn_obstacles(obstacle)
-            food.respawn(snake, grid)
-            steps = 0
-            if not autostart: gui.new_game()
-
-        # check if win
-        if snake.length == grid.get_grid_free_area():
-            #snake.draw(pygame, gui.window, grid)
-            #grid.draw_obstacles(pygame, gui.window)
-            #snake.draw(pygame, gui.window, grid)
-            #text = gui.font.render('COMPLETE', True, colors.RED)
-            #gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/2))
-            #pygame.display.update()
-            #pygame.time.delay(gui.DEATH_DELAY)
-            
-            player.save_data()
-            snake.respawn(grid)
-            if obstacle != "None": grid.spawn_obstacles(obstacle)
-            food.respawn(snake, grid)
-            #if not autostart: gui.new_game()
-        else:
-            if eaten : food.respawn(snake, grid)
-            #gui.window.fill(colors.BLACK)
-
-            #grid.draw_path(pygame, gui.window, player.get_path_to_draw()) # display the path wich the snake is following
-            #snake.draw(pygame, gui.window, grid)
-            #grid.draw_obstacles(pygame, gui.window)
-            #food.draw(pygame, gui.window, grid)
-            #pygame.display.update()
 
 def parse_config(file):
         param = {}
@@ -313,6 +219,7 @@ if not TEST_MODE:
     frame_delay=gui.FRAME_DELAY, 
     obstacle=gui.OBSTACLES, 
     autostart=gui.AUTOSTART,
+    max_repetitions=np.inf,
     dict_info=gui.dict_info_single,
     bot_config=config,
     iterations_log=iterations_log
@@ -325,9 +232,8 @@ else:
             "start_location": "top-left"
         }
         size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions = parse_config('./dati_greedy/main.config')
-        for i in range(repetitions):
-            start_test(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, dictionary, conf, log)
-        print("config:%s"%conf)
+        start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions, dictionary, conf, log)
+
 
     for conf, log in zip(ham_configs, ham_logs):
         dictionary = { 
@@ -336,6 +242,4 @@ else:
             "start_location": "top-left"
         }
         size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions = parse_config('./dati_hamilton/main.config')
-        for i in range(repetitions):
-            start_test(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, dictionary, conf, log)
-        print("config:%s"%conf)
+        start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions, dictionary, conf, log)

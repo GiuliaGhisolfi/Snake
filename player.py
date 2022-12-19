@@ -3,5 +3,5 @@ class Player():
         pass
     def get_path_to_draw(self):
         return [[],[],[]]
-    def save_data(self, result):
+    def save_data(self):
         return
