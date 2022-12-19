@@ -10,6 +10,8 @@ from food import Food
 import gui
 import colors
 
+config = '.\dati_greedy\c1.config'
+iterations_log = '.\dati_greedy\log1.json'
 
 def start():
     #create the window for the game
@@ -17,8 +19,6 @@ def start():
     grid = Grid(size=gui.SIZE, x_blocks=gui.X_BLOCKS, y_blocks=gui.Y_BLOCKS)
     gui.window = pygame.display.set_mode(grid.bounds)
     pygame.display.set_caption("Snake")
-
-    info_string = '[' + str(gui.X_BLOCKS) + '|' + str(gui.Y_BLOCKS) + '|' + str(gui.OBSTACLES) + '|' + str(gui.FRAME_DELAY) + ']'
 
     if gui.OBSTACLES == "None":
         grid.update_grid_dimensions(gui.X_BLOCKS, gui.Y_BLOCKS)
@@ -46,7 +46,7 @@ def start():
             right_key=players_info["keys"]["right"],
             left_key=players_info["keys"]["left"])
     elif players_info['type'] == "greedy":
-        player = Bot_greedy(grid, snake, food, info = info_string)
+        player = Bot_greedy(grid, snake, food, config, iterations_log)
     elif players_info['type'] == 'hamilton':
         player = Bot_hamilton(grid, snake, food)
     elif players_info['type'] == 'blind':
@@ -84,7 +84,7 @@ def start():
             pygame.display.update()
             pygame.time.delay(gui.DEATH_DELAY)
             
-            player.save_data(0)
+            player.save_data()
             snake.respawn(grid)
             if gui.OBSTACLES != "None" : grid.spawn_obstacles()
             food.respawn(snake, grid)
@@ -101,7 +101,7 @@ def start():
             pygame.display.update()
             pygame.time.delay(gui.DEATH_DELAY)
             
-            player.save_data(1)
+            player.save_data()
             snake.respawn(grid)
             if gui.OBSTACLES != "None": grid.spawn_obstacles()
             food.respawn(snake, grid)

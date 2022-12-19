@@ -1,7 +1,7 @@
 import json
 import numpy as np
 
-logfiles = ['log1.json', 'log2.json'] # aggiungiamo i log di tutti (relativi a una specifica configurazione, 1 sta per config1)
+logfiles = ['greedy_iterations_data.csv', 'log1.json'] # aggiungiamo i log di tutti (relativi a una specifica configurazione, 1 sta per config1)
 data = []
 for file in logfiles:
 	f = open(file)

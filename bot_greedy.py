@@ -25,7 +25,7 @@ FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 class Bot_greedy(Bot):
 
     # to create the bot
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, debug=False, config='greedy.config', info='', general_log= 'greedy_general_data.csv', iterations_log='greedy_iterations_data.csv'):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, config, iterations_log, debug=False):
 
         # to save these variables
         super().__init__(grid, snake, food)
@@ -51,15 +51,11 @@ class Bot_greedy(Bot):
         # parse the config file to save the hyperparameters
         self.parse_config(config)
 
-        # bot configuration
-        bot_type = 'singleplayer_bot [' + str(self.chosen_search) + '|' + str(self.safe_cycle)  +  '|' + str(self.chosen_optimization) + '|' + str(self.weights) + '|' + str(self.choice_sensibility) + ']'
-
         # collecting data
-        self.data_to_save = [bot_type, info, False, 0, 0, 0, []]
-        self.general_log = general_log
+        self.data_to_save = []
         self.iterations_log = iterations_log
-        self.total_bot_time = 0
-        self.total_iteration = 0
+        with open(self.iterations_log, 'a+') as log:
+            log.write('[\n')
 
     # method for parsing the cinfiguration file to memorize the hyperparameters
     def parse_config(self, file):
@@ -101,42 +97,20 @@ class Bot_greedy(Bot):
             self.choice_sensibility = 4
 
     # method for saving all the collected data of one iteration of the bot in a file
-    def save_data(self, result):
-
-        self.data_to_save[4] = self.total_bot_time
-        self.data_to_save[2] = result
-        self.data_to_save[3] = self.snake.length
-        self.data_to_save[5] = self.total_iteration
-
-        with open(self.general_log, 'a+') as log:
-            line = self.data_to_save[0]
-            line += ','
-
-            line = self.data_to_save[1]
-            line += ','
-
-            line = str(self.data_to_save[2])
-            line += ','
-
-            line = str(self.data_to_save[3])
-            line += ','
-
-            line += FLOATTOKEN % self.data_to_save[4]
-            line += ','
-
-            line += str(self.data_to_save[5])
-            line += '\n'
-
-            log.write( line )
-
+    def save_data(self):
         with open(self.iterations_log, 'a+') as log:
-            line = ''
-            for a,b in self.data_to_save[6]:
-                line += FLOATTOKEN % b + ',' + str(a) + '\n'
+            line = '[\n'
+            flag = True
+            for a,b in self.data_to_save:
+                if flag:
+                    line += '\t[' + FLOATTOKEN % b + ',' + str(a) + ']'
+                    flag  = False
+                else:
+                    line += ',[' + FLOATTOKEN % b + ',' + str(a) + ']'
+            line += '],\n'
             log.write( line )
-
-        self.total_iteration = 0
-        self.total_bot_time = 0
+        
+        self.data_to_save = []
 
     # method that uses the correct graph research algorithm
     def graph_search(self, start, goal, graph):
@@ -345,14 +319,11 @@ class Bot_greedy(Bot):
         snake_body_len = len(self.snake.body)
         start_iteration_time = time.time()
 
-        self.total_iteration += 1
 
         ret =  self.apple_cicle_opt_strat() 
 
         end_iteration_time = time.time()
-        self.data_to_save[6].append((snake_body_len, end_iteration_time - start_iteration_time))
-
-        self.total_bot_time += end_iteration_time - start_iteration_time
+        self.data_to_save.append((snake_body_len, end_iteration_time - start_iteration_time))
         return ret
     
     # graphic method
