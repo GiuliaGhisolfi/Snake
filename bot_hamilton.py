@@ -8,7 +8,7 @@ import colors
 from gui import *
 import time
 
-DECIMALDIGIT = 4
+DECIMALDIGIT = 6
 FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 
 
@@ -99,6 +99,10 @@ class Bot_hamilton(Bot):
                 move = coordinates # (coordinates[0], coordinates[1]) # TODO: giusto? -> si, passandolo a debug funziona sempre :)
                 break
 
+        # DYNAMIC: at each iter it looks for an optimal Hamiltonian cycle for that move
+        if self.gamma * self.grid_area < len(self.body) < self.beta * self.grid_area:
+            self.change_cycle()
+        
         # GREEDY: when the snake is long we do not take shortcuts to avoid crashes
         if len(self.body) < self.alpha * self.grid_area:
             neighbors = grid[self.head]
@@ -124,10 +128,6 @@ class Bot_hamilton(Bot):
                             food_rel - next_rel < min_ham_dis:
                         move = next
                         break
-
-        # DYNAMIC: at each iter it looks for an optimal Hamiltonian cycle for that move
-        if self.gamma * self.grid_area < len(self.body) < self.beta * self.grid_area:
-            self.change_cycle()
 
         next_move = self.snake.dir_to_cell(move)
         return next_move

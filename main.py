@@ -10,18 +10,19 @@ from food import Food
 import gui
 import colors
 
-config = '.\dati_hamilton\c1.config'
-iterations_log = '.\dati_hamilton\log1.json'
+TEST_MODE = True
+config = '.\dati_hamilton\c11.config'
+iterations_log = '.\dati_hamilton\log11.json'
 
-def start():
+def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart):
     #create the window for the game
     pygame.init()
-    grid = Grid(size=gui.SIZE, x_blocks=gui.X_BLOCKS, y_blocks=gui.Y_BLOCKS)
+    grid = Grid(size, x_blocks, y_blocks)
     gui.window = pygame.display.set_mode(grid.bounds)
     pygame.display.set_caption("Snake")
 
-    if gui.OBSTACLES == "None":
-        grid.update_grid_dimensions(gui.X_BLOCKS, gui.Y_BLOCKS)
+    if obstacle == "None":
+        grid.update_grid_dimensions(x_blocks, y_blocks)
 
     players_info = gui.dict_info_single # retrieve the dictonary for the selected bot
 
@@ -31,7 +32,7 @@ def start():
             start_location = players_info["start_location"])
     snake.respawn(grid)
     
-    if gui.OBSTACLES != "None": 
+    if obstacle != "None": 
         grid.spawn_obstacles()   
     
     food = Food(colors.RED)
@@ -63,7 +64,7 @@ def start():
 
     while run:
         steps = steps + 1
-        pygame.time.delay(gui.FRAME_DELAY)
+        pygame.time.delay(frame_delay)
         # exit the game if I click the x button
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -86,10 +87,10 @@ def start():
             
             player.save_data()
             snake.respawn(grid)
-            if gui.OBSTACLES != "None" : grid.spawn_obstacles()
+            if obstacle != "None" : grid.spawn_obstacles()
             food.respawn(snake, grid)
             steps = 0
-            if not gui.AUTOSTART: gui.new_game()
+            if not autostart: gui.new_game()
 
         # check if win
         if snake.length == grid.get_grid_free_area():
@@ -103,9 +104,9 @@ def start():
             
             player.save_data()
             snake.respawn(grid)
-            if gui.OBSTACLES != "None": grid.spawn_obstacles()
+            if obstacle != "None": grid.spawn_obstacles()
             food.respawn(snake, grid)
-            if not gui.AUTOSTART: gui.new_game()
+            if not autostart: gui.new_game()
         else:
             if eaten : food.respawn(snake, grid)
             gui.window.fill(colors.BLACK)
@@ -116,7 +117,45 @@ def start():
             food.draw(pygame, gui.window, grid)
             pygame.display.update()
 
+def parse_config(file):
+        param = {}
+        with open(file, 'r') as c:
+            for i, line in enumerate(c):
+                if line.startswith('#') or len(line) == 1:
+                    continue
+                else:
+                    try:
+                        sl = line.replace('\n', '').replace(' ', '').split('=')
+                        param[sl[0]] = sl[1]
+                    except:
+                        print('errore file config linea: ' + str(i))
+
+        try:
+            size = int(param['size'])
+            x_blocks = int(param['x_blocks'])
+            y_blocks = int(param['y_blocks'])
+            frame_delay = int(param['frame_delay'])
+            obstacle = str(param['obstacle']) 
+            autostart = bool(param['autostart'])
+
+        except Exception as e:
+            print(e)
+            print('parameter value error')
+            print('initialization with default values')
+
+            size = 700
+            x_blocks = 10
+            y_blocks = 11
+            frame_delay = 1
+            obstacle = 'None'
+            autostart = True
+        
+        return size, x_blocks, y_blocks, frame_delay, obstacle, autostart
 
 ### game start ###
-gui.snake_interface()
-start()
+if not TEST_MODE:
+    gui.snake_interface()    
+    start(size=gui.SIZE, x_blocks=gui.X_BLOCKS, y_blocks=gui.Y_BLOCKS, frame_delay=gui.FRAME_DELAY, obstacle=gui.OBSTACLES, autostart=gui.AUTOSTART)
+else:
+    size, x_blocks, y_blocks, frame_delay, obstacle, autostart = parse_config('.\dati_hamilton\main.config')
+    start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart)
