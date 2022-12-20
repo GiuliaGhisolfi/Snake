@@ -12,7 +12,7 @@ from config_parsing import get_game_config
 import gui
 import colors
 
-TEST_MODE = True
+TEST_MODE = False
 
 def start(
     size, 
@@ -34,8 +34,7 @@ def start(
         pygame.init()
         gui.window = pygame.display.set_mode(grid.bounds)
         pygame.display.set_caption('Snake')
-        if obstacles == 'None':
-            grid.update_grid_dimensions(x_blocks, y_blocks) # REVIEW: quando TEST_MODE==True serve?
+        grid.update_grid_dimensions(x_blocks, y_blocks) # REVIEW: quando TEST_MODE==True serve?
 
     # create snake, obstacles and food
     snake = Snake(color = player_info['color'], start_location = player_info['start_location'])
@@ -91,7 +90,8 @@ def start(
                 pygame.time.delay(gui.DEATH_DELAY)
             
             executions += 1
-            player.save_data(executions==max_executions)
+            if player_info['type'] != 'human':
+                player.save_data(executions==max_executions)
             snake.respawn(grid)
             grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
@@ -123,7 +123,7 @@ def start(
                 grid.draw_obstacles(pygame, gui.window)
                 food.draw(pygame, gui.window, grid)
                 pygame.display.update()
-
+###
 greedy_fold = './greedy_data/'
 greedy_configs = [
     greedy_fold+'bot1.config', 
@@ -171,14 +171,16 @@ ham_logs = [
     hamilton_fold+'log10.json',
     hamilton_fold+'log11.json'
     ]
-
+###
 ### game start ###
 if not TEST_MODE:
     gui.snake_interface()
-    if gui.dict_info_single['type']=='greedy':
+    config = 'default.config'
+    log_file = 'default_log_file.config'
+    if gui.dict_info['type']=='greedy':
         config = greedy_fold+'bot7.config'
         log_file = greedy_fold+'log7.json'
-    if gui.dict_info_single['type']=='hamilton':
+    if gui.dict_info['type']=='hamilton':
         config = hamilton_fold+'bot6.config'
         log_file = hamilton_fold+'log6.json'
     start(
@@ -189,7 +191,7 @@ if not TEST_MODE:
         obstacles=gui.OBSTACLES, 
         autostart=gui.AUTOSTART,
         max_executions=np.inf,
-        player_info=gui.dict_info_single,
+        player_info=gui.dict_info,
         bot_config=config,
         log_file=log_file
     )
@@ -240,11 +242,9 @@ TODO:
 -   sistemare get_game_config (evitare di fargli ritornare tutti quei parametri, raggrupparli)
 -   capire se i dati che salviamo sono tutti quelli che possono servirci e provare a processarli per capire se è comodo il formato che usiamo per scriverli
 -   aggiungere test per i bot random
--   ripristinare human con tasti (ora va con bot random se non sbaglio)
 -   sistemare file gui (ci sono troppe costanti a cui accediamo supponendo che venga invocato il metodo snake_interface)
     proabilmente del dizionario con le info del player non servono delle cose perchè era stato pensato per multiplayer, ovunque compaia single player rinomiamo in player
 -   leggere le dimensioni della griglia senza dover schiacciare invio
--   cambiare la scritta del bottone A* in greedy
 -   centrare meglio i bottoni in modo che prendano i click
 -   bisognerebbe fondere search e utils, togliere le cose che non servono e forse mettere nello stesso file le nostre versioni di a*
 -   aggiungere commenti al nuovo codice e ripulirlo

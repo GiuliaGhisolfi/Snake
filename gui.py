@@ -32,7 +32,7 @@ FONT = pygame.font.Font(None, 32)
 # global variables to use in main file
 choise_made = False
 buttons = []
-dict_info_single = {}
+dict_info = {}
 """ class that implements buttons in the game interface"""
 class Button:
     def __init__(self,text,width,height,pos,elevation):
@@ -68,7 +68,7 @@ class Button:
         window.blit(self.text_surf, self.text_rect)
 
     def check_click(self): # check which button i click, the do the respective action
-        global choise_made, FRAME_DELAY, OBSTACLES, X_BLOCKS, Y_BLOCKS, dict_info_single,done
+        global choise_made, FRAME_DELAY, OBSTACLES, X_BLOCKS, Y_BLOCKS, dict_info,done
         mouse_pos = pygame.mouse.get_pos()
         if self.top_rect.collidepoint(mouse_pos):# mouse ontop the button
             self.top_color = colors.ORANGE
@@ -77,7 +77,7 @@ class Button:
                 self.dynamic_elecation = 0
                 self.pressed = True
                 if self.text == 'Human Player': # select the correct dictonary for each player
-                    dict_info_single =  {
+                    dict_info =  {
                         "type": dictonary["type"][0],
                         "color": dictonary["color"][0],
                         "start_location": dictonary["start_location"],
@@ -86,15 +86,15 @@ class Button:
                     choise_made = 'human'
                     FRAME_DELAY = 85
                 elif self.text == 'Bot Player':
-                    dict_info_single =  {
+                    dict_info =  {
                         "type": dictonary["type"][1],
                         "color": dictonary["color"][1],
                         "start_location": dictonary["start_location"],
                         "keys": dictonary["keys"]
                     }            
                     choise_made = 'bot' 
-                elif self.text == 'A* search':             
-                    dict_info_single = {
+                elif self.text == 'Greedy search':             
+                    dict_info = {
                         "type": dictonary["type"][1],
                         "color": dictonary["color"][1],
                         "start_location": dictonary["start_location"],
@@ -102,7 +102,7 @@ class Button:
                     }
                     choise_made = 'astar'
                 elif self.text == 'Hamilton search':
-                    dict_info_single = {
+                    dict_info = {
                         "type": dictonary["type"][2],
                         "color": dictonary["color"][2],
                         "start_location": dictonary["start_location"],
@@ -189,7 +189,7 @@ class InputBox:
 
 # draw buttons & retrieve bot dictonary
 def buttons_draw():
-    global dict_info_single
+    global dict_info
     for b in buttons:
         b.draw()
         b.check_click()
@@ -221,7 +221,7 @@ def snake_interface():
     while len(buttons)>0: buttons.pop(0)
 
     # choose which bot to use
-    button2_1 = Button('A* search',310,70,(40,300),5)
+    button2_1 = Button('Greedy search',310,70,(40,300),5)
     button3_1 = Button('Hamilton search',310,70,(370,300),5)
     while choise_made == 'bot': #loop only if have selected bot previously
         for event in pygame.event.get():
