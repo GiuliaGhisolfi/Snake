@@ -46,11 +46,11 @@ def start(
     # bot selection
     if not TEST_MODE and player_info['type'] == 'human': # REVIEW: in test mode non è mai human
         player = HumanPlayer(
-            game=pygame,
-            up_key=player_info['keys']['up'],
-            down_key=player_info['keys']['down'],
-            right_key=player_info['keys']['right'],
-            left_key=player_info['keys']['left'])
+            game = pygame,
+            up_key = pygame.K_UP,
+            down_key = pygame.K_DOWN,
+            right_key = pygame.K_RIGHT,
+            left_key = pygame.K_LEFT)
     elif player_info['type'] == 'greedy':
         player = Bot_greedy(grid, snake, food, bot_config, log_file)
     elif player_info['type'] == 'hamilton':
@@ -243,9 +243,9 @@ TODO:
 -   capire se i dati che salviamo sono tutti quelli che possono servirci e provare a processarli per capire se è comodo il formato che usiamo per scriverli
 -   aggiungere test per i bot random
 -   sistemare file gui (ci sono troppe costanti a cui accediamo supponendo che venga invocato il metodo snake_interface)
-    proabilmente del dizionario con le info del player non servono delle cose perchè era stato pensato per multiplayer, ovunque compaia single player rinomiamo in player
+-   ovunque compaia single player rinomiamo in player
 -   leggere le dimensioni della griglia senza dover schiacciare invio
--   centrare meglio i bottoni in modo che prendano i click
+-   centrare meglio i bottoni in modo che prendano i click (?)
 -   bisognerebbe fondere search e utils, togliere le cose che non servono e forse mettere nello stesso file le nostre versioni di a*
 -   aggiungere commenti al nuovo codice e ripulirlo
 -   uniformare il passaggio di parametri a funzioni (esplicitiamo il tipo in tutte?)

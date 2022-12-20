@@ -14,12 +14,6 @@ dictonary = {
     "type": ["human", "greedy","hamilton"],
     "color": [colors.ORANGE, colors.BLUE ,colors.GREEN],
     "start_location": "top-left",
-    "keys": {
-        "up": pygame.K_UP,
-        "down": pygame.K_DOWN,
-        "right": pygame.K_RIGHT,
-        "left": pygame.K_LEFT
-    } 
 } 
 
 #initialize game, window size and font
@@ -80,8 +74,7 @@ class Button:
                     dict_info =  {
                         "type": dictonary["type"][0],
                         "color": dictonary["color"][0],
-                        "start_location": dictonary["start_location"],
-                        "keys": dictonary["keys"]
+                        "start_location": dictonary["start_location"]
                     }     
                     choise_made = 'human'
                     FRAME_DELAY = 85
@@ -89,24 +82,21 @@ class Button:
                     dict_info =  {
                         "type": dictonary["type"][1],
                         "color": dictonary["color"][1],
-                        "start_location": dictonary["start_location"],
-                        "keys": dictonary["keys"]
+                        "start_location": dictonary["start_location"]
                     }            
                     choise_made = 'bot' 
                 elif self.text == 'Greedy search':             
                     dict_info = {
                         "type": dictonary["type"][1],
                         "color": dictonary["color"][1],
-                        "start_location": dictonary["start_location"],
-                        "keys": dictonary["keys"]
+                        "start_location": dictonary["start_location"]
                     }
                     choise_made = 'astar'
                 elif self.text == 'Hamilton search':
                     dict_info = {
                         "type": dictonary["type"][2],
                         "color": dictonary["color"][2],
-                        "start_location": dictonary["start_location"],
-                        "keys": dictonary["keys"]
+                        "start_location": dictonary["start_location"]
                     }
                     choise_made = 'hamilton'
                 elif self.text == "Yes":
