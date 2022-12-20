@@ -1,9 +1,19 @@
 import json
 import numpy as np
 
-logfiles = ['.\dati_greedy\log1.json', '.\dati_greedy\log2.json', '.\dati_greedy\log3.json',
-            '.\dati_greedy\log4.json', '.\dati_greedy\log5.json', '.\dati_greedy\log6.json', 
-            '.\dati_greedy\log7.json',] # aggiungiamo i log di tutti (relativi a una specifica configurazione, 1 sta per config1)
+# deve leggere l'area della griglia per capire se ha vinto
+
+# aggiungiamo una lista simile a sotto i log di tutti (relativi a una specifica configurazione, 1 sta per config1)
+# di seguito concatena configurazioni diverse giusto per vedere se funziona
+
+logfiles = ['./hamilton_data/log1.json', './hamilton_data/log2.json', './hamilton_data/log3.json',
+            './hamilton_data/log4.json', './hamilton_data/log5.json', './hamilton_data/log6.json', 
+            './hamilton_data/log7.json', './hamilton_data/log8.json', './hamilton_data/log9.json',
+            './hamilton_data/log10.json', './hamilton_data/log1.json']
+
+"""logfiles = ['./greedy_data/log1.json', './greedy_data/log2.json', './greedy_data/log3.json',
+            './greedy_data/log4.json', './greedy_data/log5.json', './greedy_data/log6.json', 
+            './greedy_data/log7.json']"""
 data = []
 for file in logfiles:
 	f = open(file)

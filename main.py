@@ -1,6 +1,5 @@
 import pygame
 import numpy as np
-import time
 from grid import Grid
 from human_player import HumanPlayer
 from bot_greedy import Bot_greedy
@@ -9,63 +8,70 @@ from bot_blind import *
 from bot_random import *
 from snake import Snake
 from food import Food
+from config_parsing import get_game_config
 import gui
 import colors
 
 TEST_MODE = True
 
-def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, max_repetitions, dict_info, bot_config, iterations_log):
-    #create the window for the game
-    pygame.init()
+def start(
+    size, 
+    x_blocks, 
+    y_blocks, 
+    frame_delay, 
+    obstacles, 
+    autostart, 
+    max_executions, 
+    player_info,
+    bot_config, 
+    log_file
+    ):
+
     grid = Grid(size, x_blocks, y_blocks)
-    gui.window = pygame.display.set_mode(grid.bounds)
-    pygame.display.set_caption("Snake")
 
-    if obstacle == "None":
-        grid.update_grid_dimensions(x_blocks, y_blocks)
+    # create the window for the game
+    if not TEST_MODE:
+        pygame.init()
+        gui.window = pygame.display.set_mode(grid.bounds)
+        pygame.display.set_caption('Snake')
+        if obstacles == 'None':
+            grid.update_grid_dimensions(x_blocks, y_blocks) # REVIEW: quando TEST_MODE==True serve?
 
-    players_info = dict_info # retrieve the dictonary for the selected bot
-
-    # create SNAKE, OBSTACLES if selected and FOOD
-    snake = Snake(
-            color = players_info["color"],
-            start_location = players_info["start_location"])
+    # create snake, obstacles and food
+    snake = Snake(color = player_info['color'], start_location = player_info['start_location'])
     snake.respawn(grid)
-    
-    if obstacle != "None": 
-        grid.spawn_obstacles(obstacle)
-    
+    grid.spawn_obstacles(obstacles)
     food = Food(colors.RED)
     food.respawn(snake, grid)
 
     # bot selection
-    if players_info["type"] == "human":
+    if not TEST_MODE and player_info['type'] == 'human': # REVIEW: in test mode non è mai human
         player = HumanPlayer(
             game=pygame,
-            up_key=players_info["keys"]["up"],
-            down_key=players_info["keys"]["down"],
-            right_key=players_info["keys"]["right"],
-            left_key=players_info["keys"]["left"])
-    elif players_info['type'] == "greedy":
-        player = Bot_greedy(grid, snake, food, bot_config, iterations_log)
-    elif players_info['type'] == 'hamilton':
-        player = Bot_hamilton(grid, snake, food, bot_config, iterations_log, obstacle)
-    elif players_info['type'] == 'blind':
+            up_key=player_info['keys']['up'],
+            down_key=player_info['keys']['down'],
+            right_key=player_info['keys']['right'],
+            left_key=player_info['keys']['left'])
+    elif player_info['type'] == 'greedy':
+        player = Bot_greedy(grid, snake, food, bot_config, log_file)
+    elif player_info['type'] == 'hamilton':
+        player = Bot_hamilton(grid, snake, food, bot_config, log_file, obstacles)
+    elif player_info['type'] == 'blind':
         player = Bot_blind(grid, snake, food)
-    elif players_info['type'] == 'random':
+    elif player_info['type'] == 'random':
         player = Bot_random(grid, snake, food)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
 
-    repetitions = 0
-
-    while repetitions < max_repetitions:
-        pygame.time.delay(frame_delay)
-        # exit the game if I click the x button
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+    executions = 0
+    while executions < max_executions: # TODO: sistemare overflow con np.inf?
+        if not TEST_MODE:
+            pygame.time.delay(frame_delay)
+            # exit the game if the x button has been clicked
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    executions = max_executions
 
         # retrieve next move
         dir = player.get_next_move()
@@ -74,95 +80,59 @@ def start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, max_repeti
         eaten = snake.move(dir, food)
         
         # check if lose
-        lost = snake.bounds_collision(grid) or \
-            snake.tail_collision()
+        lost = snake.bounds_collision(grid) or snake.tail_collision()
         if lost:
-            text = gui.font.render('GAME OVER', True, colors.RED)
-            gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/3))  
-            pygame.display.update()
-            pygame.time.delay(gui.DEATH_DELAY)
+            if TEST_MODE: 
+                print('Execution %d/%d'%(executions+1, max_executions))
+            else:
+                text = gui.font.render('GAME OVER', True, colors.RED)
+                gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/3))  
+                pygame.display.update()
+                pygame.time.delay(gui.DEATH_DELAY)
             
-            player.save_data()
-            repetitions += 1
+            executions += 1
+            player.save_data(executions==max_executions)
             snake.respawn(grid)
-            if obstacle != "None" : grid.spawn_obstacles(obstacle)
+            grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
-            if not autostart: gui.new_game()
-
-        # check if win
-        if snake.length == grid.get_grid_free_area():
-            snake.draw(pygame, gui.window, grid)
-            grid.draw_obstacles(pygame, gui.window)
-            snake.draw(pygame, gui.window, grid)
-            text = gui.font.render('COMPLETE', True, colors.RED)
-            gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/2))
-            pygame.display.update()
-            pygame.time.delay(gui.DEATH_DELAY)
+            if not autostart: gui.new_game() # REVIEW: con test mode è sempre autostart
+        elif snake.length == grid.get_grid_free_area(): # win
+            if TEST_MODE: 
+                print('Execution %d/%d'%(executions+1, max_executions))
+            else:
+                snake.draw(pygame, gui.window, grid)
+                grid.draw_obstacles(pygame, gui.window)
+                snake.draw(pygame, gui.window, grid)
+                text = gui.font.render('COMPLETE', True, colors.RED)
+                gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/2))
+                pygame.display.update()
+                pygame.time.delay(gui.DEATH_DELAY)
             
-            player.save_data()
-            repetitions += 1
+            executions += 1
+            player.save_data(executions==max_executions)
             snake.respawn(grid)
-            if obstacle != "None": grid.spawn_obstacles(obstacle)
+            grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
-            if not autostart: gui.new_game()
+            if not autostart: gui.new_game() # REVIEW: con test mode è sempre autostart
         else:
             if eaten : food.respawn(snake, grid)
-            gui.window.fill(colors.BLACK)
+            if not TEST_MODE:
+                gui.window.fill(colors.BLACK)
+                grid.draw_path(pygame, gui.window, player.get_path_to_draw())
+                snake.draw(pygame, gui.window, grid)
+                grid.draw_obstacles(pygame, gui.window)
+                food.draw(pygame, gui.window, grid)
+                pygame.display.update()
 
-            grid.draw_path(pygame, gui.window, player.get_path_to_draw()) # display the path wich the snake is following
-            snake.draw(pygame, gui.window, grid)
-            grid.draw_obstacles(pygame, gui.window)
-            food.draw(pygame, gui.window, grid)
-            pygame.display.update()
-
-
-def parse_config(file):
-        param = {}
-        with open(file, 'r') as c:
-            for i, line in enumerate(c):
-                if line.startswith('#') or len(line) == 1:
-                    continue
-                else:
-                    try:
-                        sl = line.replace('\n', '').replace(' ', '').split('=')
-                        param[sl[0]] = sl[1]
-                    except:
-                        print('errore file config linea: ' + str(i))
-
-        try:
-            size = int(param['size'])
-            x_blocks = int(param['x_blocks'])
-            y_blocks = int(param['y_blocks'])
-            frame_delay = int(param['frame_delay'])
-            obstacle = str(param['obstacle']) 
-            autostart = bool(param['autostart'])
-            repetitions = int(param['repetitions'])
-
-        except Exception as e:
-            print(e)
-            print('parameter value error')
-            print('initialization with default values')
-
-            size = 700
-            x_blocks = 10
-            y_blocks = 11
-            frame_delay = 1
-            obstacle = 'None'
-            autostart = True
-            repetitions = 30
-        
-        return size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions
-
-
-greedy_fold = './dati_greedy/'
+greedy_fold = './greedy_data/'
 greedy_configs = [
-    greedy_fold+'c1.config', 
-    greedy_fold+'c2.config', 
-    greedy_fold+'c3.config',
-    greedy_fold+'c4.config',
-    greedy_fold+'c5.config',
-    greedy_fold+'c6.config',
-    greedy_fold+'c7.config'
+    greedy_fold+'bot1.config', 
+    greedy_fold+'bot2.config', 
+    greedy_fold+'bot3.config',
+    greedy_fold+'bot4.config',
+    greedy_fold+'bot5.config',
+    greedy_fold+'bot6.config',
+    greedy_fold+'bot7.config'
     ]
 greedy_logs = [
     greedy_fold+'log1.json', 
@@ -173,73 +143,111 @@ greedy_logs = [
     greedy_fold+'log6.json',
     greedy_fold+'log7.json'
     ]
-ham_fold = './dati_hamilton/'
-ham_configs = [
-    ham_fold+'c1.config', 
-    ham_fold+'c2.config', 
-    ham_fold+'c3.config',
-    ham_fold+'c4.config',
-    ham_fold+'c5.config',
-    ham_fold+'c6.config',
-    ham_fold+'c7.config',
-    ham_fold+'c8.config',
-    ham_fold+'c9.config',
-    ham_fold+'c10.config',
-    ham_fold+'c11.config'
+
+hamilton_fold = './hamilton_data/'
+hamilton_configs = [
+    hamilton_fold+'bot1.config', 
+    hamilton_fold+'bot2.config', 
+    hamilton_fold+'bot3.config',
+    hamilton_fold+'bot4.config',
+    hamilton_fold+'bot5.config',
+    hamilton_fold+'bot6.config',
+    hamilton_fold+'bot7.config',
+    hamilton_fold+'bot8.config',
+    hamilton_fold+'bot9.config',
+    hamilton_fold+'bot10.config',
+    hamilton_fold+'bot11.config'
     ]
 ham_logs = [
-    ham_fold+'log1.json', 
-    ham_fold+'log2.json', 
-    ham_fold+'log3.json',
-    ham_fold+'log4.json',
-    ham_fold+'log5.json',
-    ham_fold+'log6.json',
-    ham_fold+'log7.json',
-    ham_fold+'log8.json',
-    ham_fold+'log9.json',
-    ham_fold+'log10.json',
-    ham_fold+'log11.json'
+    hamilton_fold+'log1.json', 
+    hamilton_fold+'log2.json', 
+    hamilton_fold+'log3.json',
+    hamilton_fold+'log4.json',
+    hamilton_fold+'log5.json',
+    hamilton_fold+'log6.json',
+    hamilton_fold+'log7.json',
+    hamilton_fold+'log8.json',
+    hamilton_fold+'log9.json',
+    hamilton_fold+'log10.json',
+    hamilton_fold+'log11.json'
     ]
-
 
 ### game start ###
 if not TEST_MODE:
     gui.snake_interface()
-
     if gui.dict_info_single['type']=='greedy':
-        config = './dati_greedy/c7.config'
-        iterations_log = './dati_greedy/log7.json'
+        config = greedy_fold+'bot7.config'
+        log_file = greedy_fold+'log7.json'
     if gui.dict_info_single['type']=='hamilton':
-        config = './dati_hamilton/c11.config'
-        iterations_log = './dati_hamilton/log11.json'
-
-    start(size=gui.SIZE, 
-    x_blocks=gui.X_BLOCKS, 
-    y_blocks=gui.Y_BLOCKS, 
-    frame_delay=gui.FRAME_DELAY, 
-    obstacle=gui.OBSTACLES, 
-    autostart=gui.AUTOSTART,
-    max_repetitions=np.inf,
-    dict_info=gui.dict_info_single,
-    bot_config=config,
-    iterations_log=iterations_log
+        config = hamilton_fold+'bot6.config'
+        log_file = hamilton_fold+'log6.json'
+    start(
+        size=gui.SIZE, 
+        x_blocks=gui.X_BLOCKS, 
+        y_blocks=gui.Y_BLOCKS, 
+        frame_delay=gui.FRAME_DELAY, 
+        obstacles=gui.OBSTACLES, 
+        autostart=gui.AUTOSTART,
+        max_executions=np.inf,
+        player_info=gui.dict_info_single,
+        bot_config=config,
+        log_file=log_file
     )
 else:
-    for conf, log in zip(greedy_configs, greedy_logs):
-        dictionary = { 
-            "type": "greedy",
-            "color": colors.GREEN,
-            "start_location": "top-left"
-        }
-        size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions = parse_config('./dati_greedy/main.config')
-        start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions, dictionary, conf, log)
+    player_info = {
+        'color': colors.GREEN,
+        'start_location': 'top-left'
+    }
+    print('------ Bot greedy ------')
+    for config_file, log_file in zip(greedy_configs, greedy_logs):
+        print('config = %s'%config_file)
+        player_info['type'] = 'greedy'
+        size, x_blocks, y_blocks, frame_delay, obstacles, autostart, executions = get_game_config(greedy_fold+'game.config')
+        start(
+            size=size, 
+            x_blocks=x_blocks, 
+            y_blocks=y_blocks, 
+            frame_delay=frame_delay, 
+            obstacles=obstacles, 
+            autostart=autostart, 
+            max_executions=executions, 
+            player_info=player_info, 
+            bot_config=config_file,
+            log_file=log_file
+        )
 
+    print('------ Bot hamilton ------')
+    for config_file, log_file in zip(hamilton_configs, ham_logs):
+        print('config = %s'%config_file)
+        player_info['type'] = 'hamilton'
+        size, x_blocks, y_blocks, frame_delay, obstacles, autostart, executions = get_game_config(hamilton_fold+'game.config')
+        start(
+            size=size, 
+            x_blocks=x_blocks, 
+            y_blocks=y_blocks, 
+            frame_delay=frame_delay, 
+            obstacles=obstacles, 
+            autostart=autostart, 
+            max_executions=executions, 
+            player_info=player_info, 
+            bot_config=config_file, 
+            log_file=log_file
+        )
 
-    for conf, log in zip(ham_configs, ham_logs):
-        dictionary = { 
-            "type": "hamilton",
-            "color": colors.GREEN,
-            "start_location": "top-left"
-        }
-        size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions = parse_config('./dati_hamilton/main.config')
-        start(size, x_blocks, y_blocks, frame_delay, obstacle, autostart, repetitions, dictionary, conf, log)
+"""
+TODO:
+-   organizzare meglio il main, magari spostare le costanti (i path dei file di configurazione) in un altro file? controllare i REVIEW:
+-   sistemare get_game_config (evitare di fargli ritornare tutti quei parametri, raggrupparli)
+-   capire se i dati che salviamo sono tutti quelli che possono servirci e provare a processarli per capire se è comodo il formato che usiamo per scriverli
+-   aggiungere test per i bot random
+-   ripristinare human con tasti (ora va con bot random se non sbaglio)
+-   sistemare file gui (ci sono troppe costanti a cui accediamo supponendo che venga invocato il metodo snake_interface)
+    proabilmente del dizionario con le info del player non servono delle cose perchè era stato pensato per multiplayer, ovunque compaia single player rinomiamo in player
+-   leggere le dimensioni della griglia senza dover schiacciare invio
+-   cambiare la scritta del bottone A* in greedy
+-   centrare meglio i bottoni in modo che prendano i click
+-   bisognerebbe fondere search e utils, togliere le cose che non servono e forse mettere nello stesso file le nostre versioni di a*
+-   aggiungere commenti al nuovo codice e ripulirlo
+-   uniformare il passaggio di parametri a funzioni (esplicitiamo il tipo in tutte?)
+-   importare cose specifiche, evitare *
+"""

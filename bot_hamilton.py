@@ -6,41 +6,20 @@ import snake
 import food
 import colors
 from gui import *
+from config_parsing import read_config_file
 import time
 
-DECIMALDIGIT = 6
-FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
-
-
 class Bot_hamilton(Bot):
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config, iterations_log, obstacle):
-        super().__init__(grid, snake, food)
-        self.ham_cycle = self.grid.get_cycle(obstacle)
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config_path, log_path, obstacles):
+        super().__init__(grid, snake, food, config_path, log_path)
+        self.ham_cycle = self.grid.get_cycle(obstacles)
 
         if len(self.snake.get_body()) < 3:
             print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
 
-        self.parse_config(config)
-
-        self.data_to_save = []
-        self.iterations_log = iterations_log
-        with open(self.iterations_log, 'a+') as log:
-            log.write('[\n')
-
     def parse_config(self, file):
-        param = {}
-        with open(file, 'r') as c:
-            for i, line in enumerate(c):
-                if line.startswith('#') or len(line) == 1:
-                    continue
-                else:
-                    try:
-                        sl = line.replace('\n', '').replace(' ', '').split('=')
-                        param[sl[0]] = sl[1]
-                    except:
-                        print('errore file config linea: ' + str(i))
-
+        param = read_config_file(file)
         try:
             self.alpha = float(param['alpha'])
             self.gamma = float(param['gamma'])
@@ -55,34 +34,7 @@ class Bot_hamilton(Bot):
             self.gamma = 0.45
             self.beta = 0.65
 
-    def save_data(self):
-        with open(self.iterations_log, 'a+') as log:
-            line = '[\n'
-            flag = True
-            for a,b in self.data_to_save:
-                if flag:
-                    line += '\t[' + FLOATTOKEN % b + ',' + str(a) + ']'
-                    flag  = False
-                else:
-                    line += ',[' + FLOATTOKEN % b + ',' + str(a) + ']'
-            line += '],\n'
-            log.write( line )
-        
-        self.data_to_save = []
-        
-    def get_next_move(self):
-      
-        snake_body_len = len(self.snake.body)
-        start_iteration_time = time.time()
-
-        ret =  self.hamilton_strat() 
-
-        end_iteration_time = time.time()
-        self.data_to_save.append((snake_body_len, end_iteration_time - start_iteration_time))
-
-        return ret
-
-    def hamilton_strat(self):
+    def strategy(self):
         """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the
         game grid, if possible at each iteration it tries to generate an optimal cycle
         and/or to cut the current cycle to get as close as possible to the food position."""
@@ -254,12 +206,7 @@ class Bot_hamilton(Bot):
                 self.ham_cycle[nn] = new_position[idx]
                 idx += 1
 
-    """def update_ham_cycle(self):
-        "Update self.ham_cycle"
-        self.ham_cycle = self.grid.get_cycle()"""
-
     def get_path_to_draw(self):
         ord_list = sorted(self.ham_cycle.keys(),
                           key=lambda k: self.ham_cycle[k])
-
         return ([ord_list], [colors.WHITE], [True])

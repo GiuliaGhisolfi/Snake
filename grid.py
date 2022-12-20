@@ -75,6 +75,8 @@ class Grid:
 
     def spawn_obstacles(self, obstacles):
         '''create the obstacle's configuration of the grid'''
+        if obstacles == 'None':
+            return
         self.grid = copy.deepcopy(self.full_grid)
         self.obstacles.clear()
         self.current_config = obstacles

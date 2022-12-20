@@ -6,6 +6,7 @@ import food
 import colors
 from grid_problem import *
 from gui import *
+from config_parsing import read_config_file
 import time
 
 from bot import Bot
@@ -17,18 +18,15 @@ DEF_C = colors.BLUE
 
 # higher = more step before stop
 DETECTLOOPGENEROSITY = 2.1
-# for saving data
-DECIMALDIGIT = 4
-FLOATTOKEN = '%.' + str(DECIMALDIGIT) + 'f'
 
 
 class Bot_greedy(Bot):
 
     # to create the bot
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, config, iterations_log, debug=False):
+    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, config_path, log_path, debug=False):
 
         # to save these variables
-        super().__init__(grid, snake, food)
+        super().__init__(grid, snake, food, config_path, log_path)
 
         # debug mode ( default=False )
         self.debug = debug
@@ -48,29 +46,9 @@ class Bot_greedy(Bot):
         # next node to optimize
         self.nnto = None 
 
-        # parse the config file to save the hyperparameters
-        self.parse_config(config)
-
-        # collecting data
-        self.data_to_save = []
-        self.iterations_log = iterations_log
-        with open(self.iterations_log, 'a+') as log:
-            log.write('[\n')
-
-    # method for parsing the cinfiguration file to memorize the hyperparameters
+    # method for parsing the configuration file to store the parameters
     def parse_config(self, file):
-        param = {}
-        with open(file, 'r') as c:
-            for i, line in enumerate(c):
-                if line.startswith('#') or len(line) == 1:
-                    continue
-                else:
-                    try:
-                        sl = line.replace('\n', '').replace(' ', '').split('=')
-                        param[sl[0]] = sl[1]
-                    except:
-                        print('errore file config linea: '  + str(i))
-
+        param = read_config_file(file)
         try:
             self.chosen_search = int(param['chosen_search'])
             # safe path strategy
@@ -95,22 +73,6 @@ class Bot_greedy(Bot):
             self.chosen_optimization = 1
             self.weights = [1,0,0,0]
             self.choice_sensibility = 4
-
-    # method for saving all the collected data of one iteration of the bot in a file
-    def save_data(self):
-        with open(self.iterations_log, 'a+') as log:
-            line = '[\n'
-            flag = True
-            for a,b in self.data_to_save:
-                if flag:
-                    line += '\t[' + FLOATTOKEN % b + ',' + str(a) + ']'
-                    flag  = False
-                else:
-                    line += ',[' + FLOATTOKEN % b + ',' + str(a) + ']'
-            line += '],\n'
-            log.write( line )
-        
-        self.data_to_save = []
 
     # method that uses the correct graph research algorithm
     def graph_search(self, start, goal, graph):
@@ -234,7 +196,7 @@ class Bot_greedy(Bot):
             self.snake.color = DEF_C
 
     # core of the strategy
-    def apple_cicle_opt_strat(self):
+    def strategy(self):
         
         snake_body = self.snake.get_body()
         if self.debug: self.change_color()
@@ -311,21 +273,6 @@ class Bot_greedy(Bot):
                 return self.snake.dir_to_cell(possible_dir[random.randrange(len(possible_dir))])
             else:
                 return Directions.random_direction()
-
-    # the method called for the bot's next move
-    def get_next_move(self):
-        
-        # only data collection and the call to the real strategy
-        snake_body_len = len(self.snake.body)
-        start_iteration_time = time.time()
-
-
-        ret =  self.apple_cicle_opt_strat() 
-
-        end_iteration_time = time.time()
-        self.data_to_save.append((snake_body_len, end_iteration_time - start_iteration_time))
-        
-        return ret
     
     # graphic method
     def get_path_to_draw(self):
