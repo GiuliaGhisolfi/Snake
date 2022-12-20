@@ -152,17 +152,17 @@ class InputBox:
             self.color = colors.ORANGE if self.active else colors.GREEN
         if event.type == pygame.KEYDOWN:
             if self.active:
-                if event.key == pygame.K_RETURN:
-                    if self.name == "X":
-                        X_BLOCKS = int(self.text)
-                    elif self.name == "Y":
-                        Y_BLOCKS = int(self.text)
-                    else: print("error: no such input box")
-                    self.text = ''
-                elif event.key == pygame.K_BACKSPACE:
+                for value in [i for i in range(10)]:
+                    if event.unicode == str(value):
+                        self.text += event.unicode
+                        if self.name == "X":
+                            X_BLOCKS = int(self.text)
+                        elif self.name == "Y":
+                            Y_BLOCKS = int(self.text)
+                        else: print("error: no such input box")
+                #self.text = ''
+                if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
-                else:
-                    self.text += event.unicode
                 # Re-render the text.
                 self.txt_surface = FONT.render(self.text, True, self.color)
 
@@ -277,11 +277,11 @@ def snake_interface():
         for box in input_boxes:
             box.draw(window)
         buttons_draw()
-        text = font.render('Insert the grid dimensions, ', True, colors.WHITE)
-        text4 = font.render('and press enter.',True,colors.WHITE)
+        text = font.render('Insert the grid dimensions in', True, colors.WHITE)
+        text4 = font.render('the rectangles and press enter.',True,colors.WHITE)
         text1 = font.render('At the end press the button.',True, colors.WHITE)
         window.blit(text, (window.get_size()[0]/12*1.5, window.get_size()[1]/12))
-        window.blit(text4, (window.get_size()[0]/4, window.get_size()[1]/12*2))
+        window.blit(text4, (window.get_size()[0]/12, window.get_size()[1]/12*2))
         window.blit(text1,(window.get_size()[0]/12*1.5, window.get_size()[1]/12*3))
         text2 = font.render('X', True, colors.WHITE)
         text3 = font.render('Y',True, colors.WHITE)

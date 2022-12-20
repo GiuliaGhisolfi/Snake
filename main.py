@@ -244,7 +244,6 @@ TODO:
 -   aggiungere test per i bot random
 -   sistemare file gui (ci sono troppe costanti a cui accediamo supponendo che venga invocato il metodo snake_interface)
 -   ovunque compaia single player rinomiamo in player
--   leggere le dimensioni della griglia senza dover schiacciare invio
 -   centrare meglio i bottoni in modo che prendano i click (?)
 -   bisognerebbe fondere search e utils, togliere le cose che non servono e forse mettere nello stesso file le nostre versioni di a*
 -   aggiungere commenti al nuovo codice e ripulirlo
