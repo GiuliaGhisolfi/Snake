@@ -7,7 +7,6 @@ import food
 import colors
 from gui import *
 from config_parsing import read_config_file
-import time
 
 class Bot_hamilton(Bot):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config_path, log_path, obstacles):
@@ -45,15 +44,15 @@ class Bot_hamilton(Bot):
         grid = self.get_current_grid(self.body[:-1])
         self.grid_area = self.grid.get_grid_free_area()
         
+        # DYNAMIC: at each iter it looks for an optimal Hamiltonian cycle for that move
+        if self.gamma * self.grid_area < len(self.body) < self.beta * self.grid_area:
+            self.change_cycle()
+        
         head_ham_pos = self.ham_cycle[self.head]
         for coordinates, ham_pos in self.ham_cycle.items():
             if ham_pos == (head_ham_pos + 1) % self.grid_area:  
                 move = coordinates # (coordinates[0], coordinates[1]) # TODO: giusto? -> si, passandolo a debug funziona sempre :)
                 break
-
-        # DYNAMIC: at each iter it looks for an optimal Hamiltonian cycle for that move
-        if self.gamma * self.grid_area < len(self.body) < self.beta * self.grid_area:
-            self.change_cycle()
         
         # GREEDY: when the snake is long we do not take shortcuts to avoid crashes
         if len(self.body) < self.alpha * self.grid_area:
@@ -114,7 +113,7 @@ class Bot_hamilton(Bot):
                         if node_prec != None and head_succ != None:
                             break
                     if node_prec in self.grid.grid[head_succ]:
-                        flag = True
+                        flag = True                        
                         node_pos = (node_idx - head_idx) % self.grid_area
 
                 if flag:

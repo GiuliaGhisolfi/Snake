@@ -12,7 +12,7 @@ from config_parsing import get_game_config
 import gui
 import colors
 
-TEST_MODE = False
+TEST_MODE = True
 
 def start(
     size, 
@@ -181,7 +181,7 @@ if not TEST_MODE:
         config = greedy_fold+'bot7.config'
         log_file = greedy_fold+'log7.json'
     if gui.dict_info['type']=='hamilton':
-        config = hamilton_fold+'bot6.config'
+        config = hamilton_fold+'bot3.config'
         log_file = hamilton_fold+'log6.json'
     start(
         size=gui.SIZE, 
