@@ -182,7 +182,7 @@ if not TEST_MODE:
         log_file = greedy_fold+'log7.json'
     if gui.dict_info['type']=='hamilton':
         config = hamilton_fold+'bot3.config'
-        log_file = hamilton_fold+'log6.json'
+        log_file = hamilton_fold+'log3.json'
     start(
         size=gui.SIZE, 
         x_blocks=gui.X_BLOCKS, 
@@ -200,7 +200,7 @@ else:
         'color': colors.GREEN,
         'start_location': 'top-left'
     }
-    print('------ Bot greedy ------')
+    """    print('------ Bot greedy ------')
     for config_file, log_file in zip(greedy_configs, greedy_logs):
         print('config = %s'%config_file)
         player_info['type'] = 'greedy'
@@ -216,7 +216,7 @@ else:
             player_info=player_info, 
             bot_config=config_file,
             log_file=log_file
-        )
+        )"""
 
     print('------ Bot hamilton ------')
     for config_file, log_file in zip(hamilton_configs, ham_logs):
