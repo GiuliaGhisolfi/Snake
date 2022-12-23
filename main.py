@@ -93,7 +93,7 @@ def start(params):
             
             executions += 1
             if player_info['type'] != 'human':
-                player.save_data(executions==max_executions)
+                player.save_data(executions==max_executions, lost)
             snake.respawn(grid)
             grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
@@ -111,7 +111,7 @@ def start(params):
                 pygame.time.delay(gui.DEATH_DELAY)
             
             executions += 1
-            player.save_data(executions==max_executions)
+            player.save_data(executions==max_executions, lost)
             snake.respawn(grid)
             grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
@@ -132,8 +132,8 @@ if not TEST_MODE: # normal execution
     config = 'default.config'
     log_file = 'default_log_file.config'
     if gui.dict_info['type']=='greedy':
-        config = greedy_configs_fold+'bot7.config'
-        log_file = greedy_configs_fold+'log7.json'
+        config = greedy_configs_fold+'bot1.config'
+        log_file = greedy_configs_fold+'log1.json'
     if gui.dict_info['type']=='hamilton':
         config = hamilton_configs_fold+'bot6.config'
         log_file = hamilton_configs_fold+'log6.json'
