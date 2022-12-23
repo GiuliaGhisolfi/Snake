@@ -4,8 +4,8 @@ from grid import Grid
 from human_player import HumanPlayer
 from bot_greedy import Bot_greedy
 from bot_hamilton import Bot_hamilton
-from bot_blind import *
-from bot_random import *
+from bot_blind import Bot_blind
+from bot_random import Bot_random
 from snake import Snake
 from food import Food
 from config_parsing import get_game_config
@@ -200,7 +200,7 @@ else:
         'color': colors.GREEN,
         'start_location': 'top-left'
     }
-    """    print('------ Bot greedy ------')
+    print('------ Bot greedy ------')
     for config_file, log_file in zip(greedy_configs, greedy_logs):
         print('config = %s'%config_file)
         player_info['type'] = 'greedy'
@@ -216,7 +216,7 @@ else:
             player_info=player_info, 
             bot_config=config_file,
             log_file=log_file
-        )"""
+        )
 
     print('------ Bot hamilton ------')
     for config_file, log_file in zip(hamilton_configs, ham_logs):

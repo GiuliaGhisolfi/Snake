@@ -1,11 +1,10 @@
+import numpy as np
 from bot import Bot
-from search import *
-from grid_problem import *
 import grid
 import snake
 import food
 import colors
-from gui import *
+
 from config_parsing import read_config_file
 
 
