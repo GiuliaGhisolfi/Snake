@@ -4,7 +4,6 @@ import grid
 import snake
 import food
 import colors
-
 from config_parsing import read_config_file
 
 

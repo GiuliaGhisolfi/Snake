@@ -1,4 +1,5 @@
-import pygame, sys
+import pygame
+import sys
 import colors
 
 X_BLOCKS = 15
@@ -15,7 +16,10 @@ dictonary = {
     "color": [colors.ORANGE, colors.BLUE ,colors.GREEN],
     "start_location": "top-left",
 } 
-
+# global variables to use in main file
+choise_made = False
+buttons = []
+dict_info = {}
 #initialize game, window size and font
 pygame.init()
 window = pygame.display.set_mode((SIZE,SIZE))
@@ -23,10 +27,7 @@ pygame.display.set_caption("Snake")
 font = pygame.font.SysFont('Arial', 40, True)
 clock = pygame.time.Clock()
 FONT = pygame.font.Font(None, 32)
-# global variables to use in main file
-choise_made = False
-buttons = []
-dict_info = {}
+
 """ class that implements buttons in the game interface"""
 class Button:
     def __init__(self,text,width,height,pos,elevation):
