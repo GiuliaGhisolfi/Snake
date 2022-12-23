@@ -1,7 +1,4 @@
 import copy
-import random as rand
-import math
-import colors
 import gui
 import pygame
 from obstacles_configurations import Obstacles_configurations

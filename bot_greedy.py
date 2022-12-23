@@ -1,13 +1,11 @@
 from directions import Directions
-from search import *
+from search import random
 import grid
 import snake
 import food
 import colors
-from grid_problem import *
-from gui import *
+from grid_problem import GridProblem, astar_search_min_turns, astar_search_saving_spaces, longest_path
 from config_parsing import read_config_file
-import time
 
 from bot import Bot
 
