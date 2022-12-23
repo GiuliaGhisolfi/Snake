@@ -20,18 +20,18 @@ class Bot_hamilton(Bot):
     def parse_config(self, file):
         param = read_config_file(file)
         try:
-            self.alpha = float(param['alpha'])
-            self.gamma = float(param['gamma'])
-            self.beta = float(param['beta'])
+            self.max_len_shortcuts = float(param['max_len_shortcuts'])
+            self.min_len_repair = float(param['min_len_repair'])
+            self.max_len_repair = float(param['max_len_repair'])
 
         except Exception as e:
             print(e)
             print('parameter value error')
             print('initialization with default values')
 
-            self.alpha = 0.5
-            self.gamma = 0.45
-            self.beta = 0.65
+            self.max_len_shortcuts = 0.5
+            self.min_len_repair = 0.45
+            self.max_len_repair = 0.65
 
     def strategy(self):
         """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the
@@ -60,7 +60,7 @@ class Bot_hamilton(Bot):
         self.grid_area = self.grid.get_grid_free_area()
 
         # DYNAMIC: at each iter it looks for an optimal Hamiltonian cycle for that move
-        if self.gamma * self.grid_area < len(self.body) < self.beta * self.grid_area:
+        if self.min_len_repair * self.grid_area < len(self.body) < self.max_len_repair * self.grid_area:
             self.change_cycle()
 
         head_ham_pos = self.ham_cycle[self.head]
@@ -70,7 +70,7 @@ class Bot_hamilton(Bot):
                 break
 
         # GREEDY: when the snake is long we do not take shortcuts to avoid crashes
-        if len(self.body) < self.alpha * self.grid_area:
+        if len(self.body) < self.max_len_shortcuts * self.grid_area:
             neighbors = grid[self.head]
             min_ham_dis = np.inf
             for next in neighbors:

@@ -13,14 +13,14 @@ import numpy as np
 # snake_length = [ [lung. primo gioco], [secondo], ... ]
 
 
-logfiles = ['./hamilton_data/log1.json', './hamilton_data/log2.json', './hamilton_data/log3.json',
-            './hamilton_data/log4.json', './hamilton_data/log5.json', './hamilton_data/log6.json',
-            './hamilton_data/log7.json', './hamilton_data/log8.json', './hamilton_data/log9.json',
-            './hamilton_data/log10.json', './hamilton_data/log1.json']
+logfiles = ['./hamilton_results/log1.json', './hamilton_results/log2.json', './hamilton_results/log3.json',
+            './hamilton_results/log4.json', './hamilton_results/log5.json', './hamilton_results/log6.json',
+            './hamilton_results/log7.json', './hamilton_results/log8.json', './hamilton_results/log9.json',
+            './hamilton_results/log10.json', './hamilton_results/log1.json']
 
-"""logfiles = ['./greedy_data/log1.json', './greedy_data/log2.json', './greedy_data/log3.json',
-            './greedy_data/log4.json', './greedy_data/log5.json', './greedy_data/log6.json', 
-            './greedy_data/log7.json']"""
+"""logfiles = ['./greedy_results/log1.json', './greedy_results/log2.json', './greedy_results/log3.json',
+            './greedy_results/log4.json', './greedy_results/log5.json', './greedy_results/log6.json', 
+            './greedy_results/log7.json']"""
 data = []
 for file in logfiles:
     f = open(file)
