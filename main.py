@@ -243,8 +243,6 @@ TODO:
 -   capire se i dati che salviamo sono tutti quelli che possono servirci e provare a processarli per capire se è comodo il formato che usiamo per scriverli
 -   aggiungere test per i bot random
 -   sistemare file gui (ci sono troppe costanti a cui accediamo supponendo che venga invocato il metodo snake_interface)
--   ovunque compaia single player rinomiamo in player
--   centrare meglio i bottoni in modo che prendano i click (?)
 -   bisognerebbe fondere search e utils, togliere le cose che non servono e forse mettere nello stesso file le nostre versioni di a*
 -   aggiungere commenti al nuovo codice e ripulirlo
 -   uniformare il passaggio di parametri a funzioni (esplicitiamo il tipo in tutte?)
