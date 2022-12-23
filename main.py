@@ -178,10 +178,8 @@ TODO:
 -   sistemare get_game_config (evitare di fargli ritornare tutti quei parametri, raggrupparli) --> raggruppati in una lista
 -   aggiungere test per i bot random --> davvero..? 
 
--   sistemare file gui (ci sono troppe costanti a cui accediamo supponendo che venga invocato il metodo snake_interface)
--   centrare meglio i bottoni in modo che prendano i click (?)
+-   bisognerebbe fondere search e utils, togliere le cose che non servono e forse mettere nello stesso file le nostre versioni di a* 
+    --> non è meglio lasciare intatti i file che abbiamo importato dall'aima?
 
--   capire se i dati che salviamo sono tutti quelli che possono servirci e provare a processarli per capire se è comodo il formato che usiamo per scriverli
--   bisognerebbe fondere search e utils, togliere le cose che non servono e forse mettere nello stesso file le nostre versioni di a* --> non è meglio lasciare intatti i file che abbiamo importato dall'aima?
 -   uniformare il passaggio di parametri a funzioni (esplicitiamo il tipo in tutte?)
 """
