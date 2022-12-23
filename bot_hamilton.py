@@ -1,13 +1,10 @@
 from bot import Bot
-from search import *
-from grid_problem import *
+import numpy as np
 import grid
 import snake
 import food
 import colors
-from gui import *
 from config_parsing import read_config_file
-import time
 
 class Bot_hamilton(Bot):
     def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config_path, log_path, obstacles):
