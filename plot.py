@@ -80,12 +80,12 @@ def plot_iterations_time_different_config(averege_time, std_time):
         x_vectore = np.linspace(1, len(aver), len(aver))
         aver = np.array(aver)
         std = np.array(std)
-        plt.semilogy(x_vectore, aver, label="config{}".format(i), color=color[i], linewidth=0.5)
+        plt.semilogy(x_vectore, aver, label="config{}".format(i+1), color=color[i], linewidth=0.5)
         plt.semilogy(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
         plt.semilogy(x_vectore, aver-std, alpha=0.2, color=color[i], linewidth=0.5)
         i += 1
         
-    plt.legend(bbox_to_anchor=(1.05, 1.0), loc='lower center')
+    plt.legend()
     plt.xlabel("k-th iteration")
     plt.ylabel("log(time [sec])")
     plt.title("Averege and stadard deviation of time for every configuration")
@@ -99,12 +99,12 @@ def plot_iterations_lenght_snake_different_config(averege_length, std_length):
         aver = np.array(aver)
         std = np.array(std)
         x_vectore = np.linspace(1, len(aver), len(aver))
-        plt.plot(x_vectore, aver, label="config{}".format(i), color=color[i], linewidth=0.5)
+        plt.plot(x_vectore, aver, label="config{}".format(i+1), color=color[i], linewidth=0.5)
         plt.plot(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
         plt.plot(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
         i += 1
         
-    plt.legend(bbox_to_anchor=(1.05, 1.0), loc='lower center')
+    plt.legend()
     plt.xlabel("k-th iteration")
     plt.ylabel("snake length")
     plt.title("Averege and stadard deviation of snake length for every configuration")
