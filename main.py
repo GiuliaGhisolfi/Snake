@@ -12,7 +12,7 @@ from config_parsing import get_game_config, greedy_configs_fold, greedy_configs,
 import gui
 import colors
 
-TEST_MODE = True
+TEST_MODE = False
 
 def start(params):
     # parameters initialization
@@ -77,6 +77,7 @@ def start(params):
         # retrieve next move
         dir = player.get_next_move()
         
+        
         # check if eaten
         eaten = snake.move(dir, food)
         
@@ -132,7 +133,7 @@ if not TEST_MODE: # normal execution
     config = 'default.config'
     log_file = 'default_log_file.config'
     if gui.dict_info['type']=='greedy':
-        config = greedy_configs_fold+'bot1.config'
+        config = greedy_configs_fold+'bot3.config'
         log_file = greedy_configs_fold+'log1.json'
     if gui.dict_info['type']=='hamilton':
         config = hamilton_configs_fold+'bot6.config'

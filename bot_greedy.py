@@ -116,7 +116,7 @@ class Bot_greedy(Bot):
             exit()
 
     # method which is called at each failed iteration and takes care of space optimization
-    def optimize_standard_path(self, tg={}):
+    def optimize_standard_path(self):
         # no space optimization
         if self.chosen_optimization == 0: return
         
@@ -138,21 +138,20 @@ class Bot_greedy(Bot):
             return get_neighbors_n(node, true_graph) == 0
         
         #definiamo tg se non già fatto
-        if not tg:
-            tg = self.grid.grid
+        tg = self.grid.grid
 
         if self.nnto == self.snake.get_body()[-1]: #next node to optimize
-            #print('ping', self.nnto)
             if is_optimizable(self.snake.get_body()[-1], tg):
                 #cerchiamo il prossimo choke point
                 chokepoint = None
                 last_n = None
                 for c in self.default_path[:-1]:
-                    if c in tg and is_optimizable(c, tg):
-                        last_n = c
-                    if c in tg and is_chokepoint(c, tg):
+                    if is_chokepoint(c, tg): #c in tg and
                         chokepoint = c
                         break
+                    if c == self.snake.body[0] and is_optimizable(c, tg):
+                        last_n = c
+                        break 
                 if chokepoint == None and last_n != None:
                     chokepoint = last_n
                 if chokepoint != None:
@@ -161,7 +160,7 @@ class Bot_greedy(Bot):
                         chokepoint = self.default_path[choke_i]
 
                         to_remove = []
-                        if len(self.default_path) > choke_i + 2:
+                        if len(self.default_path) >= choke_i + 2:
                             to_remove = self.default_path[choke_i + 1:-1]
                         true_g = self.get_current_grid(to_remove)
 

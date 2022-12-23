@@ -16,7 +16,7 @@ class Bot(Player):
         self.data_to_save = []
         self.parse_config(config_path)
         self.log_path = log_path
-        with open(self.log_path, 'w') as log:
+        with open(self.log_path, 'w+') as log:
             log.write('[\n')
 
     def get_current_grid(self, cells_to_delete):

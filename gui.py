@@ -9,7 +9,7 @@ Y_BLOCKS = 16
 FRAME_DELAY = 1
 DEATH_DELAY = 700
 OBSTACLES = "to_be_setup"
-AUTOSTART = False
+AUTOSTART = True
 SIZE = 700
 # general dictonary to use in the bot dictonary creation
 dictonary = { 
