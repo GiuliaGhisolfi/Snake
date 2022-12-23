@@ -1,50 +1,52 @@
 #configuration and log files paths
-greedy_fold = './greedy_data/'
+greedy_configs_fold = './greedy_configs/'
 greedy_configs = [
-    greedy_fold+'bot1.config', 
-    greedy_fold+'bot2.config', 
-    greedy_fold+'bot3.config',
-    greedy_fold+'bot4.config',
-    greedy_fold+'bot5.config',
-    greedy_fold+'bot6.config',
-    greedy_fold+'bot7.config'
+    greedy_configs_fold+'bot1.config', 
+    greedy_configs_fold+'bot2.config', 
+    greedy_configs_fold+'bot3.config',
+    greedy_configs_fold+'bot4.config',
+    greedy_configs_fold+'bot5.config',
+    greedy_configs_fold+'bot6.config',
+    greedy_configs_fold+'bot7.config'
     ]
+greedy_results_fold = './greedy_results/'
 greedy_logs = [
-    greedy_fold+'log1.json', 
-    greedy_fold+'log2.json', 
-    greedy_fold+'log3.json',
-    greedy_fold+'log4.json',
-    greedy_fold+'log5.json',
-    greedy_fold+'log6.json',
-    greedy_fold+'log7.json'
+    greedy_results_fold+'log1.json', 
+    greedy_results_fold+'log2.json', 
+    greedy_results_fold+'log3.json',
+    greedy_results_fold+'log4.json',
+    greedy_results_fold+'log5.json',
+    greedy_results_fold+'log6.json',
+    greedy_results_fold+'log7.json'
     ]
 
-hamilton_fold = './hamilton_data/'
+hamilton_configs_fold = './hamilton_configs/'
 hamilton_configs = [
-    hamilton_fold+'bot1.config', 
-    hamilton_fold+'bot2.config', 
-    hamilton_fold+'bot3.config',
-    hamilton_fold+'bot4.config',
-    hamilton_fold+'bot5.config',
-    hamilton_fold+'bot6.config',
-    hamilton_fold+'bot7.config',
-    hamilton_fold+'bot8.config',
-    hamilton_fold+'bot9.config',
-    hamilton_fold+'bot10.config',
-    hamilton_fold+'bot11.config'
+    hamilton_configs_fold+'bot1.config', 
+    hamilton_configs_fold+'bot2.config', 
+    hamilton_configs_fold+'bot3.config',
+    hamilton_configs_fold+'bot4.config',
+    hamilton_configs_fold+'bot5.config',
+    hamilton_configs_fold+'bot6.config',
+    hamilton_configs_fold+'bot7.config',
+    hamilton_configs_fold+'bot8.config',
+    hamilton_configs_fold+'bot9.config',
+    hamilton_configs_fold+'bot10.config',
+    hamilton_configs_fold+'bot11.config'
     ]
+hamilton_results_fold = './hamilton_results/'
 ham_logs = [
-    hamilton_fold+'log1.json', 
-    hamilton_fold+'log2.json', 
-    hamilton_fold+'log3.json',
-    hamilton_fold+'log4.json',
-    hamilton_fold+'log5.json',
-    hamilton_fold+'log6.json',
-    hamilton_fold+'log7.json',
-    hamilton_fold+'log8.json',
-    hamilton_fold+'log9.json',
-    hamilton_fold+'log10.json',
-    hamilton_fold+'log11.json'
+    hamilton_results_fold+'log1.json', 
+    hamilton_results_fold+'log2.json', 
+    hamilton_results_fold+'log3.json',
+    hamilton_results_fold+'log4.json',
+    hamilton_results_fold+'log5.json',
+    hamilton_results_fold+'log6.json',
+    hamilton_results_fold+'log7.json',
+    hamilton_results_fold+'log8.json',
+    hamilton_results_fold+'log9.json',
+    hamilton_results_fold+'log10.json',
+    hamilton_results_fold+'log11.json'
     ]
 
 def read_config_file(file):

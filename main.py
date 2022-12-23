@@ -8,7 +8,7 @@ from bot_blind import Bot_blind
 from bot_random import Bot_random
 from snake import Snake
 from food import Food
-from config_parsing import get_game_config, greedy_fold, greedy_configs, greedy_logs, hamilton_fold, hamilton_configs, ham_logs
+from config_parsing import get_game_config, greedy_configs_fold, greedy_configs, greedy_logs, hamilton_configs_fold, hamilton_configs, ham_logs
 import gui
 import colors
 
@@ -66,7 +66,7 @@ def start(params):
         exit(1)
 
     executions = 0
-    while (executions < max_executions) or (executions < sys.maxsize): # così non va in overflow, ed è plausibile che l'utente non voglia fare più 9*(10^18) esecuzioni di fila
+    while (executions < max_executions) and (executions < sys.maxsize): # così non va in overflow, ed è plausibile che l'utente non voglia fare più 9*(10^18) esecuzioni di fila
         if not TEST_MODE:
             pygame.time.delay(frame_delay)
             # exit the game if the x button has been clicked
@@ -132,11 +132,11 @@ if not TEST_MODE: # normal execution
     config = 'default.config'
     log_file = 'default_log_file.config'
     if gui.dict_info['type']=='greedy':
-        config = greedy_fold+'bot7.config'
-        log_file = greedy_fold+'log7.json'
+        config = greedy_configs_fold+'bot7.config'
+        log_file = greedy_configs_fold+'log7.json'
     if gui.dict_info['type']=='hamilton':
-        config = hamilton_fold+'bot6.config'
-        log_file = hamilton_fold+'log6.json'
+        config = hamilton_configs_fold+'bot6.config'
+        log_file = hamilton_configs_fold+'log6.json'
     start_params = [
         gui.SIZE,           #size
         gui.X_BLOCKS,       #x_blocks 
@@ -160,7 +160,7 @@ else: # execute to collect data for tests
     for config_file, log_file in zip(greedy_configs, greedy_logs):
         print('config = %s'%config_file)
         player_info['type'] = 'greedy'
-        start_params = get_game_config(greedy_fold+'game.config')
+        start_params = get_game_config(greedy_configs_fold+'game.config')
         start_params.extend([player_info, config_file, log_file])
         start(start_params)
 
@@ -168,7 +168,7 @@ else: # execute to collect data for tests
     for config_file, log_file in zip(hamilton_configs, ham_logs):
         print('config = %s'%config_file)
         player_info['type'] = 'hamilton'
-        start_params = get_game_config(hamilton_fold+'game.config')
+        start_params = get_game_config(hamilton_configs_fold+'game.config')
         start_params.extend([player_info, config_file, log_file])
         start(start_params)
 
