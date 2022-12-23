@@ -12,7 +12,7 @@ from config_parsing import get_game_config, greedy_fold, greedy_configs, greedy_
 import gui
 import colors
 
-TEST_MODE = False
+TEST_MODE = True
 
 def start(params):
     # parameters initialization

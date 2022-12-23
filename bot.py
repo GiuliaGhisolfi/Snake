@@ -44,17 +44,17 @@ class Bot(Player):
 
         return ret
 
-    def save_data(self, last): # TODO: scrivere meglio (flag e last sono brutti...)
+    def save_data(self, last_execution): # TODO: scrivere meglio (flag e last sono brutti...)
         with open(self.log_path, 'a+') as log:
             line = '\t[\n'
-            flag = True
+            first_iter = True
             for a, b in self.data_to_save:
-                if flag:
+                if first_iter:
                     line += '\t\t[%.6f,%d]'%(b, a)
-                    flag  = False
+                    first_iter  = False
                 else:
                     line += ',[%.6f,%d]'%(b, a)
-            if last:
+            if last_execution:
                 line += '\n\t]\n]'
             else:
                 line += '\n\t],\n'
