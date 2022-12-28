@@ -40,9 +40,6 @@ class Grid:
                 ((self.obstacles[i].x_position) * self.block_size + 1, (self.obstacles[i].y_position) * self.block_size + 1, self.block_size-2, self.block_size-2))
 
     def draw_cycle(self, game, window, cycle, color, closed=True):
-
-        # 
-
         points = []
         shift = self.block_size/2
         count = 0

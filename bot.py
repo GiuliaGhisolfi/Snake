@@ -8,10 +8,10 @@ import time
 
 class Bot(Player):
 
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, config_path, log_path):
+    def __init__(self, grid, snake, food, config_path, log_path):
         self.grid = grid
-        self.snake = snake       
-        self.food = food 
+        self.snake = snake
+        self.food = food
         self.strat = self.strategy
         self.data_to_save = []
         self.parse_config(config_path)

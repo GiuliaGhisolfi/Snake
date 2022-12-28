@@ -8,7 +8,7 @@ from bot_blind import Bot_blind
 from bot_random import Bot_random
 from snake import Snake
 from food import Food
-from config_parsing import get_game_config, greedy_configs_fold, greedy_configs, greedy_logs, hamilton_configs_fold, hamilton_configs, ham_logs
+from config_parsing import *
 import gui
 import colors
 

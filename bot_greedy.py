@@ -21,7 +21,7 @@ DETECTLOOPGENEROSITY = 2.1
 class Bot_greedy(Bot):
 
     # to create the bot
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food:food.Food, config_path, log_path, debug=False):
+    def __init__(self, grid, snake, food, config_path, log_path, debug=False):
 
         # to save these variables
         super().__init__(grid, snake, food, config_path, log_path)

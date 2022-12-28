@@ -8,7 +8,7 @@ from config_parsing import read_config_file
 
 
 class Bot_hamilton(Bot):
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, config_path, log_path, obstacles):
+    def __init__(self, grid, snake, food, config_path, log_path, obstacles):
         super().__init__(grid, snake, food, config_path, log_path)
         #self.ham_cycle = self.grid.get_cycle(obstacles)
         self.obstacles = obstacles
