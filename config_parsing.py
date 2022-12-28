@@ -69,23 +69,22 @@ def get_game_config(file):
 
     #sets params
     try:
-        size = int(param['size'])
-        x_blocks = int(param['x_blocks'])
-        y_blocks = int(param['y_blocks'])
-        frame_delay = int(param['frame_delay'])
-        obstacles = str(param['obstacles']) 
-        autostart = bool(param['autostart'])
-        executions = int(param['executions'])
+        param['size'] = int(param['size'])
+        param['x_blocks'] = int(param['x_blocks'])
+        param['y_blocks'] = int(param['y_blocks'])
+        param['frame_delay'] = int(param['frame_delay'])
+        param['obstacles'] = str(param['obstacles']) 
+        param['autostart'] = bool(param['autostart'])
+        param['executions'] = int(param['executions'])
     except Exception as e:
         print(e)
         print('parameter value error')
         print('initialization with default values')
-        size = 700
-        x_blocks = 10
-        y_blocks = 11
-        frame_delay = 1
-        obstacles = 'None'
-        autostart = True
-        executions = 30
-    config_params = [size, x_blocks, y_blocks, frame_delay, obstacles, autostart, executions]
-    return config_params
+        param['size'] = 700
+        param['x_blocks'] = 10
+        param['y_blocks'] = 11
+        param['frame_delay'] = 1
+        param['obstacles'] = 'None'
+        param['autostart'] = True
+        param['executions'] = 30
+    return param

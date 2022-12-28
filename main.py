@@ -16,17 +16,16 @@ TEST_MODE = True
 
 def start(params):
     # parameters initialization
-    size = params[0]
-    x_blocks = params[1]
-    y_blocks = params[2]
-    frame_delay = params[3]
-    obstacles = params[4]
-    autostart = params[5]
-    max_executions = params[6]
-    player_info = params[7]
-    bot_config = params[8]
-    log_file = params[9]
-
+    size = params['size']
+    x_blocks = params['x_blocks']
+    y_blocks = params['y_blocks']
+    frame_delay = params['frame_delay']
+    obstacles = params['obstacles']
+    autostart = params['autostart']
+    max_executions = params['executions']
+    player_info = params['player_info']
+    bot_config = params['bot_config']
+    log_file = params['log_file']
 
     grid = Grid(size, x_blocks, y_blocks)
 
@@ -138,18 +137,18 @@ if not TEST_MODE: # normal execution
     if gui.dict_info['type']=='hamilton':
         config = hamilton_configs_fold+'bot6.config'
         log_file = hamilton_configs_fold+'log6.json'
-    start_params = [
-        gui.SIZE,           #size
-        gui.X_BLOCKS,       #x_blocks 
-        gui.Y_BLOCKS,       #y_blocks
-        gui.FRAME_DELAY,    #frame_delay 
-        gui.OBSTACLES,      #obstacles
-        gui.AUTOSTART,      #autostart
-        np.inf,             #max_executions
-        gui.dict_info,      #player_info
-        config,             #bot_config
-        log_file            #log_file
-    ]
+    start_params = {
+        'size': gui.SIZE,
+        'x_blocks': gui.X_BLOCKS,
+        'y_blocks': gui.Y_BLOCKS,
+        'frame_delay': gui.FRAME_DELAY,
+        'obstacles': gui.OBSTACLES,
+        'autostart': gui.AUTOSTART,
+        'executions': np.inf,
+        'player_info': gui.dict_info,
+        'bot_config': config,
+        'log_file': log_file
+    }
     start(start_params)
 else: # execute to collect data for tests
     player_info = {
@@ -162,7 +161,9 @@ else: # execute to collect data for tests
         print('config = %s'%config_file)
         player_info['type'] = 'greedy'
         start_params = get_game_config(greedy_configs_fold+'game.config')
-        start_params.extend([player_info, config_file, log_file])
+        start_params['player_info'] = player_info
+        start_params['bot_config'] = config_file
+        start_params['log_file'] = log_file
         start(start_params)
 
     print('------ Bot hamilton ------')
@@ -170,17 +171,7 @@ else: # execute to collect data for tests
         print('config = %s'%config_file)
         player_info['type'] = 'hamilton'
         start_params = get_game_config(hamilton_configs_fold+'game.config')
-        start_params.extend([player_info, config_file, log_file])
+        start_params['player_info'] = player_info
+        start_params['bot_config'] = config_file
+        start_params['log_file'] = log_file
         start(start_params)
-
-"""
-TODO:
--   organizzare meglio il main, magari spostare le costanti (i path dei file di configurazione) in un altro file? --> IN config_parsing
--   sistemare get_game_config (evitare di fargli ritornare tutti quei parametri, raggrupparli) --> raggruppati in una lista
--   aggiungere test per i bot random --> davvero..? 
-
--   bisognerebbe fondere search e utils, togliere le cose che non servono e forse mettere nello stesso file le nostre versioni di a* 
-    --> non è meglio lasciare intatti i file che abbiamo importato dall'aima?
-
--   uniformare il passaggio di parametri a funzioni (esplicitiamo il tipo in tutte?)
-"""

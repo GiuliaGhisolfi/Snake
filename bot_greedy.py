@@ -1,5 +1,5 @@
 from directions import Directions
-from search import random
+from aimacode.search import random
 import grid
 import snake
 import food

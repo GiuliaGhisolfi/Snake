@@ -1,4 +1,4 @@
-from search import Problem, PriorityQueue, Node, manhattan_distance, heapq, memoize, astar_search
+from aimacode.search import Problem, PriorityQueue, Node, manhattan_distance, heapq, memoize, astar_search
 import numpy as np
 
 class GridProblem(Problem):
