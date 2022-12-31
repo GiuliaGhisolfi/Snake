@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-#--------------ELABORATE DATA--------------
+#-------------DATA PROCESSING-------------
 
 def split_iteration_length_data(data, i):
     """divide i dati in due matrici, una per i tempi e una la lunghezza dello snake"""
@@ -16,7 +16,7 @@ def split_iteration_length_data(data, i):
             temporary_length.append(element[1])
         iterations_time.append(temporary_iter)
         snake_length.append(temporary_length)
-    
+
     #plot_iterations_time(iterations_time, i)
     plot_iterations_length(snake_length, i)
     return iterations_time, snake_length
@@ -25,7 +25,7 @@ def calculate_averege_std(data):
     """ritorna: time_for_iterartion_averege = [ tempo medio prime iterzioni, seconde iter, ... ]
                 time_for_iterartion_std = [deviazione standard prime iter, seconde iter, ... ]
                 per la configurazone di cui abbiamo dato i dati in input"""
-    
+
     #data = [ [first game iterations time ], [second game], ... ]
     data = np.array(data)
     max_iter = max(len(game) for game in data)
@@ -33,7 +33,7 @@ def calculate_averege_std(data):
         len_game = len(data[j])
         for _ in range(max_iter - len_game):
             data[j].append(0)
-    
+
     time_for_iterartion_averege = []
     time_for_iterartion_std = []
     for l in range(len(data[0])):
@@ -45,6 +45,27 @@ def calculate_averege_std(data):
         time_for_iterartion_std.append( np.std(iteration_data) )
 
     return time_for_iterartion_averege, time_for_iterartion_std
+
+def divides_games_won_lost(data, grid_area=10*10):
+    """ritorna: 
+    games_won_data = [ [first game won data for k-th strategy configuration], [second game], ... ]
+    games_lost_data = [ [first game lost data for k-th strategy configuration], [second game], ... ]
+    games_won := rapporto partite vinte su totale partite per configurazione k-esima
+    games_lost := raport partite perse
+    """
+    games_won_data = []
+    games_lost_data = []
+    
+    for game in data:
+        if game[-1] == [0, grid_area]:
+            game.pop(-1)
+            games_won_data.append(game)
+        else:
+            games_lost_data.append(game)
+
+    games_won = len(games_lost_data) / len(data)
+
+    return games_won_data, games_lost_data, games_won
 
 #------------------PLOT------------------
 
