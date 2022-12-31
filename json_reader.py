@@ -21,6 +21,11 @@ logfiles = ['./hamilton_results/log1.json', './hamilton_results/log2.json', './h
 """logfiles = ['./greedy_results/log1.json', './greedy_results/log2.json', './greedy_results/log3.json',
             './greedy_results/log4.json', './greedy_results/log5.json', './greedy_results/log6.json', 
             './greedy_results/log7.json']"""
+
+greedy_fold = './greedy_results/'
+hamilton_fold = './hamilton_results/'
+trial = ['irene', 'giulia']
+
 data = []
 for file in logfiles:
     f = open(file)
