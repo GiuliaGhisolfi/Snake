@@ -1,7 +1,4 @@
 import copy
-import random as rand
-import math
-import colors
 import gui
 import pygame
 from obstacles_configurations import Obstacles_configurations
@@ -43,9 +40,6 @@ class Grid:
                 ((self.obstacles[i].x_position) * self.block_size + 1, (self.obstacles[i].y_position) * self.block_size + 1, self.block_size-2, self.block_size-2))
 
     def draw_cycle(self, game, window, cycle, color, closed=True):
-
-        # 
-
         points = []
         shift = self.block_size/2
         count = 0
@@ -73,11 +67,13 @@ class Grid:
             if len(points) > 1:
                 game.draw.lines(window, cl[i], closed[i], points)
 
-    def spawn_obstacles(self):
+    def spawn_obstacles(self, obstacles):
         '''create the obstacle's configuration of the grid'''
+        if obstacles == 'None':
+            return
         self.grid = copy.deepcopy(self.full_grid)
         self.obstacles.clear()
-        self.current_config = gui.OBSTACLES
+        self.current_config = obstacles
 
         # create the Obstacles' list and update the grid
         obc = Obstacles_configurations(self)
@@ -96,8 +92,8 @@ class Grid:
     def get_obstacles(self):
         return copy.deepcopy(self.obstacles)
 
-    def get_cycle(self):
-        if gui.OBSTACLES == "None": 
+    def get_cycle(self, obstacles):
+        if obstacles == "None": 
             self.current_config = 4
         obc = Obstacles_configurations(self)
         return copy.deepcopy(obc.hamcycles[self.current_config])
@@ -105,7 +101,7 @@ class Grid:
     def get_grid_free_area(self):
         return (self.x_blocks * self.y_blocks) - len(self.obstacles)
     
-    def update_grid_dimensions(self,X,Y):
+    def update_grid_dimensions(self, X, Y):
         self.x_blocks = X
         self.y_blocks = Y
         x_pixel = self.size-(self.size % self.x_blocks)

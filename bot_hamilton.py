@@ -1,35 +1,57 @@
+import numpy as np
 from bot import Bot
-from search import *
-from grid_problem import *
-import copy
 import grid
 import snake
 import food
 import colors
+from config_parsing import read_config_file
+
 
 class Bot_hamilton(Bot):
-    def __init__(self, grid: grid.Grid, snake: snake.Snake, food: food.Food, alpha=0.5, beta=0.5):
-        super().__init__(grid, snake, food)
-        self.alpha = alpha
-        self.beta = beta
-        self.ham_cycle = self.grid.get_cycle()
+    def __init__(self, grid, snake, food, config_path, log_path, obstacles):
+        super().__init__(grid, snake, food, config_path, log_path)
+        #self.ham_cycle = self.grid.get_cycle(obstacles)
+        self.obstacles = obstacles
 
         if len(self.snake.get_body()) < 3:
             print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
 
-    def set_alpha(self, alpha):
-        # alpha: (snake.length / grid_area) s.t. stops greedy alg
-        self.alpha = alpha
-    
-    def set_beta(self, beta):
-        # beta: (snake.length / grid_area) s.t. stops dynamic alg
-        self.beta = beta
+    def parse_config(self, file):
+        param = read_config_file(file)
+        try:
+            self.max_len_shortcuts = float(param['max_len_shortcuts'])
+            self.min_len_repair = float(param['min_len_repair'])
+            self.max_len_repair = float(param['max_len_repair'])
 
-    def get_next_move(self):
-        """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the 
-        game grid, if possible at each iteration it tries to generate an optimal cycle 
+        except Exception as e:
+            print(e)
+            print('parameter value error')
+            print('initialization with default values')
+
+            self.max_len_shortcuts = 0.5
+            self.min_len_repair = 0.45
+            self.max_len_repair = 0.65
+
+    def strategy(self):
+        """Hamilton strategy: the snake follows a Hamiltonian cycle generated on the
+        game grid, if possible at each iteration it tries to generate an optimal cycle
         and/or to cut the current cycle to get as close as possible to the food position."""
+
+        # restart from the same cycle at every game
+        if len(self.snake.body) == 3:
+            if self.snake.start_location == "top-left" and \
+                    self.snake.body == [(3, 2), (3, 3), (3, 4)]:
+                self.first_iter = True
+            if self.snake.start_location == "bottom-right" and \
+                self.snake.body == [((self.grid.x_blocks-4), (self.grid.y_blocks-4)),
+                                    ((self.grid.x_blocks-4), (self.grid.y_blocks-5)),
+                                    ((self.grid.x_blocks-4), (self.grid.y_blocks-6))]:
+                self.first_iter = True
+        if self.first_iter:
+            self.first_iter = False
+            self.restart_cycle()
+
         self.body = self.snake.get_body()
         self.head = self.body[-1]
         self.goal = self.food.position
@@ -37,47 +59,42 @@ class Bot_hamilton(Bot):
         grid = self.get_current_grid(self.body[:-1])
         self.grid_area = self.grid.get_grid_free_area()
 
-        # TODO: None?
-        if self.beta != 0:  # DYNAMIC = True
-            # at each iter it looks for an optimal Hamiltonian cycle for that move
-            if len(self.body) < self.beta * self.grid_area:
-                self.change_cycle()
+        # DYNAMIC: at each iter it looks for an optimal Hamiltonian cycle for that move
+        if self.min_len_repair * self.grid_area < len(self.body) < self.max_len_repair * self.grid_area:
+            self.change_cycle()
 
         head_ham_pos = self.ham_cycle[self.head]
-
         for coordinates, ham_pos in self.ham_cycle.items():
             if ham_pos == (head_ham_pos + 1) % self.grid_area:
-                move = coordinates # (coordinates[0], coordinates[1]) # TODO: giusto?
+                move = coordinates
                 break
 
-        # TODO: None?
-        if self.alpha != 0:  # GREEDY = True
-            # when the snake is long we do not take shortcuts to avoid crashes
-            if len(self.body) < self.alpha * self.grid_area:
-                neighbors = grid[self.head]
-                min_ham_dis = np.inf
-                for next in neighbors:
-                    next_ham_pos = self.ham_cycle[next]
-                    tail_ham_pos = self.ham_cycle[self.body[0]]
-                    food_ham_pos = self.ham_cycle[self.goal]
-                    # if the food is adjacent to the tail we do not take shortcuts 
-                    # to avoid eating the tail
-                    if not (self.goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
-                        head_rel = (head_ham_pos - tail_ham_pos) % self.grid_area
-                        next_rel = (next_ham_pos - tail_ham_pos) % self.grid_area
-                        food_rel = (food_ham_pos - tail_ham_pos) % self.grid_area
-                        # if next precedes the head's snake, succeds the food
-                        # and is nearer to the food on the cycle, 
-                        # moving there it's a shortcut
-                        if next_rel > head_rel and \
+        # GREEDY: when the snake is long we do not take shortcuts to avoid crashes
+        if len(self.body) < self.max_len_shortcuts * self.grid_area:
+            neighbors = grid[self.head]
+            min_ham_dis = np.inf
+            for next in neighbors:
+                next_ham_pos = self.ham_cycle[next]
+                tail_ham_pos = self.ham_cycle[self.body[0]]
+                food_ham_pos = self.ham_cycle[self.goal]
+                # if the food is adjacent to the tail we do not take shortcuts
+                # to avoid eating the tail
+                if not (self.goal == next and abs(food_ham_pos-tail_ham_pos) == 1):
+                    head_rel = (head_ham_pos -
+                                tail_ham_pos) % self.grid_area
+                    next_rel = (next_ham_pos -
+                                tail_ham_pos) % self.grid_area
+                    food_rel = (food_ham_pos -
+                                tail_ham_pos) % self.grid_area
+                    # if next precedes the head's snake, succeds the food
+                    # and is nearer to the food on the cycle,
+                    # moving there it's a shortcut
+                    if next_rel > head_rel and \
                             next_rel <= food_rel and \
-                            food_rel - next_rel < min_ham_dis: # TODO: giusto?
-                            move = next
-                            break
-                            #if food_rel - next_rel < min_ham_dis:
-                                #move = next
-                                #break
-        
+                            food_rel - next_rel < min_ham_dis:
+                        move = next
+                        break
+
         next_move = self.snake.dir_to_cell(move)
         return next_move
 
@@ -131,16 +148,16 @@ class Bot_hamilton(Bot):
 
                     if flag:
                         flag = False
-                        for n1_coll in self.ham_cycle:
-                            for n2_coll in self.ham_cycle:
-                                n1_coll_idx = self.ham_cycle[n1_coll]
-                                n2_coll_idx = self.ham_cycle[n2_coll]
+                        for n1_adjecent in self.ham_cycle:
+                            for n2_adjecnt in self.ham_cycle:
+                                n1_adjecnt_idx = self.ham_cycle[n1_adjecent]
+                                n2_adjecnt_idx = self.ham_cycle[n2_adjecnt]
                                 n1_coll_pos = (
-                                    n1_coll_idx - head_idx) % self.grid_area
-                                n2_coll_pos = (
-                                    n2_coll_idx - head_idx) % self.grid_area
-                                if (n2_coll_pos > node_pos) and (n1_coll_pos == (n2_coll_pos + 1)) and \
-                                        n2_coll in self.grid.grid[n2] and n1_coll in self.grid.grid[n1]:
+                                    n1_adjecnt_idx - head_idx) % self.grid_area
+                                n2_adjecent_pos = (
+                                    n2_adjecnt_idx - head_idx) % self.grid_area
+                                if (n2_adjecent_pos > node_pos) and (n1_coll_pos == (n2_adjecent_pos + 1)) and \
+                                        n2_adjecnt in self.grid.grid[n2] and n1_adjecent in self.grid.grid[n1]:
                                     flag = True
                                     break
                             if flag:
@@ -153,7 +170,7 @@ class Bot_hamilton(Bot):
             # change Hamiltonian cycle:
             position = np.array(list(self.ham_cycle.values()))
             # considered head in position == 0
-            position = (position - head_idx) % self.grid_area 
+            position = (position - head_idx) % self.grid_area
             new_position = - np.ones((position.size,), dtype=int)
 
             for i in range(position.size):
@@ -165,7 +182,7 @@ class Bot_hamilton(Bot):
             incr2 = 1
 
             check = node_pos
-            while check < n2_coll_pos + 1:  # nn_idx in [node, n2_coll]
+            while check < n2_adjecent_pos + 1:  # nn_idx in [node, n2_adjecnt]
                 for i in range(position.size):
                     if position[i] == node_pos + count - 1:
                         new_position[i] = count
@@ -193,7 +210,7 @@ class Bot_hamilton(Bot):
                         check += 1
                         break
 
-            for i in range(position.size):  # nn_idx in [n1_coll, head - 1]
+            for i in range(position.size):  # nn_idx in [n1_adjecent, head - 1]
                 if new_position[i] == -1:
                     new_position[i] = position[i]
 
@@ -203,11 +220,10 @@ class Bot_hamilton(Bot):
                 self.ham_cycle[nn] = new_position[idx]
                 idx += 1
 
-    def update_ham_cycle(self):
-        "Update self.ham_cycle"
-        self.ham_cycle = self.grid.get_cycle()
+    def restart_cycle(self):
+        self.ham_cycle = self.grid.get_cycle(self.obstacles)
 
     def get_path_to_draw(self):
-        ord_list = sorted(self.ham_cycle.keys(), key=lambda k: self.ham_cycle[k])
-        
-        return ([ord_list] , [colors.WHITE], [True])
+        ord_list = sorted(self.ham_cycle.keys(),
+                          key=lambda k: self.ham_cycle[k])
+        return ([ord_list], [colors.WHITE], [True])
