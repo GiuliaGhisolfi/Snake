@@ -63,7 +63,7 @@ def divides_games_won_lost(data, grid_area=10*10):
         else:
             games_lost_data.append(game)
 
-    games_won = len(games_lost_data) / len(data)
+    games_won = len(games_won_data) / len(data)
 
     return games_won_data, games_lost_data, games_won
 
