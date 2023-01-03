@@ -4,7 +4,8 @@ from utilis_json import *
 
 greedy_fold = './greedy_results/'
 hamilton_fold = './hamilton_results/'
-names = ['irene', 'giulia']
+#names = ['irene', 'giulia', 'gabriele', 'luca']
+names = ['gabriele']
 
 
 #---------Read data from file json---------
