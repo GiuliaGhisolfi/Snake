@@ -106,7 +106,7 @@ class Bot_greedy(Bot):
         else:
             print('Strategia ancora non implementata!!')
             exit()
-    
+
     # method that uses the correct optimization algorithm (only one implemented)
     def opt_search(self, start, goal, graph):
         if self.chosen_optimization == 1:
@@ -136,7 +136,7 @@ class Bot_greedy(Bot):
             return get_neighbors_n(node, true_graph) > 0
         def is_chokepoint(node, true_graph):
             return get_neighbors_n(node, true_graph) == 0
-        
+
         #definiamo tg se non già fatto
         tg = self.grid.grid
 
@@ -171,7 +171,7 @@ class Bot_greedy(Bot):
                             self.default_path = patch + self.default_path[choke_i + 1:]
                             self.nnto = self.default_path[choke_i + 1]
                             return #esce dal for
-            
+
             #tg = self.get_current_grid(self.snake.fast_get_body()[-1:], tg) #solo ultima posizione
             #calcoliamo il prossimo nodo che è ottimizzabile
             for node in self.default_path[:-1]:
@@ -181,7 +181,7 @@ class Bot_greedy(Bot):
                     #print(self.nnto)
                     return
 
-    # returns the position of the food. Useful in cases of multiple apples               
+    # returns the position of the food. Useful in cases of multiple apples
     def get_best_food(self):
         return self.food.position
 
@@ -194,7 +194,6 @@ class Bot_greedy(Bot):
 
     # core of the strategy
     def strategy(self):
-        
         snake_body = self.snake.get_body()
         if self.debug: self.change_color()
         

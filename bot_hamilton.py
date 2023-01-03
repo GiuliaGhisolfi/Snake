@@ -39,18 +39,9 @@ class Bot_hamilton(Bot):
         and/or to cut the current cycle to get as close as possible to the food position."""
 
         # restart from the same cycle at every game
-        if len(self.snake.body) == 3:
-            if self.snake.start_location == "top-left" and \
-                    self.snake.body == [(3, 2), (3, 3), (3, 4)]:
-                self.first_iter = True
-            if self.snake.start_location == "bottom-right" and \
-                self.snake.body == [((self.grid.x_blocks-4), (self.grid.y_blocks-4)),
-                                    ((self.grid.x_blocks-4), (self.grid.y_blocks-5)),
-                                    ((self.grid.x_blocks-4), (self.grid.y_blocks-6))]:
-                self.first_iter = True
-        if self.first_iter:
-            self.first_iter = False
+        if self.restart_game:
             self.restart_cycle()
+            self.reset_restart_game()
 
         self.body = self.snake.get_body()
         self.head = self.body[-1]
