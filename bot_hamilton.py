@@ -1,6 +1,6 @@
 import numpy as np
 from bot import Bot
-import grid
+import gui
 import snake
 import food
 import colors
@@ -16,6 +16,9 @@ class Bot_hamilton(Bot):
         if len(self.snake.get_body()) < 3:
             print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
+
+        if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:
+            gui.grid_not_allowed()
 
     def parse_config(self, file):
         param = read_config_file(file)

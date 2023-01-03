@@ -114,10 +114,6 @@ class Obstacles_configurations:
     def create_hamilton_cycle(self, grid):
         ''' create hamiltonian cycle for grid without obstacles '''
 
-        if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:
-            gui.grid_not_allowed()
-            exit()
-
         hamcycle = {(0, 0): 0}
         value = 1
 
