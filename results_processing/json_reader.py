@@ -4,8 +4,8 @@ from utilis_json import *
 
 greedy_fold = './greedy_results/'
 hamilton_fold = './hamilton_results/'
-#names = ['irene', 'giulia', 'gabriele', 'luca']
-names = ['gabriele']
+names = ['irene', 'giulia', 'gabriele', 'luca']
+dimension = ['10x10']
 
 
 #---------Read data from file json---------
@@ -18,21 +18,23 @@ strategy_config_k = [ [first game data for k-th strategy configuration], [second
 #greedy
 for i in range(1, 7+1):
     data = []
-    for name in names:
-        file = greedy_fold+name+'/log'+'%s'%i+'.json'
-        f = open(file)
-        data += json.load(f)
-        f.close()
+    for dim in dimension:
+        for name in names:
+            file = greedy_fold+dim+'/'+name+'/log'+'%s'%i+'.json'
+            f = open(file)
+            data += json.load(f)
+            f.close()
     globals()['greedy_config%s' % i] = data
     
 #hamilton
 for i in range(1, 11+1):
     data = []
-    for name in names:
-        file = hamilton_fold+name+'/log'+'%s'%i+'.json'
-        f = open(file)
-        data += json.load(f)
-        f.close()
+    for dim in dimension:
+        for name in names:
+            file = hamilton_fold+dim+'/'+name+'/log'+'%s'%i+'.json'
+            f = open(file)
+            data += json.load(f)
+            f.close()
     globals()['hamilton_config%s' % i] = data
 
 #------------Data processing------------

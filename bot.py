@@ -63,7 +63,7 @@ class Bot(Player):
                     line += ',[%.9f,%d]'%(b, a)
             if not lost:
                 line += ',[0,%d]'%(a+1)
-            if last_execution:                    
+            if last_execution:
                 line += '\n\t]\n]'
             else:
                 line += '\n\t],\n'
