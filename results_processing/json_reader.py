@@ -2,8 +2,6 @@ import json
 import numpy as np
 from utilis_json import *
 
-
-
 def total_time_len(iterations_time, snake_length):
     total_time = []
     for game in iterations_time:
@@ -31,6 +29,9 @@ def total_time_len(iterations_time, snake_length):
 greedy_fold = './greedy_results/'
 hamilton_fold = './hamilton_results/'
 names = ['irene', 'giulia', 'gabriele', 'luca', 'giacomo']
+# TODO: 
+# irene => 1,6 GHz Intel Core i5 dual-core
+# giulia => ...
 dimension = ['10x10']
 
 FILE_RESULTS = './results_processing/results_10x10/results.csv'
@@ -76,7 +77,7 @@ for i in range(1, 11+1):
 
 #---------------------------------greedy----------------------------------
 fold = "./results_processing/results_10x10/greedy/"
-strategy = "greedy"
+strategy = "Greedy"
 data_greedy_time_average = []
 data_greedy_time_std = []
 data_greedy_length_average = []
@@ -103,7 +104,7 @@ for i in range(1, 7+1):
     
     for game in snake_length_won:
         game[-1] += 1 # se vince lunghezza finale == grid area
-    
+
     snake_length_tot = []
     snake_length_tot += snake_length_won
     snake_length_tot += snake_length_lost
@@ -127,13 +128,13 @@ for i in range(1, 7+1):
 
 plot_iterations_time_different_config(data_greedy_time_average, data_greedy_time_std, fold, strategy)
 plot_iterations_lenght_snake_different_config(data_greedy_length_average, data_greedy_length_std, fold, strategy)
-plot_violin(data_greedy_time_average, fold, 'Time', strategy)
-plot_violin(data_greedy_length_average, fold, 'Length', strategy)
+plot_violin(data_greedy_time_average, fold, 'Time', strategy, 'time')
+plot_violin(data_greedy_length_average, fold, 'Length', strategy, 'length')
 
 
 #---------------------------------hamilton---------------------------------
 fold = "./results_processing/results_10x10/hamilton/"
-strategy = "hamilton"
+strategy = "Hamilton"
 data_hamilton_time_average = []
 data_hamilton_time_std = []
 data_hamilton_length_average = []
@@ -170,7 +171,7 @@ for i in range(1, 11+1):
 
 plot_iterations_time_different_config(data_hamilton_time_average, data_hamilton_time_std, fold, strategy)
 plot_iterations_lenght_snake_different_config(data_hamilton_length_average, data_hamilton_length_std, fold, strategy)
-plot_violin(data_hamilton_time_average, fold, 'Time', strategy)
-plot_violin(data_hamilton_length_average, fold, 'Length', strategy)
+plot_violin(data_hamilton_time_average, fold, 'Time', strategy, 'time')
+plot_violin(data_hamilton_length_average, fold, 'Length', strategy, 'length')
 
 results.close()
