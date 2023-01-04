@@ -7,7 +7,10 @@ greedy_configs = [
     greedy_configs_fold+'bot4.config',
     greedy_configs_fold+'bot5.config',
     greedy_configs_fold+'bot6.config',
-    greedy_configs_fold+'bot7.config'
+    greedy_configs_fold+'bot7.config',
+    greedy_configs_fold+'bot8.config',
+    greedy_configs_fold+'bot9.config',
+    greedy_configs_fold+'bot10.config'
     ]
 greedy_results_fold = './greedy_results/'
 greedy_logs = [
@@ -17,7 +20,10 @@ greedy_logs = [
     greedy_results_fold+'log4.json',
     greedy_results_fold+'log5.json',
     greedy_results_fold+'log6.json',
-    greedy_results_fold+'log7.json'
+    greedy_results_fold+'log7.json',
+    greedy_results_fold+'log8.json',
+    greedy_results_fold+'log9.json',
+    greedy_results_fold+'log10.json'
     ]
 
 hamilton_configs_fold = './hamilton_configs/'
