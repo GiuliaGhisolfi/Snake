@@ -3,7 +3,7 @@ import numpy as np
 
 #-------------DATA PROCESSING-------------
 
-def split_iteration_length_data(data, i):
+def split_iteration_length_data(data):
     """divide i dati in due matrici, una per i tempi e una la lunghezza dello snake"""
     iterations_time = []  # iterations_time = [ [tempi primo gioco], [secondo], ... ]
     snake_length = []  # snake_length = [ [lung. primo gioco], [secondo], ... ]
@@ -17,9 +17,13 @@ def split_iteration_length_data(data, i):
         iterations_time.append(temporary_iter)
         snake_length.append(temporary_length)
 
-    #plot_iterations_time(iterations_time, i)
-    plot_iterations_length(snake_length, i)
     return iterations_time, snake_length
+
+def plot_single_config(iterations_time, snake_length, i, fold, strategy):
+    plot_iterations_time(iterations_time, i, fold, strategy)
+    plot_iterations_length(snake_length, i, fold, strategy)
+    plot_time_length(iterations_time, snake_length, i, fold, strategy)
+    
 
 def calculate_averege_std(data):
     """ritorna: time_for_iterartion_averege = [ tempo medio prime iterzioni, seconde iter, ... ]
@@ -69,7 +73,7 @@ def divides_games_won_lost(data, grid_area=10*10):
 
 #------------------PLOT------------------
 
-def plot_iterations_time(iterations_time, i):
+def plot_iterations_time(iterations_time, i, fold, strategy):
     """asse x: numero iterazione, asse y: tempo dall'inizio del gioco"""
     plt.figure()
     for game in iterations_time:
@@ -79,24 +83,46 @@ def plot_iterations_time(iterations_time, i):
             time_sum += game[l]
             y_vectore.append(time_sum)
         x_vectore = np.linspace(1, len(y_vectore), len(y_vectore))
-        plt.plot(x_vectore, y_vectore, linewidth=0.5)
+        plt.semilogy(x_vectore, y_vectore, linewidth=0.8)
     plt.xlabel("k-th iteration")
-    plt.ylabel("time [sec]")
+    plt.ylabel("log(time [sec])")
+    plt.title('Time for each iteration for %s configuration %d' %(strategy, i))
     plt.grid()
-    plt.savefig("./hamilton_plot/ham_config{}_iterations_time".format(i))
+    plt.savefig(fold+"/iterations_time"+"config{}_iterations_time.pdf".format(i), bbox_inches="tight")
     
-def plot_iterations_length(iterations_length, i):
+def plot_iterations_length(iterations_length, i, fold, strategy):
     """asse x: numero iterazione, asse y: lunghezza dello snake"""
     plt.figure()
     for game in iterations_length:
         x_vectore = np.linspace(1, len(game), len(game))
-        plt.plot(x_vectore, game, linewidth=0.5)
+        plt.plot(x_vectore, game, linewidth=0.8)
     plt.xlabel("k-th iteration")
     plt.ylabel("snake length")
+    plt.title('Snake length for each iteration for %s configuration %d' %(strategy, i))
     plt.grid()
-    plt.savefig("./hamilton_plot/ham_config{}_iterations_length".format(i))
+    plt.savefig(fold+"/iterations_length"+"config{}_iterations_length.pdf".format(i), bbox_inches="tight")
     
-def plot_iterations_time_different_config(averege_time, std_time):
+def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
+    """asse x: tempo dall'inizio del gioco, asse y: lunghezza dello snake"""
+    plt.figure()
+    j = 0
+    for game in iterations_time:
+        time_sum = 0
+        x_vectore = []
+        for l in range(len(game)):
+            time_sum += game[l]
+            x_vectore.append(time_sum)
+        y_vectore = iterations_length[j]
+        j += 1
+        plt.plot(x_vectore, y_vectore, linewidth=0.8)
+
+    plt.xlabel("time [sec]")
+    plt.ylabel("snake length")
+    plt.title('Snake length over time for %s configuration %d' %(strategy, i))
+    plt.grid()
+    plt.savefig(fold+"/time_length"+"config{}_iterations_length.pdf".format(i), bbox_inches="tight")
+    
+def plot_iterations_time_different_config(averege_time, std_time, fold, strategy):
     plt.figure()
     color = ['r', 'b', 'g', 'm', 'c', 'y', 'purple', 'orange', 'olive', 'pink', 'red']
     i = 0
@@ -104,7 +130,7 @@ def plot_iterations_time_different_config(averege_time, std_time):
         x_vectore = np.linspace(1, len(aver), len(aver))
         aver = np.array(aver)
         std = np.array(std)
-        plt.semilogy(x_vectore, aver, label="config{}".format(i+1), color=color[i], linewidth=0.5)
+        plt.semilogy(x_vectore, aver, label="config{}".format(i+1), color=color[i], linewidth=0.8)
         plt.semilogy(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
         plt.semilogy(x_vectore, aver-std, alpha=0.2, color=color[i], linewidth=0.5)
         i += 1
@@ -112,10 +138,11 @@ def plot_iterations_time_different_config(averege_time, std_time):
     plt.legend()
     plt.xlabel("k-th iteration")
     plt.ylabel("log(time [sec])")
-    plt.title("Averege and stadard deviation of time for every configuration")
-    plt.savefig("./hamilton_plot/ham_all_config_averege_std_time")
+    plt.title("Averege and stadard deviation of time for each %s configuration" % strategy)
+    plt.grid()
+    plt.savefig(fold+"all_config_averege_time.pdf", bbox_inches="tight")
     
-def plot_iterations_lenght_snake_different_config(averege_length, std_length):
+def plot_iterations_lenght_snake_different_config(averege_length, std_length, fold, strategy):
     plt.figure()
     color = ['r', 'b', 'g', 'm', 'c', 'y', 'purple', 'orange', 'olive', 'pink', 'red']
     i = 0
@@ -123,7 +150,7 @@ def plot_iterations_lenght_snake_different_config(averege_length, std_length):
         aver = np.array(aver)
         std = np.array(std)
         x_vectore = np.linspace(1, len(aver), len(aver))
-        plt.plot(x_vectore, aver, label="config{}".format(i+1), color=color[i], linewidth=0.5)
+        plt.plot(x_vectore, aver, label="config{}".format(i+1), color=color[i], linewidth=0.8)
         plt.plot(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
         plt.plot(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
         i += 1
@@ -131,12 +158,16 @@ def plot_iterations_lenght_snake_different_config(averege_length, std_length):
     plt.legend()
     plt.xlabel("k-th iteration")
     plt.ylabel("snake length")
-    plt.title("Averege and stadard deviation of snake length for every configuration")
-    plt.savefig("./hamilton_plot/ham_all_config_averege_std_length")
-        
-def plot_violin(iterations_time):
+    plt.grid()
+    plt.title("Averege and stadard deviation of snake length for each %s configuration" % strategy)
+    plt.savefig(fold+"all_config_averege_length", bbox_inches="tight")
+
+def plot_violin(iterations_time, fold, name, strategy):
     plt.figure()
     plt.violinplot(iterations_time)
     plt.xlabel("configuration")
     plt.ylabel("time [sec]")
-    plt.savefig("./hamilton_plot/ham_all_config_violinplot")
+    plt.grid()
+    plt.title('%s per iteration for each %s configuration' %(name, strategy))
+
+    plt.savefig(fold+"%s_per_iteration_violinplot.pdf" % name, bbox_inches="tight")
