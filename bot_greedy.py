@@ -93,7 +93,7 @@ class Bot_greedy(Bot):
                 return dummy
         elif self.chosen_search == 2:  # balanced
             grid_problem = GridProblem(start, goal, graph, False)
-            if self.snake.length >= (self.grid.x_blocks*self.grid.y_blocks / self.choice_sensibility):
+            if self.choice_sensibility != 0 and self.snake.length >= (self.grid.x_blocks*self.grid.y_blocks / self.choice_sensibility):
                 dummy = astar_search_saving_spaces(grid_problem, self.weights)
             else:
                 dummy = astar_search_min_turns(grid_problem, self.weights)
