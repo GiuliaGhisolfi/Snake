@@ -2,79 +2,100 @@ GREEDY
 
 Greedy config 1 
 Averege time to complite the game: 0.105600 [sec], std dev: 0.129261 [sec] 
+Averege number of iteration to complite the game: 94.690000 [iterations], std dev: 74.738838 [iterations] 
 Average length achieved at the end of the game 13.140000, std dev: 8.015011 
 Ratio of games won out of total = 0.000000 
 Games won: 
 Averege time to complite the game: nan [sec], std dev: nan [sec] 
+Averege number of iteration to complite the game: nan [iterations], std dev: nan [iterations] 
 Average length achieved at the end of the game nan, std dev: nan 
 Games lost: 
 Averege time to complite the game: 0.105600 [sec], std dev: 0.129261 [sec] 
+Averege number of iteration to complite the game: 94.690000 [iterations], std dev: 74.738838 [iterations] 
 Average length achieved at the end of the game 13.140000, std dev: 8.015011 
 
 Greedy config 2 
 Averege time to complite the game: 7.337325 [sec], std dev: 7.496593 [sec] 
+Averege number of iteration to complite the game: 1670.840000 [iterations], std dev: 263.266318 [iterations] 
 Average length achieved at the end of the game 92.220000, std dev: 8.061737 
 Ratio of games won out of total = 0.150000 
 Games won: 
 Averege time to complite the game: 10.193614 [sec], std dev: 8.478314 [sec] 
+Averege number of iteration to complite the game: 1618.000000 [iterations], std dev: 127.580040 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 Games lost: 
 Averege time to complite the game: 6.833274 [sec], std dev: 7.192882 [sec] 
+Averege number of iteration to complite the game: 1680.164706 [iterations], std dev: 279.442590 [iterations] 
 Average length achieved at the end of the game 90.847059, std dev: 7.993388 
 
 Greedy config 3 
 Averege time to complite the game: 8.584798 [sec], std dev: 8.546039 [sec] 
+Averege number of iteration to complite the game: 1797.070000 [iterations], std dev: 288.809704 [iterations] 
 Average length achieved at the end of the game 98.140000, std dev: 7.740827 
 Ratio of games won out of total = 0.290000 
 Games won: 
 Averege time to complite the game: 8.155843 [sec], std dev: 7.563704 [sec] 
+Averege number of iteration to complite the game: 1605.310345 [iterations], std dev: 178.179318 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 Games lost: 
 Averege time to complite the game: 8.760005 [sec], std dev: 8.910260 [sec] 
+Averege number of iteration to complite the game: 1875.394366 [iterations], std dev: 288.719147 [iterations] 
 Average length achieved at the end of the game 97.380282, std dev: 9.077702 
 
 Greedy config 4 
 Averege time to complite the game: 8.815103 [sec], std dev: 9.651557 [sec] 
+Averege number of iteration to complite the game: 1740.210000 [iterations], std dev: 483.158200 [iterations] 
 Average length achieved at the end of the game 93.610000, std dev: 19.156145 
 Ratio of games won out of total = 0.290000 
 Games won: 
 Averege time to complite the game: 7.185174 [sec], std dev: 7.186028 [sec] 
+Averege number of iteration to complite the game: 1629.103448 [iterations], std dev: 164.254921 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 Games lost: 
 Averege time to complite the game: 9.480848 [sec], std dev: 10.420195 [sec] 
+Averege number of iteration to complite the game: 1785.591549 [iterations], std dev: 557.377602 [iterations] 
 Average length achieved at the end of the game 91.000000, std dev: 22.211531 
 
 Greedy config 5 
 Averege time to complite the game: 9.000554 [sec], std dev: 9.067451 [sec] 
+Averege number of iteration to complite the game: 1865.360000 [iterations], std dev: 317.454454 [iterations] 
 Average length achieved at the end of the game 97.200000, std dev: 9.999000 
 Ratio of games won out of total = 0.230000 
 Games won: 
 Averege time to complite the game: 11.067193 [sec], std dev: 8.838886 [sec] 
+Averege number of iteration to complite the game: 1701.173913 [iterations], std dev: 171.143381 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 Games lost: 
 Averege time to complite the game: 8.383246 [sec], std dev: 9.043470 [sec] 
+Averege number of iteration to complite the game: 1914.402597 [iterations], std dev: 334.175677 [iterations] 
 Average length achieved at the end of the game 96.363636, std dev: 11.260676 
 
 Greedy config 6 
 Averege time to complite the game: 8.304316 [sec], std dev: 8.490373 [sec] 
+Averege number of iteration to complite the game: 1730.090000 [iterations], std dev: 335.492745 [iterations] 
 Average length achieved at the end of the game 97.030000, std dev: 11.848591 
 Ratio of games won out of total = 0.420000 
 Games won: 
 Averege time to complite the game: 7.264483 [sec], std dev: 7.042128 [sec] 
+Averege number of iteration to complite the game: 1605.452381 [iterations], std dev: 153.024617 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 Games lost: 
 Averege time to complite the game: 9.057299 [sec], std dev: 9.328766 [sec] 
+Averege number of iteration to complite the game: 1820.344828 [iterations], std dev: 397.126079 [iterations] 
 Average length achieved at the end of the game 94.879310, std dev: 15.199907 
 
 Greedy config 7 
 Averege time to complite the game: 9.129187 [sec], std dev: 9.004780 [sec] 
+Averege number of iteration to complite the game: 1707.260000 [iterations], std dev: 438.268881 [iterations] 
 Average length achieved at the end of the game 94.450000, std dev: 16.914121 
 Ratio of games won out of total = 0.260000 
 Games won: 
 Averege time to complite the game: 6.785418 [sec], std dev: 7.157416 [sec] 
+Averege number of iteration to complite the game: 1570.730769 [iterations], std dev: 150.184133 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 Games lost: 
 Averege time to complite the game: 9.952673 [sec], std dev: 9.432302 [sec] 
+Averege number of iteration to complite the game: 1755.229730 [iterations], std dev: 492.739132 [iterations] 
 Average length achieved at the end of the game 92.500000, std dev: 19.286776 
 
 
@@ -82,44 +103,55 @@ HAMILTON
 
 Hamilton config 1 
 Averege time to complite the game: 12.316926 [sec], std dev: 10.973021 [sec] 
+Averege number of iteration to complite the game: 2427.690000 [iterations], std dev: 151.903831 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 2 
 Averege time to complite the game: 14.681220 [sec], std dev: 11.691410 [sec] 
+Averege number of iteration to complite the game: 2169.710000 [iterations], std dev: 184.430653 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 3 
 Averege time to complite the game: 10.282985 [sec], std dev: 9.281851 [sec] 
+Averege number of iteration to complite the game: 2036.580000 [iterations], std dev: 154.467160 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 4 
 Averege time to complite the game: 9.343957 [sec], std dev: 8.686203 [sec] 
+Averege number of iteration to complite the game: 1944.030000 [iterations], std dev: 127.145779 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 5 
 Averege time to complite the game: 12.072561 [sec], std dev: 10.828450 [sec] 
+Averege number of iteration to complite the game: 1922.210000 [iterations], std dev: 176.209154 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 6 
 Averege time to complite the game: 9.753414 [sec], std dev: 9.446526 [sec] 
+Averege number of iteration to complite the game: 1981.760000 [iterations], std dev: 147.451085 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 7 
 Averege time to complite the game: 10.031976 [sec], std dev: 9.682599 [sec] 
+Averege number of iteration to complite the game: 1956.340000 [iterations], std dev: 142.864707 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 8 
 Averege time to complite the game: 10.090200 [sec], std dev: 9.781208 [sec] 
+Averege number of iteration to complite the game: 2029.420000 [iterations], std dev: 172.440551 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 9 
 Averege time to complite the game: 10.017134 [sec], std dev: 9.687236 [sec] 
+Averege number of iteration to complite the game: 1958.670000 [iterations], std dev: 142.143664 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 10 
 Averege time to complite the game: 10.235018 [sec], std dev: 9.527261 [sec] 
+Averege number of iteration to complite the game: 1982.040000 [iterations], std dev: 131.307800 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 
 
 Hamilton config 11 
 Averege time to complite the game: 10.237092 [sec], std dev: 9.647634 [sec] 
+Averege number of iteration to complite the game: 2008.070000 [iterations], std dev: 142.393065 [iterations] 
 Average length achieved at the end of the game 100.000000, std dev: 0.000000 

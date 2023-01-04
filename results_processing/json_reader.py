@@ -11,6 +11,12 @@ def total_time_len(iterations_time, snake_length):
     mean_time = np.mean(total_time, axis=0)
     std_time = np.std(total_time, axis=0)
     
+    total_iteration_number = []
+    for game in iterations_time:
+        total_iteration_number.append( len(game))
+    mean_iter = np.mean(total_iteration_number, axis=0)
+    std_iter = np.std(total_iteration_number, axis=0)
+    
     max_len = []
     for game in snake_length:
         max_len.append(game[-1])
@@ -18,6 +24,7 @@ def total_time_len(iterations_time, snake_length):
     std_len = np.std(max_len, axis=0)
     
     results.write("Averege time to complite the game: %f [sec], std dev: %f [sec] \n" %(mean_time, std_time))
+    results.write("Averege number of iteration to complite the game: %f [iterations], std dev: %f [iterations] \n" %(mean_iter, std_iter))
     results.write("Average length achieved at the end of the game %f, std dev: %f \n" %(mean_len, std_len))
 
 
