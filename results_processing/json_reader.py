@@ -5,16 +5,20 @@ from utilis_json import *
 
 
 def total_time_len(iterations_time, snake_length):
-    total_time = np.sum(iterations_time)
+    total_time = []
+    for game in iterations_time:
+        total_time.append( np.sum(game, axis=0) )
     mean_time = np.mean(total_time, axis=0)
     std_time = np.std(total_time, axis=0)
     
-    max_len = snake_length[:, -1]
+    max_len = []
+    for game in snake_length:
+        max_len.append(game[-1])
     mean_len = np.mean(max_len, axis=0)
     std_len = np.std(max_len, axis=0)
     
-    results.write("averege time to complite the game: %f [sec], std dev: %f \n" %(mean_time, std_len))
-    results.write("average length achieved at the end of the game %f, std dev: %f : \n" %(mean_len, std_len))
+    results.write("Averege time to complite the game: %f [sec], std dev: %f [sec] \n" %(mean_time, std_time))
+    results.write("Average length achieved at the end of the game %f, std dev: %f \n" %(mean_len, std_len))
 
 
 greedy_fold = './greedy_results/'
@@ -22,7 +26,7 @@ hamilton_fold = './hamilton_results/'
 names = ['irene', 'giulia', 'gabriele', 'luca', 'giacomo']
 dimension = ['10x10']
 
-FILE_RESULTS = './results_processing/results_10x10/results.txt'
+FILE_RESULTS = './results_processing/results_10x10/results.csv'
 results = open(FILE_RESULTS, 'w')
 
 
@@ -79,21 +83,30 @@ for i in range(1, 7+1):
     # e salvo il rapporto dei giochi vinti
     games_won_data, games_lost_data, games_won = divides_games_won_lost(data_greedy[i-1])
     games_won_total.append(games_won)
-    print('percentage of games won out of total for greedy configuration %d = %f' %(i, games_won*100) )
+    print('Ratio of games won out of total for greedy configuration %d = %f' %(i, games_won) )
 
     # trascrizione dati e grafici
-    results.write('greedy config %s \n' % i)
+    results.write('\nGreedy config %s \n' % i)
 
     iterations_time, snake_length = split_iteration_length_data(data_greedy[i-1])
     plot_single_config(iterations_time, snake_length, i, fold, strategy)
     
-    total_time_len(iterations_time, snake_length)
-    results.write('Percentage of games won out of total = %f \n' %games_won*100)
-    results.write('Games won \n')
-    total_time_len( split_iteration_length_data(games_won_data) )
-    results.write('Games lost \n')
-    total_time_len( split_iteration_length_data(games_lost_data) )
-    results.write('\n')
+    iterations_time_won, snake_length_won = split_iteration_length_data(games_won_data)
+    iterations_time_lost, snake_length_lost = split_iteration_length_data(games_lost_data)
+    
+    for game in snake_length_won:
+        game[-1] += 1 # se vince lunghezza finale == grid area
+    
+    snake_length_tot = []
+    snake_length_tot += snake_length_won
+    snake_length_tot += snake_length_lost
+    
+    total_time_len(iterations_time, snake_length_tot)
+    results.write('Ratio of games won out of total = %f \n' %games_won)
+    results.write('Games won: \n')
+    total_time_len(iterations_time_won, snake_length_won)
+    results.write('Games lost: \n')
+    total_time_len( iterations_time_lost, snake_length_lost )
     
     # media e dev std tempo per iterazione
     time_for_iterartion_averege, time_for_iterartion_std = calculate_averege_std(iterations_time)
@@ -101,7 +114,7 @@ for i in range(1, 7+1):
     data_greedy_time_std.append(time_for_iterartion_std)
     
     # media e dev std lunghezza snake ad ogni iterazione
-    len_for_iterartion_averege, len_for_iterartion_std = calculate_averege_std(iterations_time)
+    len_for_iterartion_averege, len_for_iterartion_std = calculate_averege_std(snake_length)
     data_greedy_length_average.append(len_for_iterartion_averege)
     data_greedy_length_std.append(len_for_iterartion_std)
 
@@ -126,23 +139,25 @@ for i in range(1, 11+1):
     # tolgo step finale di controllo da ogni gioco
     data_hamilton[i-1], _, games_won = divides_games_won_lost(data_hamilton[i-1])
     if games_won != 1:
-        print('percentage of games won out of total for hamilton configuration %d = %f' %(i, games_won*100))
+        print('Ratio of games won out of total for hamilton configuration %d = %f' %(i, games_won))
 
     # trascrizione dati e grafici
-    results.write('hamilton config %s \n' % i)
+    results.write('\nHamilton config %s \n' % i)
     
     iterations_time, snake_length = split_iteration_length_data(data_hamilton[i-1])
     plot_single_config(iterations_time, snake_length, i, fold, strategy)
     
+    for game in snake_length:
+        game[-1] += 1
     total_time_len(iterations_time, snake_length)
 
     # media e dev std tempo per iterazione
-    time_for_iterartion_averege, time_for_iterartion_std = calculate_averege_std(data_hamilton[i-1])
+    time_for_iterartion_averege, time_for_iterartion_std = calculate_averege_std(iterations_time)
     data_hamilton_time_average.append(time_for_iterartion_averege)
     data_hamilton_time_std.append(time_for_iterartion_std)
 
     # media e dev std lunghezza snake ad ogni iterazione
-    len_for_iterartion_averege, len_for_iterartion_std = calculate_averege_std(iterations_time)
+    len_for_iterartion_averege, len_for_iterartion_std = calculate_averege_std(snake_length)
     data_hamilton_length_average.append(len_for_iterartion_averege)
     data_hamilton_length_std.append(len_for_iterartion_std)
 
@@ -150,3 +165,5 @@ plot_iterations_time_different_config(data_hamilton_time_average, data_hamilton_
 plot_iterations_lenght_snake_different_config(data_hamilton_length_average, data_hamilton_length_std, fold, strategy)
 plot_violin(data_hamilton_time_average, fold, 'Time', strategy)
 plot_violin(data_hamilton_length_average, fold, 'Length', strategy)
+
+results.close()

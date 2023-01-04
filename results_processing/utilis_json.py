@@ -88,7 +88,7 @@ def plot_iterations_time(iterations_time, i, fold, strategy):
     plt.ylabel("log(time [sec])")
     plt.title('Time for each iteration for %s configuration %d' %(strategy, i))
     plt.grid()
-    plt.savefig(fold+"/iterations_time"+"config{}_iterations_time.pdf".format(i), bbox_inches="tight")
+    plt.savefig(fold+"config{}_iterations_time.pdf".format(i), bbox_inches="tight")
     
 def plot_iterations_length(iterations_length, i, fold, strategy):
     """asse x: numero iterazione, asse y: lunghezza dello snake"""
@@ -100,7 +100,7 @@ def plot_iterations_length(iterations_length, i, fold, strategy):
     plt.ylabel("snake length")
     plt.title('Snake length for each iteration for %s configuration %d' %(strategy, i))
     plt.grid()
-    plt.savefig(fold+"/iterations_length"+"config{}_iterations_length.pdf".format(i), bbox_inches="tight")
+    plt.savefig(fold+"config{}_iterations_length.pdf".format(i), bbox_inches="tight")
     
 def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
     """asse x: tempo dall'inizio del gioco, asse y: lunghezza dello snake"""
@@ -120,47 +120,55 @@ def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
     plt.ylabel("snake length")
     plt.title('Snake length over time for %s configuration %d' %(strategy, i))
     plt.grid()
-    plt.savefig(fold+"/time_length"+"config{}_iterations_length.pdf".format(i), bbox_inches="tight")
+    plt.savefig(fold+"config{}_time_length.pdf".format(i), bbox_inches="tight")
     
 def plot_iterations_time_different_config(averege_time, std_time, fold, strategy):
     plt.figure()
-    color = ['r', 'b', 'g', 'm', 'c', 'y', 'purple', 'orange', 'olive', 'pink', 'red']
+    #color = ['r', 'b', 'g', 'm', 'c', 'y', 'purple', 'orange', 'olive', 'pink', 'red']
     i = 0
     for aver, std in zip(averege_time, std_time):
+        y_vector = []
+        sum = 0
+        
         x_vectore = np.linspace(1, len(aver), len(aver))
-        aver = np.array(aver)
+        for t in aver:
+            sum += t
+            y_vector.append(sum)
+
         std = np.array(std)
-        plt.semilogy(x_vectore, aver, label="config{}".format(i+1), color=color[i], linewidth=0.8)
-        plt.semilogy(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
-        plt.semilogy(x_vectore, aver-std, alpha=0.2, color=color[i], linewidth=0.5)
+        plt.semilogy(x_vectore, y_vector, label="config{}".format(i+1), linewidth=0.8)
+        #plt.semilogy(x_vectore, y_vector+std, alpha=0.2, color=color[i], linewidth=0.5)
+        #plt.semilogy(x_vectore, y_vector-std, alpha=0.2, color=color[i], linewidth=0.5)
         i += 1
         
     plt.legend()
     plt.xlabel("k-th iteration")
     plt.ylabel("log(time [sec])")
-    plt.title("Averege and stadard deviation of time for each %s configuration" % strategy)
+    #plt.title("Averege and stadard deviation of time for each %s configuration" % strategy)
+    plt.title("Averege of time for each %s configuration" % strategy)
     plt.grid()
     plt.savefig(fold+"all_config_averege_time.pdf", bbox_inches="tight")
     
 def plot_iterations_lenght_snake_different_config(averege_length, std_length, fold, strategy):
     plt.figure()
-    color = ['r', 'b', 'g', 'm', 'c', 'y', 'purple', 'orange', 'olive', 'pink', 'red']
+    #color = ['r', 'b', 'g', 'm', 'c', 'y', 'purple', 'orange', 'olive', 'pink', 'red']
     i = 0
     for aver, std in zip(averege_length, std_length):
         aver = np.array(aver)
         std = np.array(std)
         x_vectore = np.linspace(1, len(aver), len(aver))
-        plt.plot(x_vectore, aver, label="config{}".format(i+1), color=color[i], linewidth=0.8)
-        plt.plot(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
-        plt.plot(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
+        plt.plot(x_vectore, aver, label="config{}".format(i+1), linewidth=0.8)
+        #plt.plot(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
+        #plt.plot(x_vectore, aver+std, alpha=0.2, color=color[i], linewidth=0.5)
         i += 1
         
     plt.legend()
     plt.xlabel("k-th iteration")
     plt.ylabel("snake length")
     plt.grid()
-    plt.title("Averege and stadard deviation of snake length for each %s configuration" % strategy)
-    plt.savefig(fold+"all_config_averege_length", bbox_inches="tight")
+    #plt.title("Averege and stadard deviation of snake length for each %s configuration" % strategy)
+    plt.title("Averege of snake length for each %s configuration" % strategy)
+    plt.savefig(fold+"all_config_averege_length.pdf", bbox_inches="tight")
 
 def plot_violin(iterations_time, fold, name, strategy):
     plt.figure()
