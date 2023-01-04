@@ -1,0 +1,125 @@
+GREEDY 
+
+Greedy config 1 
+Averege time to complite the game: 0.105600 [sec], std dev: 0.129261 [sec] 
+Average length achieved at the end of the game 13.140000, std dev: 8.015011 
+Ratio of games won out of total = 0.000000 
+Games won: 
+Averege time to complite the game: nan [sec], std dev: nan [sec] 
+Average length achieved at the end of the game nan, std dev: nan 
+Games lost: 
+Averege time to complite the game: 0.105600 [sec], std dev: 0.129261 [sec] 
+Average length achieved at the end of the game 13.140000, std dev: 8.015011 
+
+Greedy config 2 
+Averege time to complite the game: 7.337325 [sec], std dev: 7.496593 [sec] 
+Average length achieved at the end of the game 92.220000, std dev: 8.061737 
+Ratio of games won out of total = 0.150000 
+Games won: 
+Averege time to complite the game: 10.193614 [sec], std dev: 8.478314 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+Games lost: 
+Averege time to complite the game: 6.833274 [sec], std dev: 7.192882 [sec] 
+Average length achieved at the end of the game 90.847059, std dev: 7.993388 
+
+Greedy config 3 
+Averege time to complite the game: 8.584798 [sec], std dev: 8.546039 [sec] 
+Average length achieved at the end of the game 98.140000, std dev: 7.740827 
+Ratio of games won out of total = 0.290000 
+Games won: 
+Averege time to complite the game: 8.155843 [sec], std dev: 7.563704 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+Games lost: 
+Averege time to complite the game: 8.760005 [sec], std dev: 8.910260 [sec] 
+Average length achieved at the end of the game 97.380282, std dev: 9.077702 
+
+Greedy config 4 
+Averege time to complite the game: 8.815103 [sec], std dev: 9.651557 [sec] 
+Average length achieved at the end of the game 93.610000, std dev: 19.156145 
+Ratio of games won out of total = 0.290000 
+Games won: 
+Averege time to complite the game: 7.185174 [sec], std dev: 7.186028 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+Games lost: 
+Averege time to complite the game: 9.480848 [sec], std dev: 10.420195 [sec] 
+Average length achieved at the end of the game 91.000000, std dev: 22.211531 
+
+Greedy config 5 
+Averege time to complite the game: 9.000554 [sec], std dev: 9.067451 [sec] 
+Average length achieved at the end of the game 97.200000, std dev: 9.999000 
+Ratio of games won out of total = 0.230000 
+Games won: 
+Averege time to complite the game: 11.067193 [sec], std dev: 8.838886 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+Games lost: 
+Averege time to complite the game: 8.383246 [sec], std dev: 9.043470 [sec] 
+Average length achieved at the end of the game 96.363636, std dev: 11.260676 
+
+Greedy config 6 
+Averege time to complite the game: 8.304316 [sec], std dev: 8.490373 [sec] 
+Average length achieved at the end of the game 97.030000, std dev: 11.848591 
+Ratio of games won out of total = 0.420000 
+Games won: 
+Averege time to complite the game: 7.264483 [sec], std dev: 7.042128 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+Games lost: 
+Averege time to complite the game: 9.057299 [sec], std dev: 9.328766 [sec] 
+Average length achieved at the end of the game 94.879310, std dev: 15.199907 
+
+Greedy config 7 
+Averege time to complite the game: 9.129187 [sec], std dev: 9.004780 [sec] 
+Average length achieved at the end of the game 94.450000, std dev: 16.914121 
+Ratio of games won out of total = 0.260000 
+Games won: 
+Averege time to complite the game: 6.785418 [sec], std dev: 7.157416 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+Games lost: 
+Averege time to complite the game: 9.952673 [sec], std dev: 9.432302 [sec] 
+Average length achieved at the end of the game 92.500000, std dev: 19.286776 
+
+
+HAMILTON 
+
+Hamilton config 1 
+Averege time to complite the game: 12.316926 [sec], std dev: 10.973021 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 2 
+Averege time to complite the game: 14.681220 [sec], std dev: 11.691410 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 3 
+Averege time to complite the game: 10.282985 [sec], std dev: 9.281851 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 4 
+Averege time to complite the game: 9.343957 [sec], std dev: 8.686203 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 5 
+Averege time to complite the game: 12.072561 [sec], std dev: 10.828450 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 6 
+Averege time to complite the game: 9.753414 [sec], std dev: 9.446526 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 7 
+Averege time to complite the game: 10.031976 [sec], std dev: 9.682599 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 8 
+Averege time to complite the game: 10.090200 [sec], std dev: 9.781208 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 9 
+Averege time to complite the game: 10.017134 [sec], std dev: 9.687236 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 10 
+Averege time to complite the game: 10.235018 [sec], std dev: 9.527261 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 
+
+Hamilton config 11 
+Averege time to complite the game: 10.237092 [sec], std dev: 9.647634 [sec] 
+Average length achieved at the end of the game 100.000000, std dev: 0.000000 

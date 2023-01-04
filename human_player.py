@@ -29,3 +29,6 @@ class HumanPlayer(Player):
         elif keys[self.left_key]:
             dir = Directions.LEFT
         return dir
+    
+    def set_restart_game(self):
+        pass

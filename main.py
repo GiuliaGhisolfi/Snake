@@ -12,7 +12,7 @@ from config_parsing import *
 import gui
 import colors
 
-TEST_MODE = True
+TEST_MODE = False
 
 def start(params):
     # parameters initialization
@@ -98,6 +98,7 @@ def start(params):
             grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
             if not autostart: gui.new_game() # con test mode è sempre autostart, lasciamo comunque così?
+            player.set_restart_game()
         elif snake.length == grid.get_grid_free_area(): # win
             if TEST_MODE: 
                 print('Execution %d/%d'%(executions+1, max_executions))
@@ -116,6 +117,7 @@ def start(params):
             grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
             if not autostart: gui.new_game() # idem come sopra
+            player.set_restart_game()
         else:
             if eaten : food.respawn(snake, grid)
             if not TEST_MODE:
@@ -131,10 +133,10 @@ if not TEST_MODE: # normal execution
     gui.snake_interface()
     config = 'default.config'
     log_file = 'default_log_file.config'
-    if gui.dict_info['type']=='greedy':
+    if gui.player_info['type']=='greedy':
         config = greedy_configs_fold+'bot3.config'
         log_file = greedy_configs_fold+'log1.json'
-    if gui.dict_info['type']=='hamilton':
+    if gui.player_info['type']=='hamilton':
         config = hamilton_configs_fold+'bot6.config'
         log_file = hamilton_configs_fold+'log6.json'
     start_params = {
@@ -145,7 +147,7 @@ if not TEST_MODE: # normal execution
         'obstacles': gui.OBSTACLES,
         'autostart': gui.AUTOSTART,
         'executions': np.inf,
-        'player_info': gui.dict_info,
+        'player_info': gui.player_info,
         'bot_config': config,
         'log_file': log_file
     }

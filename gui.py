@@ -3,7 +3,7 @@ import sys
 import colors
 
 # global variable to use in main file
-dict_info = {}
+player_info = {}
 X_BLOCKS = 15
 Y_BLOCKS = 16
 FRAME_DELAY = 1
@@ -12,7 +12,7 @@ OBSTACLES = "to_be_setup"
 AUTOSTART = True
 SIZE = 700
 # general dictonary to use in the bot dictonary creation
-dictonary = { 
+player_info_configuration = { 
     "type": ["human", "greedy","hamilton"],
     "color": [colors.ORANGE, colors.BLUE ,colors.GREEN],
     "start_location": "top-left",
@@ -66,7 +66,7 @@ class Button:
 
     # draw buttons & retrieve bot dictonary
     def buttons_draw(self):
-        global dict_info
+        global player_info
         for b in Button.buttons:
             b.draw()
             b.check_click()
@@ -89,7 +89,7 @@ class Button:
                 sys.exit()
 
     def check_click(self): # check which button i click, the do the respective action
-        global FRAME_DELAY, OBSTACLES, X_BLOCKS, Y_BLOCKS, dict_info
+        global FRAME_DELAY, OBSTACLES, X_BLOCKS, Y_BLOCKS, player_info
         mouse_pos = pygame.mouse.get_pos()
         if self.top_rect.collidepoint(mouse_pos):# mouse ontop the button
             self.top_color = colors.ORANGE
@@ -98,32 +98,32 @@ class Button:
                 self.dynamic_elecation = 0
                 self.pressed = True
                 if self.text == 'Human Player': # select the correct dictonary for each player
-                    dict_info =  {
-                        "type": dictonary["type"][0],
-                        "color": dictonary["color"][0],
-                        "start_location": dictonary["start_location"]
+                    player_info =  {
+                        "type": player_info_configuration["type"][0],
+                        "color": player_info_configuration["color"][0],
+                        "start_location": player_info_configuration["start_location"]
                     }     
                     Button.choise_made = 'human'
                     FRAME_DELAY = 85
                 elif self.text == 'Bot Player':
-                    dict_info =  {
-                        "type": dictonary["type"][1],
-                        "color": dictonary["color"][1],
-                        "start_location": dictonary["start_location"]
+                    player_info =  {
+                        "type": player_info_configuration["type"][1],
+                        "color": player_info_configuration["color"][1],
+                        "start_location": player_info_configuration["start_location"]
                     }            
                     Button.choise_made = 'bot' 
                 elif self.text == 'Greedy search':             
-                    dict_info = {
-                        "type": dictonary["type"][1],
-                        "color": dictonary["color"][1],
-                        "start_location": dictonary["start_location"]
+                    player_info = {
+                        "type": player_info_configuration["type"][1],
+                        "color": player_info_configuration["color"][1],
+                        "start_location": player_info_configuration["start_location"]
                     }
                     Button.choise_made = 'astar'
                 elif self.text == 'Hamilton search':
-                    dict_info = {
-                        "type": dictonary["type"][2],
-                        "color": dictonary["color"][2],
-                        "start_location": dictonary["start_location"]
+                    player_info = {
+                        "type": player_info_configuration["type"][2],
+                        "color": player_info_configuration["color"][2],
+                        "start_location": player_info_configuration["start_location"]
                     }
                     Button.choise_made = 'hamilton'
                 elif self.text == "Yes":
