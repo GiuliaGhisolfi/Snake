@@ -53,8 +53,8 @@ strategy_config_k = [ [first game data for k-th strategy configuration], [second
 data_greedy = []
 for i in range(1, 10+1):
     data = []
-    dim = dimension2[0]
-    for name in names2:
+    dim = dimension[0]
+    for name in names:
         file = greedy_fold+dim+'/'+name+'/log'+'%s'%i+'.json'
         f = open(file)
         data += json.load(f)

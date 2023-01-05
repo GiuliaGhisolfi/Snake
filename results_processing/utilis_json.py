@@ -78,7 +78,7 @@ def divides_games_won_lost(data, grid_area=10*10):
 
 def plot_iterations_time(iterations_time, i, fold, strategy):
     """asse x: numero iterazione, asse y: tempo dall'inizio del gioco"""
-    rep = 1000
+    rep = 20
     colors = plt.cm.get_cmap("tab10")
     plt.figure()
     for c, game in enumerate(iterations_time):
@@ -116,7 +116,7 @@ def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
     colors = plt.cm.get_cmap("tab10")
     plt.figure()
     j = 0
-    rep = 1000
+    rep = 20
     for c, game in enumerate(iterations_time):
         time_sum = 0
         x_vectore = []
