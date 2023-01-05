@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.lines import Line2D
 import numpy as np
 
 names = ['irene', 'giulia', 'gabriele', 'luca', 'giacomo']
@@ -216,11 +218,28 @@ def plot_violin(iterations_time, win_ratio, fold, name, strategy, ylbl):
         plt.ylabel("snake length")
     plt.grid()
     plt.title('%s' %(strategy))
-
-    
-
-    
-    
     plt.xticks(configs_idx, configs_names)
     
     plt.savefig(fold+"%s_violinplot.pdf" % name, bbox_inches="tight")
+
+def plot_ellipse(mean_iter_list,std_iter_list,mean_len_list,std_len_list,fold,name):
+    plt.figure()
+    fig, ax = plt.subplots()
+    colors = plt.cm.get_cmap("tab20")
+    i = 0
+    legends=[]
+    for mean_iter,std_iter,mean_len,std_len in zip(mean_iter_list,std_iter_list,mean_len_list,std_len_list):
+        center = np.array([mean_iter, mean_len])
+        patch = mpatches.Ellipse(center, std_iter, std_len, fc='none', ls='solid', ec='g', lw=1) 
+        patch.set_edgecolor(colors(i))
+        ax.add_patch(patch)
+        plt.plot(center[0], center[1], 'go',color=colors(i))
+        legends.append(Line2D([], [], color=colors(i), marker='o',markersize=8, label="config{}".format(i+1)))      
+        i += 1
+        
+    plt.legend(ncols=2,handles=legends)
+    plt.xlabel("game steps")
+    plt.ylabel("snake length")
+    plt.grid(color='lightgray',linestyle='--')
+    plt.title("Final steps and lengths")
+    plt.savefig(fold+"%s_all_config_ellipse.pdf" % name , bbox_inches="tight")
