@@ -78,7 +78,7 @@ def divides_games_won_lost(data, grid_area=10*10):
 
 def plot_iterations_time(iterations_time, i, fold, strategy):
     """asse x: numero iterazione, asse y: tempo dall'inizio del gioco"""
-    rep = 20
+    rep = 1000
     colors = plt.cm.get_cmap("tab10")
     plt.figure()
     for c, game in enumerate(iterations_time):
@@ -96,7 +96,7 @@ def plot_iterations_time(iterations_time, i, fold, strategy):
     plt.ylabel("log(time [sec])")
     plt.title('%s config%d' %(strategy, i))
     plt.grid()
-    plt.legend()
+    #plt.legend()
     plt.savefig(fold+"config{}_iterations_time.pdf".format(i), bbox_inches="tight")
     
 def plot_iterations_length(iterations_length, i, fold, strategy):
@@ -116,7 +116,7 @@ def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
     colors = plt.cm.get_cmap("tab10")
     plt.figure()
     j = 0
-    rep = 20
+    rep = 1000
     for c, game in enumerate(iterations_time):
         time_sum = 0
         x_vectore = []
@@ -125,7 +125,7 @@ def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
             x_vectore.append(time_sum)
         y_vectore = iterations_length[j]
         j += 1
-        if c%20==0:
+        if c%rep==0:
             plt.plot(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/rep)), label=names[int(c/rep)])
         else:
             plt.plot(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/rep)))
@@ -134,7 +134,7 @@ def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
     plt.ylabel("snake length")
     plt.title('%s config%d' %(strategy, i))
     plt.grid()
-    plt.legend()
+    #plt.legend()
     plt.savefig(fold+"config{}_time_length.pdf".format(i), bbox_inches="tight")
     
 def plot_iterations_time_different_config(averege_time, std_time, fold, strategy):
@@ -193,8 +193,22 @@ def plot_iterations_lenght_snake_different_config(averege_length, std_length, fo
     plt.title("Averege of snake length for each %s configuration" % strategy)
     plt.savefig(fold+"all_config_averege_length.pdf", bbox_inches="tight")
 
-def plot_violin(iterations_time, fold, name, strategy, ylbl):
+def plot_violin(iterations_time, win_ratio, fold, name, strategy, ylbl):
     plt.figure(figsize=(10.4, 4.8))
+    if strategy=='Greedy': n_configs = 10
+    else: n_configs = 11
+    configs_names = []
+    configs_idx = []
+    for c in range(n_configs):
+        configs_names.append('config%d'%(c+1))
+        configs_idx.append(c+1)
+
+    if win_ratio != None:
+        ax1 = plt.twinx()
+        ax1.set_yscale('symlog')
+        ax1.bar(configs_idx, win_ratio, alpha=0.3)
+        ax1.set_ylabel(configs_names)
+
     plt.violinplot(iterations_time)
     if ylbl=='time':
         plt.ylabel("time [sec]")
@@ -203,13 +217,10 @@ def plot_violin(iterations_time, fold, name, strategy, ylbl):
     plt.grid()
     plt.title('%s' %(strategy))
 
-    if strategy=='Greedy': n_configs = 7
-    else: n_configs = 11
-    configs_names = []
-    configs_idx = []
-    for c in range(n_configs):
-        configs_names.append('config%d'%(c+1))
-        configs_idx.append(c+1)
+    
+
+    
+    
     plt.xticks(configs_idx, configs_names)
     
     plt.savefig(fold+"%s_violinplot.pdf" % name, bbox_inches="tight")

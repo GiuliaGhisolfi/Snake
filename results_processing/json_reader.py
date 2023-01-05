@@ -31,8 +31,11 @@ hamilton_fold = './hamilton_results/'
 names = ['irene', 'giulia', 'gabriele', 'luca', 'giacomo']
 names2 = ['giacomo']
 # TODO: 
-# irene => 1,6 GHz Intel Core i5 dual-core
-# giulia => ...
+# irene => 1,6 GHz Intel Core i5
+# giulia => Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz   1.80 GHz
+# gabriele => Apple M1 Pro 2.064 GHz / 3.228 GHz
+# luca => Intel® Core™ i7-7500U CPU @ 2.70GHz × 4
+# giacomo => Intel Core i7-10750H CPU @ 2.60GHz
 dimension = ['10x10']
 dimension2 = ['10x10 1000']
 
@@ -53,8 +56,8 @@ strategy_config_k = [ [first game data for k-th strategy configuration], [second
 data_greedy = []
 for i in range(1, 10+1):
     data = []
-    dim = dimension[0]
-    for name in names:
+    dim = dimension2[0]
+    for name in names2:
         file = greedy_fold+dim+'/'+name+'/log'+'%s'%i+'.json'
         f = open(file)
         data += json.load(f)
@@ -136,9 +139,9 @@ for i in range(1, 10+1):
 
 plot_iterations_time_different_config(data_greedy_time_average, data_greedy_time_std, fold, strategy)
 plot_iterations_lenght_snake_different_config(data_greedy_length_average, data_greedy_length_std, fold, strategy)
-plot_violin(data_greedy_time_average, fold, 'Time_per_iteration', strategy, 'time')
-plot_violin(data_greedy_length_average, fold, 'Length_per_iteration', strategy, 'length')
-plot_violin(data_greedy_total_time, fold, 'Game_time', strategy, 'time')
+plot_violin(data_greedy_time_average, None, fold, 'Time_per_iteration', strategy, 'time')
+plot_violin(data_greedy_length_average, None, fold, 'Length_per_iteration', strategy, 'length')
+plot_violin(data_greedy_total_time, None, fold, 'Game_time', strategy, 'time')
 
 
 #---------------------------------hamilton---------------------------------
@@ -186,8 +189,8 @@ for i in range(1, 11+1):
 
 plot_iterations_time_different_config(data_hamilton_time_average, data_hamilton_time_std, fold, strategy)
 plot_iterations_lenght_snake_different_config(data_hamilton_length_average, data_hamilton_length_std, fold, strategy)
-plot_violin(data_hamilton_time_average, fold, 'Time_per_iteration', strategy, 'time')
-plot_violin(data_hamilton_length_average, fold, 'Length_per_iteration', strategy, 'length')
-plot_violin(data_hamilton_total_time, fold, 'Game_time', strategy, 'time')
+plot_violin(data_hamilton_time_average, None, fold, 'Time_per_iteration', strategy, 'time')
+plot_violin(data_hamilton_length_average, None, fold, 'Length_per_iteration', strategy, 'length')
+plot_violin(data_hamilton_total_time, None, fold, 'Game_time', strategy, 'time')
 
 results.close()
