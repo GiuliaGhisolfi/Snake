@@ -73,6 +73,7 @@ def divides_games_won_lost(data, grid_area=10*10):
 
     return games_won_data, games_lost_data, games_won
 
+
 #------------------PLOT------------------
 
 def plot_iterations_time(iterations_time, i, fold, strategy):
@@ -211,4 +212,4 @@ def plot_violin(iterations_time, fold, name, strategy, ylbl):
         configs_idx.append(c+1)
     plt.xticks(configs_idx, configs_names)
     
-    plt.savefig(fold+"%s_per_iteration_violinplot.pdf" % name, bbox_inches="tight")
+    plt.savefig(fold+"%s_violinplot.pdf" % name, bbox_inches="tight")
