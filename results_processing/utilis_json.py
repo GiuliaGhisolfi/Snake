@@ -77,6 +77,7 @@ def divides_games_won_lost(data, grid_area=10*10):
 
 def plot_iterations_time(iterations_time, i, fold, strategy):
     """asse x: numero iterazione, asse y: tempo dall'inizio del gioco"""
+    rep = 1000
     colors = plt.cm.get_cmap("tab10")
     plt.figure()
     for c, game in enumerate(iterations_time):
@@ -86,10 +87,10 @@ def plot_iterations_time(iterations_time, i, fold, strategy):
             time_sum += game[l]
             y_vectore.append(time_sum)
         x_vectore = np.linspace(1, len(y_vectore), len(y_vectore))
-        if c%20==0:
-            plt.semilogy(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/20)), label=names[int(c/20)])
+        if c%rep==0:
+            plt.semilogy(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/rep)), label=names[int(c/rep)])
         else:
-            plt.semilogy(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/20)))
+            plt.semilogy(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/rep)))
     plt.xlabel("game step")
     plt.ylabel("log(time [sec])")
     plt.title('%s config%d' %(strategy, i))
@@ -114,6 +115,7 @@ def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
     colors = plt.cm.get_cmap("tab10")
     plt.figure()
     j = 0
+    rep = 1000
     for c, game in enumerate(iterations_time):
         time_sum = 0
         x_vectore = []
@@ -123,9 +125,9 @@ def plot_time_length(iterations_time, iterations_length, i, fold, strategy):
         y_vectore = iterations_length[j]
         j += 1
         if c%20==0:
-            plt.plot(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/20)), label=names[int(c/20)])
+            plt.plot(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/rep)), label=names[int(c/rep)])
         else:
-            plt.plot(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/20)))
+            plt.plot(x_vectore, y_vectore, linewidth=0.8, color=colors(int(c/rep)))
 
     plt.xlabel("time [sec]")
     plt.ylabel("snake length")

@@ -12,7 +12,7 @@ from config_parsing import *
 import gui
 import colors
 
-TEST_MODE = False
+TEST_MODE = True
 
 def start(params):
     # parameters initialization
@@ -168,6 +168,7 @@ else: # execute to collect data for tests
         start_params['log_file'] = log_file
         start(start_params)
 
+    '''
     print('------ Bot hamilton ------')
     for config_file, log_file in zip(hamilton_configs, ham_logs):
         print('config = %s'%config_file)
@@ -176,4 +177,4 @@ else: # execute to collect data for tests
         start_params['player_info'] = player_info
         start_params['bot_config'] = config_file
         start_params['log_file'] = log_file
-        start(start_params)
+        start(start_params)'''

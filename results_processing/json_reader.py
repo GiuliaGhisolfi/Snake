@@ -29,10 +29,12 @@ def total_time_len(iterations_time, snake_length):
 greedy_fold = './greedy_results/'
 hamilton_fold = './hamilton_results/'
 names = ['irene', 'giulia', 'gabriele', 'luca', 'giacomo']
+names2 = ['giacomo']
 # TODO: 
 # irene => 1,6 GHz Intel Core i5 dual-core
 # giulia => ...
 dimension = ['10x10']
+dimension2 = ['10x10 1000']
 
 FILE_RESULTS = './results_processing/results_10x10/results.csv'
 results = open(FILE_RESULTS, 'w')
@@ -49,10 +51,10 @@ strategy_config_k = [ [first game data for k-th strategy configuration], [second
 
 #---------------------------------greedy----------------------------------
 data_greedy = []
-for i in range(1, 7+1):
+for i in range(1, 10+1):
     data = []
-    dim = dimension[0]
-    for name in names:
+    dim = dimension2[0]
+    for name in names2:
         file = greedy_fold+dim+'/'+name+'/log'+'%s'%i+'.json'
         f = open(file)
         data += json.load(f)
@@ -86,7 +88,7 @@ games_won_total = [] # games won out of total for each config
 
 results.write('GREEDY \n')
 
-for i in range(1, 7+1):
+for i in range(1, 10+1):
     # Divido i dati di greedy in due matrici, una con i giochi vinti e una con quelli persi per ogni configurazione 
     # e salvo il rapporto dei giochi vinti
     games_won_data, games_lost_data, games_won = divides_games_won_lost(data_greedy[i-1])
