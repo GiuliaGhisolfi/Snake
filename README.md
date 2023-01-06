@@ -1,17 +1,17 @@
 # Snake AI 🐍🤖
 Implementation of two snake AIs.
 ## How to install
-Install python
+Clone the repository
 ```bash
-sudo apt install python3
+git clone https://github.com/GiuliaGhisolfi/Snake.git
 ```
-Install the package manager [pip](https://pypi.org/project/pip/)
+Move into the directory
 ```bash
-sudo apt install --upgrade python3-pip
+cd Snake
 ```
 Install the requirements
 ```bash
-python -m pip install --requirement requirements.txt
+python3 -m pip install --r requirements.txt
 ```
 ## How to run
 Execute the following instruction ...
