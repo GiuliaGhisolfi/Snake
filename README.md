@@ -16,7 +16,7 @@ python3 -m pip install --r requirements.txt
 ## How to run
 Execute the following instruction ...
 ```bash
-python3 main.py
+python3 start_play.py
 ```
 ... then choose the settings you prefer through the GUI.
 ## Demo
