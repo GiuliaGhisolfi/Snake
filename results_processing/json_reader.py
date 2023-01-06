@@ -24,7 +24,8 @@ def total_time_len(iterations_time, snake_length):
     results.write("Averege time to complete the game: %f [sec], std dev: %f [sec] \n" %(mean_time, std_time))
     results.write("Averege number of iteration to complite the game: %f [iterations], std dev: %f [iterations] \n" %(mean_iter, std_iter))
     results.write("Average length achieved at the end of the game %f, std dev: %f \n" %(mean_len, std_len))
-
+    
+    return (mean_iter,std_iter,mean_len,std_len)
 
 greedy_fold = './greedy_results/'
 hamilton_fold = './hamilton_results/'
@@ -89,6 +90,10 @@ data_greedy_length_average = []
 data_greedy_length_std = []
 data_greedy_total_time = []
 games_won_total = [] # games won out of total for each config
+greedy_mean_iter = []
+greedy_std_iter = []
+greedy_mean_len = []
+greedy_std_len = []
 
 results.write('GREEDY \n')
 ratio = []
@@ -120,7 +125,11 @@ for i in range(1, 10+1):
     snake_length_tot += snake_length_won
     snake_length_tot += snake_length_lost
     
-    total_time_len(iterations_time, snake_length_tot)
+    mean_iter,std_iter,mean_len,std_len = total_time_len(iterations_time, snake_length_tot)
+    greedy_mean_iter.append(mean_iter)
+    greedy_std_iter.append(std_iter)
+    greedy_mean_len.append(mean_len)
+    greedy_std_len.append(std_len)
     results.write('Ratio of games won out of total = %f \n' %games_won)
     ratio.append(games_won)
     results.write('Games won: \n')
@@ -138,6 +147,7 @@ for i in range(1, 10+1):
     data_greedy_length_average.append(len_for_iterartion_averege)
     data_greedy_length_std.append(len_for_iterartion_std)
 
+plot_ellipse(greedy_mean_iter,greedy_std_iter,greedy_mean_len,greedy_std_len,fold,strategy)
 plot_iterations_time_different_config(data_greedy_time_average, data_greedy_time_std, fold, strategy)
 plot_iterations_lenght_snake_different_config(data_greedy_length_average, data_greedy_length_std, fold, strategy)
 plot_violin(data_greedy_time_average, None, fold, 'Time_per_iteration', strategy, 'time')
@@ -153,6 +163,10 @@ data_hamilton_time_std = []
 data_hamilton_length_average = []
 data_hamilton_length_std = []
 data_hamilton_total_time = []
+hamilton_mean_iter = []
+hamilton_std_iter = []
+hamilton_mean_len = []
+hamilton_std_len = []
 
 results.write('\n\n')
 results.write('HAMILTON \n')
@@ -176,8 +190,11 @@ for i in range(1, 11+1):
     
     for game in snake_length:
         game[-1] += 1
-    total_time_len(iterations_time, snake_length)
-
+    mean_iter,std_iter,mean_len,std_len=total_time_len(iterations_time, snake_length)
+    hamilton_mean_iter.append(mean_iter)
+    hamilton_std_iter.append(std_iter)
+    hamilton_mean_len.append(mean_len)
+    hamilton_std_len.append(std_len)
     # media e dev std tempo per iterazione
     time_for_iterartion_averege, time_for_iterartion_std = calculate_averege_std(iterations_time)
     data_hamilton_time_average.append(time_for_iterartion_averege)
@@ -188,6 +205,7 @@ for i in range(1, 11+1):
     data_hamilton_length_average.append(len_for_iterartion_averege)
     data_hamilton_length_std.append(len_for_iterartion_std)
 
+plot_ellipse(hamilton_mean_iter,hamilton_std_iter,hamilton_mean_len,hamilton_std_len,fold,strategy)
 plot_iterations_time_different_config(data_hamilton_time_average, data_hamilton_time_std, fold, strategy)
 plot_iterations_lenght_snake_different_config(data_hamilton_length_average, data_hamilton_length_std, fold, strategy)
 plot_violin(data_hamilton_time_average, None, fold, 'Time_per_iteration', strategy, 'time')
