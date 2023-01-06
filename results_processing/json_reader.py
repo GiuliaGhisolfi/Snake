@@ -96,13 +96,13 @@ greedy_mean_len = []
 greedy_std_len = []
 
 results.write('GREEDY \n')
-
+ratio = []
 for i in range(1, 10+1):
     # Divido i dati di greedy in due matrici, una con i giochi vinti e una con quelli persi per ogni configurazione 
     # e salvo il rapporto dei giochi vinti
     games_won_data, games_lost_data, games_won = divides_games_won_lost(data_greedy[i-1])
     games_won_total.append(games_won)
-    print('Ratio of games won out of total for greedy configuration %d = %f' %(i, games_won) )
+    print('Ratio of games won out of total for greedy configuration %d = %f' % (i, games_won) )
 
     # trascrizione dati e grafici
     results.write('\nGreedy config %s \n' % i)
@@ -131,6 +131,7 @@ for i in range(1, 10+1):
     greedy_mean_len.append(mean_len)
     greedy_std_len.append(std_len)
     results.write('Ratio of games won out of total = %f \n' %games_won)
+    ratio.append(games_won)
     results.write('Games won: \n')
     total_time_len(iterations_time_won, snake_length_won)
     results.write('Games lost: \n')
@@ -151,7 +152,7 @@ plot_iterations_time_different_config(data_greedy_time_average, data_greedy_time
 plot_iterations_lenght_snake_different_config(data_greedy_length_average, data_greedy_length_std, fold, strategy)
 plot_violin(data_greedy_time_average, None, fold, 'Time_per_iteration', strategy, 'time')
 plot_violin(data_greedy_length_average, None, fold, 'Length_per_iteration', strategy, 'length')
-plot_violin(data_greedy_total_time, None, fold, 'Game_time', strategy, 'time')
+plot_violin(data_greedy_total_time, ratio, fold, 'Game_time', strategy, 'time')
 
 
 #---------------------------------hamilton---------------------------------
