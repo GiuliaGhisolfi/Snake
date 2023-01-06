@@ -203,11 +203,6 @@ def plot_violin(iterations_time, win_ratio, fold, name, strategy, ylbl):
         configs_names.append('config%d'%(c+1))
         configs_idx.append(c+1)
 
-    if win_ratio != None:
-        ax1 = plt.twinx()
-        ax1.set_yscale('symlog')
-        ax1.bar(configs_idx, win_ratio, alpha=0.3)
-        ax1.set_ylabel(configs_names)
 
     plt.violinplot(iterations_time)
     if ylbl=='time':
@@ -217,7 +212,10 @@ def plot_violin(iterations_time, win_ratio, fold, name, strategy, ylbl):
     plt.grid()
     plt.title('%s' %(strategy))
 
-    
+    if win_ratio != None:
+        ax1 = plt.twinx()
+        ax1.bar(configs_idx, win_ratio, alpha=0.3)
+        ax1.set_ylabel('win ratio')
 
     
     
