@@ -11,7 +11,7 @@ cd Snake
 ```
 Install the requirements
 ```bash
-python3 -m pip install --r requirements.txt
+python3 -m pip install --requirement requirements.txt
 ```
 ## How to run
 Execute the following instruction ...
