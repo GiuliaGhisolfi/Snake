@@ -35,7 +35,8 @@ class Food:
         the cells adjacent to the snake's head."""
         nodes = list(grid.grid.keys())
         rand.shuffle(nodes)
-        adj_positions = None
+        # come dovrebbe essere
+        adj_positions = None 
         
         for n in nodes:
             if manhattan_distance(n, snake.get_body()[1]) <= 1:
@@ -45,3 +46,8 @@ class Food:
                 return
 
         self.position = adj_positions
+        # come l'abbiamo usata nei test precedenti (confrontate anche la history)
+        """for n in nodes:
+            if n != self.position and not self.is_overlapped(n, snake, grid):
+                self.position = n
+                return"""

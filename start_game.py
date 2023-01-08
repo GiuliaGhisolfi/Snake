@@ -1,6 +1,6 @@
 import numpy as np
 import src.gui as gui
-from src.game import start
+from src.game import run_game
 
 gui.snake_interface()
 
@@ -11,10 +11,10 @@ if gui.player_info['type']=='greedy':
 if gui.player_info['type']=='hamilton':
     config = './hamilton.config'
 
-start_params = {
-    'size': gui.SIZE,
-    'x_blocks': gui.X_BLOCKS,
-    'y_blocks': gui.Y_BLOCKS,
+game_config = {
+    'grid_size': gui.SIZE,
+    'grid_width': gui.X_BLOCKS,
+    'grid_height': gui.Y_BLOCKS,
     'frame_delay': gui.FRAME_DELAY,
     'obstacles': gui.OBSTACLES,
     'autostart': gui.AUTOSTART,
@@ -25,4 +25,4 @@ start_params = {
     'test_mode': False,
 }
 
-start(**start_params)
+run_game(**game_config)

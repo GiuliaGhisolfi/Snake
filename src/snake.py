@@ -1,15 +1,16 @@
 from src.directions import Directions
 import copy
+import src.colors as colors
 
 class Snake:
     """This class implements the snake."""
     
-    def __init__(self, color = (0, 190, 80), start_location = "top-left"):
-        self.color = color  # unchangable
+    def __init__(self, color = colors.GREEN, start_location = "top-left"):
+        self.color = color
         self.start_location = start_location
 
     def respawn(self, grid):
-        '''respawn the snake at its starting point'''
+        """Respawn the snake at its starting position."""
         self.length = 3
         if self.start_location == "top-left":
             self.body = [(3, 2), # 0 / 2
@@ -23,44 +24,58 @@ class Snake:
             self.direction = Directions.UP
     
     def coord_from_graph(self, grid):
-        '''return snake's body coordinates on the grid'''
+        """Return snake's body coordinates on the grid."""
         body_coord = []
         for node in self.get_body():
             body_coord[len(body_coord):] = [
-                (int(node[0]) * grid.block_size, int(node[1]) * grid.block_size)]
+                (int(node[0]) * grid.block_size, int(node[1]) * grid.block_size)
+            ]
         return body_coord
 
     def draw(self, game, window, grid):
-        '''draw the snake'''
-
+        """Draws the snake."""
         body_coord = self.coord_from_graph(grid)
-
         bsize = grid.block_size
         head = body_coord[-1]
         tail = body_coord[0]
 
-        # Draw tail
-        game.draw.rect(window, self.color,
-                       (tail[0]+1, tail[1]+1, bsize-2, bsize-2))
+        # Draw the tail
+        game.draw.rect(
+            window,
+            self.color,
+            (tail[0]+1, tail[1]+1, bsize-2, bsize-2)
+        )
         prev = (body_coord[0][0], body_coord[0][1])
 
         # Draw the rest of the body
         for segment in body_coord[1:]:
             if segment[0] > prev[0]:
-                game.draw.rect(window, self.color,
-                               (segment[0]-1, segment[1]+1, bsize, bsize-2))
+                game.draw.rect(
+                    window,
+                    self.color,
+                    (segment[0]-1, segment[1]+1, bsize, bsize-2)
+                )
             elif segment[0] < prev[0]:
-                game.draw.rect(window, self.color,
-                               (segment[0]+1, segment[1]+1, bsize, bsize-2))
+                game.draw.rect(
+                    window,
+                    self.color,
+                    (segment[0]+1, segment[1]+1, bsize, bsize-2)
+                )
             elif segment[1] > prev[1]:
-                game.draw.rect(window, self.color,
-                               (segment[0]+1, segment[1]-1, bsize-2, bsize))
+                game.draw.rect(
+                    window,
+                    self.color,
+                    (segment[0]+1, segment[1]-1, bsize-2, bsize)
+                )
             elif segment[1] < prev[1]:
-                game.draw.rect(window, self.color,
-                               (segment[0]+1, segment[1]+1, bsize-2, bsize))
+                game.draw.rect(
+                    window,
+                    self.color,
+                    (segment[0]+1, segment[1]+1, bsize-2, bsize)
+                )
             prev = (segment[0], segment[1])
         
-        # Draw eyes
+        # Draw the eyes
         black = (0, 0, 0)
         eye_size = bsize/6
 
@@ -77,34 +92,38 @@ class Snake:
         game.draw.rect(window, black, (eye2_x, eye2_y, eye_size, eye_size))
 
     def move(self, direction, food):
-        '''change the position of the snake on the grid'''
+        """Moves the snake on the grid."""
+        # change direction
+        self.steer(direction)
 
-        self.__steer(direction)
-        x, y = self.body[-1]
-
+        # get next head position
+        x_head, y_head = self.body[-1]
         if self.direction == Directions.DOWN:
-            y = y + 1
+            y_head = y_head + 1
         elif self.direction == Directions.UP:
-            y = y - 1
+            y_head = y_head - 1
         elif self.direction == Directions.RIGHT:
-            x = x + 1
+            x_head = x_head + 1
         elif self.direction == Directions.LEFT:
-            x = x - 1
+            x_head = x_head - 1
+        next_head = (x_head, y_head)
 
-        next_head = (x, y)
+        # move the head
         self.body.append(next_head)
 
+        # eventually eat the food
         can_eat = self.can_eat(food)
-        if can_eat: self.eat()
+        if can_eat:
+            self.eat()
 
+        # advance the tail
         if self.length < len(self.body):
             self.body.pop(0)
 
         return can_eat
 
-    def __steer(self, direction):
-        '''check if the new direction is not the opposite of the current one'''
-
+    def steer(self, direction):
+        """Updates the direction if it is not the opposite of the current one."""
         if direction == None:
             return
         if self.direction == Directions.DOWN and direction != Directions.UP:
@@ -123,7 +142,7 @@ class Snake:
         return self.body[-1] == food.position
 
     def tail_collision(self):
-        '''check if the snake has overlapped its tail'''
+        """Checks if the snake has has crashed against itself."""
         head = self.body[-1]
         for segment in self.body[:-1]:
             if head == segment:
@@ -131,7 +150,7 @@ class Snake:
         return False
 
     def bounds_collision(self, grid):
-        '''check if the snake has overcome the grid bounds'''
+        """Checks if the snake has overcomed the grid bounds."""
         head = self.body[-1]
         if head not in grid.grid:
             return True
@@ -144,12 +163,13 @@ class Snake:
         return self.body
 
     def dir_to_cell(self, cell):
+        """Returns the direction to follow to reach cell."""
         head = self.body[-1]
-        if cell[0] < head[0]:  # x shift
+        if cell[0] < head[0]:
             return Directions.LEFT
         elif cell[0] > head[0]:
             return Directions.RIGHT
-        elif cell[1] < head[1]:  # y shift
+        elif cell[1] < head[1]:
             return Directions.UP
         else:
             return Directions.DOWN

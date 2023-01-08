@@ -1,7 +1,7 @@
 import copy
 import src.gui as gui
 import pygame
-from src.obstacles_configurations import Obstacles_configurations
+from src.obstacles_configs import ObstaclesConfig
 
 class Grid:
     """This class implements the game grid."""
@@ -78,7 +78,7 @@ class Grid:
         self.current_config = obstacles
 
         # create the Obstacles' list and update the grid
-        obc = Obstacles_configurations(self)
+        obc = ObstaclesConfig(self)
         for pos in obc.configs[int(self.current_config)]:
             obstacle = Obstacle("gray", pos[0], pos[1])
             self.obstacles.append(obstacle)
@@ -97,7 +97,7 @@ class Grid:
     def get_cycle(self, obstacles):
         if obstacles == "None": 
             self.current_config = 4
-        obc = Obstacles_configurations(self)
+        obc = ObstaclesConfig(self)
         return copy.deepcopy(obc.hamcycles[int(self.current_config)])
 
     def get_grid_free_area(self):

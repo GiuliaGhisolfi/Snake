@@ -16,9 +16,9 @@ def get_game_config(file):
     """Return the configuration values."""
     param = read_config_file(file)
     try:
-        param['size'] = int(param['size'])
-        param['x_blocks'] = int(param['x_blocks'])
-        param['y_blocks'] = int(param['y_blocks'])
+        param['grid_size'] = int(param['grid_size'])
+        param['grid_width'] = int(param['grid_width'])
+        param['grid_height'] = int(param['grid_height'])
         param['frame_delay'] = int(param['frame_delay'])
         param['obstacles'] = str(param['obstacles'])
         param['autostart'] = bool(param['autostart'])
@@ -27,9 +27,9 @@ def get_game_config(file):
         print(e)
         print('parameter value error')
         print('initialization with default values')
-        param['size'] = 700
-        param['x_blocks'] = 10
-        param['y_blocks'] = 11
+        param['grid_size'] = 700
+        param['grid_width'] = 10
+        param['grid_height'] = 11
         param['frame_delay'] = 1
         param['obstacles'] = 'None'
         param['autostart'] = True
