@@ -12,9 +12,9 @@ class Snake:
         '''respawn the snake at its starting point'''
         self.length = 3
         if self.start_location == "top-left":
-            self.body = [(3, 2),
-                         (3, 3),
-                         (3, 4)]
+            self.body = [(3, 2), # 0 / 2
+                         (3, 3), # 1 / 3
+                         (3, 4)] # 2 / 4
             self.direction = Directions.DOWN
         if self.start_location == "bottom-right":
             self.body = [((grid.x_blocks-4), (grid.y_blocks-4)),

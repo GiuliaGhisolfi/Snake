@@ -1,3 +1,4 @@
+from src.aima_utils import manhattan_distance
 import random as rand
 
 class Food:
@@ -32,19 +33,15 @@ class Food:
     def respawn(self, snake, grid):
         """Randomly generates a new food position, avoiding (if possible) 
         the cells adjacent to the snake's head."""
-        def distance(n1, n2):
-            return abs(n1[0]-n2[0]) + abs(n1[0] - n2[0]) # REVIEW: aima_utils manhattan distance?
-
         nodes = list(grid.grid.keys())
         rand.shuffle(nodes)
-
-        possible_positions = [] # REVIEW: why a list?
+        adj_positions = None
+        
         for n in nodes:
-            if distance(n, snake.get_body()[1]) <= 1:
-                possible_positions.append(n)
-            if n != self.position and not self.is_overlapped(n, snake, grid):
+            if manhattan_distance(n, snake.get_body()[1]) <= 1:
+                adj_positions = n
+            elif n != self.position and not self.is_overlapped(n, snake, grid):
                 self.position = n
                 return
 
-        rand.shuffle(possible_positions) # REVIEW: needed?
-        self.position = possible_positions[0]
+        self.position = adj_positions

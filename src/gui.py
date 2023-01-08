@@ -45,7 +45,7 @@ class Button:
         
         # bottom rectangle 
         self.bottom_rect = pygame.Rect(pos,(width,height))
-        self.bottom_color = '#458B00'
+        self.bottom_color = colors.VERY_DARK_GREEN #'#458B00'
         #text
         self.text = text
         self.text_surf = font.render(text,True,colors.WHITE)
@@ -92,12 +92,12 @@ class Button:
         global FRAME_DELAY, OBSTACLES, X_BLOCKS, Y_BLOCKS, player_info
         mouse_pos = pygame.mouse.get_pos()
         if self.top_rect.collidepoint(mouse_pos):# mouse ontop the button
-            self.top_color = colors.ORANGE
+            self.top_color = colors.DARK_GREEN #colors.ORANGE
             if pygame.mouse.get_pressed()[0]: # if i've pressed the mouse it returns true
                 #print(pygame.mouse.get_pressed())
                 self.dynamic_elecation = 0
                 self.pressed = True
-                if self.text == 'Human Player': # select the correct dictonary for each player
+                if self.text == 'Play yourself': # select the correct dictonary for each player
                     player_info =  {
                         "type": player_info_configuration["type"][0],
                         "color": player_info_configuration["color"],
@@ -105,21 +105,21 @@ class Button:
                     }     
                     Button.choise_made = 'human'
                     FRAME_DELAY = 200
-                elif self.text == 'Bot Player':
+                elif self.text == 'Watch an AI playing':
                     player_info =  {
                         "type": player_info_configuration["type"][1],
                         "color": player_info_configuration["color"],
                         "start_location": player_info_configuration["start_location"]
                     }            
                     Button.choise_made = 'bot' 
-                elif self.text == 'Greedy search':             
+                elif self.text == 'Greedy':
                     player_info = {
                         "type": player_info_configuration["type"][1],
                         "color": player_info_configuration["color"],
                         "start_location": player_info_configuration["start_location"]
                     }
                     Button.choise_made = 'astar'
-                elif self.text == 'Hamilton search':
+                elif self.text == 'Hamilton':
                     player_info = {
                         "type": player_info_configuration["type"][2],
                         "color": player_info_configuration["color"],
@@ -176,7 +176,7 @@ class InputBox:
             else:
                 self.active = False
             # Change the current color of the input box.
-            self.color = colors.ORANGE if self.active else colors.GREEN
+            self.color = colors.DARK_GREEN if self.active else colors.GREEN
         if event.type == pygame.KEYDOWN:
             if self.active:
                 for value in [i for i in range(10)]:
@@ -207,8 +207,8 @@ class InputBox:
 # start-game option configuration menu
 def snake_interface():
     global OBSTACLES
-    button1 = Button('Human Player',300,70,(50,300),5)
-    button2 = Button('Bot Player',300,70,(360,300),5)
+    button1 = Button('Play yourself',400,100,(150,300),5)
+    button2 = Button('Watch an AI playing',400,100,(150,450),5)
     # choose human/bot configuratioin
     while not button1.choise_made:
         for event in pygame.event.get():
@@ -227,8 +227,8 @@ def snake_interface():
     button1.clear_buttons()
 
     # choose which bot to use
-    button2_1 = Button('Greedy search',310,70,(40,300),5)
-    button3_1 = Button('Hamilton search',310,70,(370,300),5)
+    button2_1 = Button('Greedy',310,70,(40,300),5)
+    button3_1 = Button('Hamilton',310,70,(370,300),5)
     while button2_1.choise_made == 'bot': #loop only if have selected bot previously
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -236,7 +236,7 @@ def snake_interface():
                 sys.exit()
         window.fill('#000000')
         button2_1.buttons_draw()
-        text = font.render('Which bot do you prefer?', True, colors.WHITE)
+        text = font.render('Choose a strategy', True, colors.WHITE)
         window.blit(text, (105, 170))
         pygame.display.update()
         clock.tick(60)
@@ -259,8 +259,8 @@ def snake_interface():
                 sys.exit()
         window.fill('#000000')
         button3.buttons_draw()
-        text = font.render('Which obstacles configuration', True, colors.WHITE)
-        text1 = font.render(' do you prefer?',True, colors.WHITE)
+        text = font.render('        Choose an obstacle', True, colors.WHITE)
+        text1 = font.render('   configuration',True, colors.WHITE)
         window.blit(text, (70, 120))
         window.blit(text1, (190, 170))
         pygame.display.update()
@@ -292,7 +292,7 @@ def snake_interface():
         button7.buttons_draw()
         text = font.render('Insert the grid dimensions in', True, colors.WHITE)
         text4 = font.render('the rectangles and press enter.',True,colors.WHITE)
-        text1 = font.render('At the end press the button.',True, colors.WHITE)
+        text1 = font.render('        Then press done.',True, colors.WHITE)
         window.blit(text, (window.get_size()[0]/12*1.5, window.get_size()[1]/12))
         window.blit(text4, (window.get_size()[0]/12, window.get_size()[1]/12*2))
         window.blit(text1,(window.get_size()[0]/12*1.5, window.get_size()[1]/12*3))
