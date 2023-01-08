@@ -11,9 +11,22 @@ from src.config_parsing import *
 import src.gui as gui
 import src.colors as colors
 
-def start(params):
+def start(
+    size,
+    x_blocks,
+    y_blocks,
+    frame_delay,
+    obstacles,
+    autostart,
+    max_executions,
+    player_info,
+    bot_config,
+    log_file,
+    test_mode
+    ):
+    #def start(params):
     # parameters initialization
-    size = params['size']
+    """size = params['size']
     x_blocks = params['x_blocks']
     y_blocks = params['y_blocks']
     frame_delay = params['frame_delay']
@@ -23,7 +36,7 @@ def start(params):
     player_info = params['player_info']
     bot_config = params['bot_config']
     log_file = params['log_file']
-    test_mode = params['test_mode']
+    test_mode = params['test_mode']"""
 
     grid = Grid(size, x_blocks, y_blocks)
 
@@ -51,13 +64,13 @@ def start(params):
             right_key = pygame.K_RIGHT,
             left_key = pygame.K_LEFT)
     elif player_info['type'] == 'greedy':
-        player = Bot_greedy(grid, snake, food, bot_config, log_file)
+        player = Bot_greedy(grid, snake, food, bot_config, log_file, test_mode)
     elif player_info['type'] == 'hamilton':
-        player = Bot_hamilton(grid, snake, food, bot_config, log_file, obstacles)
+        player = Bot_hamilton(grid, snake, food, bot_config, log_file, obstacles, test_mode)
     elif player_info['type'] == 'blind':
-        player = Bot_blind(grid, snake, food)
+        player = Bot_blind(grid, snake, food, test_mode)
     elif player_info['type'] == 'random':
-        player = Bot_random(grid, snake, food)
+        player = Bot_random(grid, snake, food, test_mode)
     else:
         print('PLAYERS INFO ERROR: player type not recognized')
         exit(1)
@@ -90,8 +103,8 @@ def start(params):
                 pygame.time.delay(gui.DEATH_DELAY)
             
             executions += 1
-            if player_info['type'] != 'human':
-                player.save_data(executions==max_executions, lost)
+            if test_mode:
+                player.write_log(executions==max_executions, lost)
             snake.respawn(grid)
             grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
@@ -110,7 +123,8 @@ def start(params):
                 pygame.time.delay(gui.DEATH_DELAY)
             
             executions += 1
-            player.save_data(executions==max_executions, lost)
+            if test_mode:
+                player.write_log(executions==max_executions, lost)
             snake.respawn(grid)
             grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)

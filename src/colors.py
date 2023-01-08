@@ -9,5 +9,4 @@ RED    = (255, 0, 0)
 ORANGE = (255, 102, 0)
 WHITE  = (255, 255, 255)
 YELLOW = (255,255,153)
-
 RANDOM = (r.randint(0, 255), r.randint(0, 255), r.randint(0, 255))

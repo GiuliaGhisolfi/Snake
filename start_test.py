@@ -2,7 +2,7 @@ from src.game import start
 import src.colors as colors
 from src.config_parsing import *
 
-# configuration and log files paths
+# greedy bot configuration and log files paths
 greedy_configs_fold = './test/greedy_configs/'
 greedy_configs = [
     greedy_configs_fold+'bot1.config',
@@ -30,6 +30,7 @@ greedy_logs = [
     # greedy_results_fold+'log10.json'
 ]
 
+# hamilton bot configuration and log files paths
 hamilton_configs_fold = './test/hamilton_configs/'
 hamilton_configs = [
     hamilton_configs_fold+'bot1.config',
@@ -59,30 +60,30 @@ ham_logs = [
     # hamilton_results_fold+'log11.json'
 ]
 
-player_info = {
-        'color': colors.GREEN,
-        'start_location': 'top-left'
-    }
+# test greedy bot
 
-# get configurations parameters from file and start executions
 print('------ Bot greedy ------')
 for i, log_file in enumerate(greedy_logs):
-	print('config = ' + str(i + 1))
-	player_info['type'] = 'greedy'
-	start_params = get_game_config(greedy_configs_fold + 'game_' + str(i + 1) + '.config')
-	start_params['player_info'] = player_info
-	start_params['bot_config'] = greedy_configs_fold + 'bot7.config'
-	start_params['log_file'] = log_file
-	start_params['test_mode'] = True
-	start(start_params)
+    print('config = ' + str(i + 1))
+    player_info = {'color': colors.GREEN, 'start_location': 'top-left'}
+    player_info['type'] = 'greedy'
+    start_params = get_game_config(greedy_configs_fold + 'game_' + str(i + 1) + '.config')
+    start_params['player_info'] = player_info
+    start_params['bot_config'] = greedy_configs_fold + 'bot7.config'
+    start_params['log_file'] = log_file
+    start_params['test_mode'] = True
+    start(**start_params)
+
+# test hamilton bot
 
 print('------ Bot hamilton ------')
 for i, log_file in enumerate(ham_logs):
-	print('config = ' + str(i + 1))
-	player_info['type'] = 'hamilton'
-	start_params = get_game_config(hamilton_configs_fold + 'game_' + str(i + 1) + '.config')
-	start_params['player_info'] = player_info
-	start_params['bot_config'] = hamilton_configs_fold +  'bot4.config'
-	start_params['log_file'] = log_file
-	start_params['test_mode'] = True
-	start(start_params)
+    print('config = ' + str(i + 1))
+    player_info = {'color': colors.GREEN, 'start_location': 'top-left'}
+    player_info['type'] = 'hamilton'
+    start_params = get_game_config(hamilton_configs_fold + 'game_' + str(i + 1) + '.config')
+    start_params['player_info'] = player_info
+    start_params['bot_config'] = hamilton_configs_fold +  'bot4.config'
+    start_params['log_file'] = log_file
+    start_params['test_mode'] = True
+    start(**start_params)

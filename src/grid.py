@@ -4,6 +4,8 @@ import pygame
 from src.obstacles_configurations import Obstacles_configurations
 
 class Grid:
+    """This class implements the game grid."""
+    
     def __init__(self, size, x_blocks, y_blocks):
         self.size = size
         self.x_blocks = x_blocks

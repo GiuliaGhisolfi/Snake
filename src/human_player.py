@@ -3,6 +3,8 @@ from src.directions import Directions
 from src.player import Player
 
 class HumanPlayer(Player):
+    """This class implements a human player (moves are taken from the keyboard)."""
+
     def __init__(
         self, 
         game, 
@@ -10,7 +12,6 @@ class HumanPlayer(Player):
         down_key=pygame.K_DOWN, 
         right_key=pygame.K_RIGHT, 
         left_key=pygame.K_LEFT):
-
         self.game = game
         self.up_key = up_key
         self.down_key = down_key
@@ -29,6 +30,3 @@ class HumanPlayer(Player):
         elif keys[self.left_key]:
             dir = Directions.LEFT
         return dir
-    
-    def set_restart_game(self):
-        pass

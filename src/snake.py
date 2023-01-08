@@ -2,6 +2,8 @@ from src.directions import Directions
 import copy
 
 class Snake:
+    """This class implements the snake."""
+    
     def __init__(self, color = (0, 190, 80), start_location = "top-left"):
         self.color = color  # unchangable
         self.start_location = start_location

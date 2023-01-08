@@ -16,12 +16,13 @@ DETECTLOOPGENEROSITY = 2.1
 
 
 class Bot_greedy(Bot):
+    """This class implements a bot which uses a greedy strategy to play."""
 
     # to create the bot
-    def __init__(self, grid, snake, food, config_path, log_path, debug=False):
+    def __init__(self, grid, snake, food, config_path, log_path, test_mode, debug=False):
 
         # to save these variables
-        super().__init__(grid, snake, food, config_path, log_path)
+        super().__init__(grid, snake, food, config_path, log_path, test_mode)
 
         # debug mode ( default=False )
         self.debug = debug

@@ -1,6 +1,7 @@
 import src.gui as gui
 
 class Obstacles_configurations:
+    """This class implements the grid obstacles of the game."""
 
     def __init__(self, grid):
         self.grid = grid

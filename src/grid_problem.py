@@ -3,6 +3,7 @@ import numpy as np
 
 class GridProblem(Problem):
     """This class represents the problem of finding a path on a 2D grid."""
+    
     def __init__(self, initial, goal, grid, hor_orient):
         super().__init__(initial, goal)
         self.grid = grid
