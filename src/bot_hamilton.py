@@ -205,5 +205,6 @@ class Bot_hamilton(Bot):
                 idx += 1
 
     def get_path_to_draw(self):
-        ord_list = sorted(self.ham_cycle.keys(), key=lambda k: self.ham_cycle[k])
-        return ([ord_list], [colors.WHITE], [True])
+        """Returns the informations needed to draw the path on the game grid."""
+        sorted_list = sorted(self.ham_cycle.keys(), key=lambda k: self.ham_cycle[k])
+        return ([sorted_list], [colors.WHITE], [True])

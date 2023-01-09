@@ -3,6 +3,7 @@ import sys
 import src.colors as colors
 
 # global variable to use in main file
+FONT_PATH = './src/upheavtt.ttf'
 player_info = {}
 X_BLOCKS = 15
 Y_BLOCKS = 16
@@ -21,12 +22,13 @@ player_info_configuration = {
 pygame.init()
 window = pygame.display.set_mode((SIZE,SIZE))
 pygame.display.set_caption("Snake")
-font = pygame.font.SysFont('Arial', 40, True)
+font = pygame.font.Font(FONT_PATH, 50)
+#font = pygame.font.SysFont('Arial', 40, True)
 clock = pygame.time.Clock()
 FONT = pygame.font.Font(None, 32)
 
-""" class that implements buttons in the game interface"""
 class Button:
+    """This class implements the buttons in the game interface."""
 
     buttons = []
     choise_made = False
@@ -45,7 +47,7 @@ class Button:
         
         # bottom rectangle 
         self.bottom_rect = pygame.Rect(pos,(width,height))
-        self.bottom_color = colors.VERY_DARK_GREEN #'#458B00'
+        self.bottom_color = colors.DARK_GREEN
         #text
         self.text = text
         self.text_surf = font.render(text,True,colors.WHITE)
@@ -92,7 +94,7 @@ class Button:
         global FRAME_DELAY, OBSTACLES, X_BLOCKS, Y_BLOCKS, player_info
         mouse_pos = pygame.mouse.get_pos()
         if self.top_rect.collidepoint(mouse_pos):# mouse ontop the button
-            self.top_color = colors.DARK_GREEN #colors.ORANGE
+            self.top_color = colors.ORANGE
             if pygame.mouse.get_pressed()[0]: # if i've pressed the mouse it returns true
                 #print(pygame.mouse.get_pressed())
                 self.dynamic_elecation = 0
@@ -105,7 +107,7 @@ class Button:
                     }     
                     Button.choise_made = 'human'
                     FRAME_DELAY = 200
-                elif self.text == 'Watch an AI playing':
+                elif self.text == 'Watch an AI':
                     player_info =  {
                         "type": player_info_configuration["type"][1],
                         "color": player_info_configuration["color"],
@@ -207,8 +209,8 @@ class InputBox:
 # start-game option configuration menu
 def snake_interface():
     global OBSTACLES
-    button1 = Button('Play yourself',400,100,(150,300),5)
-    button2 = Button('Watch an AI playing',400,100,(150,450),5)
+    button1 = Button('Play yourself',400,100,(150,200),5)
+    button2 = Button('Watch an AI',400,100,(150,450),5)
     # choose human/bot configuratioin
     while not button1.choise_made:
         for event in pygame.event.get():
@@ -217,8 +219,8 @@ def snake_interface():
                 sys.exit()
         window.fill('#000000')
         button1.buttons_draw()
-        text = font.render('How do you want to play?', True, colors.WHITE)
-        window.blit(text, (95, 170))
+        """text = font.render('SNAKE GAME', True, colors.WHITE)
+        window.blit(text, (95, 170))"""
         pygame.display.update()
         clock.tick(60)
     button2.pressed_buttons()
@@ -237,7 +239,7 @@ def snake_interface():
         window.fill('#000000')
         button2_1.buttons_draw()
         text = font.render('Choose a strategy', True, colors.WHITE)
-        window.blit(text, (105, 170))
+        window.blit(text, (115, 170))
         pygame.display.update()
         clock.tick(60)
     if button2_1.choise_made != 'human':
@@ -259,8 +261,8 @@ def snake_interface():
                 sys.exit()
         window.fill('#000000')
         button3.buttons_draw()
-        text = font.render('        Choose an obstacle', True, colors.WHITE)
-        text1 = font.render('   configuration',True, colors.WHITE)
+        text = font.render('Choose an obstacle', True, colors.WHITE)
+        text1 = font.render('configuration',True, colors.WHITE)
         window.blit(text, (70, 120))
         window.blit(text1, (190, 170))
         pygame.display.update()
@@ -292,7 +294,7 @@ def snake_interface():
         button7.buttons_draw()
         text = font.render('Insert the grid dimensions in', True, colors.WHITE)
         text4 = font.render('the rectangles and press enter.',True,colors.WHITE)
-        text1 = font.render('        Then press done.',True, colors.WHITE)
+        text1 = font.render('Then press done.',True, colors.WHITE)
         window.blit(text, (window.get_size()[0]/12*1.5, window.get_size()[1]/12))
         window.blit(text4, (window.get_size()[0]/12, window.get_size()[1]/12*2))
         window.blit(text1,(window.get_size()[0]/12*1.5, window.get_size()[1]/12*3))
