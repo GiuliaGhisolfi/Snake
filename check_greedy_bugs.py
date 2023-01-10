@@ -7,18 +7,21 @@ CONFIGURATIONS = 7
 
 #greedy_fold = './greedy_results/10x10/'
 #greedy_fold = './greedy_results/15x16/'
-greedy_fold = './greedy_results/10x10 1000/'
+#greedy_fold = './greedy_results/10x10 1000/'
+greedy_fold = './nuovi_test/'
 
 #names = ['irene', 'giulia', 'gabriele', 'luca', 'giacomo']
 #names = ['luca', 'giacomo']
-names = ['giacomo']
+#names = ['giacomo']
+names = ['irene', 'giulia', 'gabriele', 'luca', 'giacomo']
 
 data_greedy = []
 errors = 0
 for i in range(1, CONFIGURATIONS + 1):
     for name in names:
         data = []
-        file = greedy_fold + name + '/log' + '%s'%i + '.json'
+        #file = greedy_fold + name + '/log' + '%s'%i + '.json'
+        file = greedy_fold + name + '/greedy_results' + '/log' + '%s'%i + '.json'
         f = open(file)
         data += json.load(f)
 
