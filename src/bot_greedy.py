@@ -40,9 +40,9 @@ class Bot_greedy(Bot):
             print('Default values will be used.')
             self.chosen_search = 2
             self.safe_cycle = 1
-            self.chosen_optimization = 1 # TODO: change with best
-            self.weights = [1, 0, 0, 0]
-            self.choice_sensibility = 4
+            self.chosen_optimization = 1
+            self.weights = [1, 1, 1, 1]
+            self.choice_sensibility = 3
 
     def graph_search(self, start, goal, graph):
         """Returns a path from start to goal on graph using chosen_search."""
@@ -95,18 +95,12 @@ class Bot_greedy(Bot):
             if is_optimizable(self.snake.get_body()[-1], true_graph):
                 # find the closest chokepoint
                 chokepoint = None
-                last_n = None
                 for node in self.default_path[:-1]:
                     if is_chokepoint(node, true_graph):
                         chokepoint = node
                         break
-                    if node == self.snake.body[0] and is_optimizable(node, true_graph):
-                        last_n = node
-                        break
-                if chokepoint == None and last_n != None:
-                    chokepoint = last_n
-                # TODO: if chokepoint == None and is_optimizable(self.snake.body[0], true_graph):
-                #   chokepoint = self.snake.body[0]
+                if chokepoint == None and is_optimizable(self.snake.body[0], true_graph):
+                   chokepoint = self.snake.body[0]
 
                 if chokepoint != None:
                     choke_ind = self.default_path.index(chokepoint)
