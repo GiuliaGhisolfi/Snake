@@ -40,10 +40,8 @@ def run_game(
         grid.update_grid_dimensions(grid_width, grid_height)
 
     # create snake, obstacles and food
-    snake = Snake(
-        color = player_info['color'],
-        start_location = player_info['start_location'])
-    snake.respawn(grid)
+    snake = Snake(color=colors.GREEN)
+    snake.respawn()
     grid.spawn_obstacles(obstacles)
     food = Food(colors.RED)
     food.respawn(snake, grid)
@@ -94,7 +92,7 @@ def run_game(
                 player.write_log(executions==max_executions, crashed)
                 print('Execution %d/%d'%(executions, max_executions))
             if crashed: # has lost
-                text = gui.font1.render('GAME OVER', True, colors.RED)
+                text = gui.font1.render('GAME OVER', True, colors.PURPLE)
                 gui.window.blit(text, ((gui.window.get_size()[0]-text.get_width())/2,(gui.window.get_size()[1]-text.get_height())/2))
                 pygame.display.update()
                 pygame.time.delay(DEATH_DELAY)
@@ -102,12 +100,12 @@ def run_game(
                 snake.draw(pygame, gui.window, grid)
                 grid.draw_obstacles(pygame, gui.window)
                 snake.draw(pygame, gui.window, grid)
-                text = gui.font1.render('COMPLETE', True, colors.RED)
+                text = gui.font1.render('WIN', True, colors.PURPLE)
                 gui.window.blit(text, ((gui.window.get_size()[0]-text.get_width())/2, (gui.window.get_size()[1]-text.get_height())/2))
                 pygame.display.update()
                 pygame.time.delay(DEATH_DELAY)
             player.set_restart_game()
-            snake.respawn(grid)
+            snake.respawn()
             grid.spawn_obstacles(obstacles)
             food.respawn(snake, grid)
             if not autostart: 

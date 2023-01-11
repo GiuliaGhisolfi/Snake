@@ -76,7 +76,7 @@ class Grid:
                     n[1] * self.block_size + shift
                 ))
             if len(points) > 1:
-                game.draw.lines(window, colors[i], closed[i], points)
+                game.draw.lines(window, colors[i], closed[i], points, width=3)
 
     def spawn_obstacles(self, obstacles):
         """Sets the obstacles on the grid."""

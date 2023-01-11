@@ -5,23 +5,16 @@ import src.colors as colors
 class Snake:
     """This class implements the snake."""
     
-    def __init__(self, color = colors.GREEN, start_location = "top-left"):
+    def __init__(self, color = colors.GREEN):
         self.color = color
-        self.start_location = start_location
 
-    def respawn(self, grid):
+    def respawn(self):
         """Respawn the snake at its starting position."""
-        self.length = 3
-        if self.start_location == "top-left":
-            self.body = [(3, 2), # 0 / 2 # TODO:
-                         (3, 3), # 1 / 3
-                         (3, 4)] # 2 / 4
-            self.direction = Directions.DOWN
-        if self.start_location == "bottom-right":
-            self.body = [((grid.x_blocks-4), (grid.y_blocks-4)),
-                         ((grid.x_blocks-4), (grid.y_blocks-5)),
-                         ((grid.x_blocks-4), (grid.y_blocks-6))]
-            self.direction = Directions.UP
+        self.length = 3 # TODO: esplode mai così?
+        self.body = [(3, 0), # 0 / 2
+                        (3, 1), # 1 / 3
+                        (3, 2)] # 2 / 4
+        self.direction = Directions.DOWN
     
     def coord_from_graph(self, grid):
         """Return snake's body coordinates on the grid."""

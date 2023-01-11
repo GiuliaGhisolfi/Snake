@@ -106,7 +106,8 @@ class Button:
                 if self.text == 'Play yourself': # select the correct dictonary for each player
                     Button.player_info =  {
                         "type": "human",
-                        "color": colors.GREEN, # TODO: questo probabilmente diventerà globale, nel caso possiamo inizializzarlo con color e start_location che rimangono sempre uguali e settare solo type?
+                        "color": colors.GREEN, # TODO: ho modificato il resto del codice in modo che usi sempre il colore verde per i serpenti e che partano sempre da una certa location
+                                                # per cui puà diventare una sola variable player_type
                         "start_location": "top-left"
                     }
                     Button.choise_made = 'human'
@@ -198,7 +199,7 @@ class InputBox:
                 if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 # re-render the text
-                self.txt_surface = FONT.render(self.text, True, colors.WHITE) # TODO: si può centrare nella casella?
+                self.txt_surface = FONT.render(self.text, True, colors.WHITE) # TODO: si può centrare nella casella e fare il testo un po' più grande?
 
     def update(self):
         # resize the box if the text is too long
