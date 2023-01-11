@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame
 from src.grid import Grid
 from src.human_player import HumanPlayer
 from src.bot_greedy import Bot_greedy
@@ -90,16 +90,16 @@ def run_game(
                 player.write_log(executions==max_executions, crashed)
                 print('Execution %d/%d'%(executions, max_executions))
             if crashed: # has lost
-                text = gui.font.render('GAME OVER', True, colors.RED)
-                gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/3))
+                text = gui.font1.render('GAME OVER', True, colors.RED)
+                gui.window.blit(text, ((gui.window.get_size()[0]-text.get_width())/2,(gui.window.get_size()[1]-text.get_height())/2))
                 pygame.display.update()
                 pygame.time.delay(gui.DEATH_DELAY)
             else: # has won
                 snake.draw(pygame, gui.window, grid)
                 grid.draw_obstacles(pygame, gui.window)
                 snake.draw(pygame, gui.window, grid)
-                text = gui.font.render('COMPLETE', True, colors.RED)
-                gui.window.blit(text, (gui.window.get_size()[0]/3, gui.window.get_size()[1]/2))
+                text = gui.font1.render('COMPLETE', True, colors.RED)
+                gui.window.blit(text, ((gui.window.get_size()[0]-text.get_width())/2, (gui.window.get_size()[1]-text.get_height())/2))
                 pygame.display.update()
                 pygame.time.delay(gui.DEATH_DELAY)
             player.set_restart_game()
