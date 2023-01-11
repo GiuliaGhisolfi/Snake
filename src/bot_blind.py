@@ -1,7 +1,9 @@
-from src.bot import Bot
+from src.bot_player import BotPlayer
 from src.directions import Directions
 
-class Bot_blind(Bot):
+# TODO: eventualmente cancellare
+
+class BotBlind(BotPlayer):
     """This class implements a blind bot, i.e. a bot which chooses moves 
     randomly (it cannot avoid crashing against its body or the frame 
     of the grid)."""

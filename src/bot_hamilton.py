@@ -1,10 +1,10 @@
 import numpy as np
-from src.bot import Bot
+from src.bot_player import BotPlayer
 import src.gui as gui
 import src.colors as colors
 from src.config_parsing import read_config_file
 
-class Bot_hamilton(Bot):
+class BotHamilton(BotPlayer):
     """This class implements a bot which follows an Hamiltonian path on the grid 
     game and eventually takes shortcuts and/or tries to repair the cycle to reach 
     the food faster."""
@@ -12,7 +12,7 @@ class Bot_hamilton(Bot):
     def __init__(self, grid, snake, food, config_path, log_path, obstacles, test_mode):
         super().__init__(grid, snake, food, config_path, log_path, test_mode)
         self.obstacles = obstacles
-        if len(self.snake.get_body()) < 3:
+        if len(self.snake.get_body()) < 3: #TODO: necessario? forse in repair?
             print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
         """if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:

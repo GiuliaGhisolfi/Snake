@@ -46,6 +46,7 @@ class Food:
                 return
 
         self.position = adj_positions
+        # TODO: togliere
         # come l'abbiamo usata nei test precedenti (confrontate anche la history)
         """for n in nodes:
             if n != self.position and not self.is_overlapped(n, snake, grid):

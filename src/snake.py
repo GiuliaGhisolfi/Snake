@@ -13,7 +13,7 @@ class Snake:
         """Respawn the snake at its starting position."""
         self.length = 3
         if self.start_location == "top-left":
-            self.body = [(3, 2), # 0 / 2
+            self.body = [(3, 2), # 0 / 2 # TODO:
                          (3, 3), # 1 / 3
                          (3, 4)] # 2 / 4
             self.direction = Directions.DOWN

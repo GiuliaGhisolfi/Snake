@@ -1,10 +1,12 @@
 import pygame
+import random as r
+from enum import Enum
 from src.grid import Grid
 from src.human_player import HumanPlayer
-from src.bot_greedy import Bot_greedy
-from src.bot_hamilton import Bot_hamilton
-from src.bot_blind import Bot_blind
-from src.bot_random import Bot_random
+from src.bot_greedy import BotGreedy
+from src.bot_hamilton import BotHamilton
+from src.bot_blind import BotBlind
+from src.bot_random import BotRandom
 from src.snake import Snake
 from src.food import Food
 from src.config_parsing import *
@@ -50,13 +52,13 @@ def run_game(
     if player_info['type'] == 'human':
         player = HumanPlayer(pygame, pygame.K_UP, pygame.K_DOWN, pygame.K_RIGHT, pygame.K_LEFT)
     elif player_info['type'] == 'greedy':
-        player = Bot_greedy(grid, snake, food, bot_config, log_file, test_mode)
+        player = BotGreedy(grid, snake, food, bot_config, log_file, test_mode)
     elif player_info['type'] == 'hamilton':
-        player = Bot_hamilton(grid, snake, food, bot_config, log_file, obstacles, test_mode)
+        player = BotHamilton(grid, snake, food, bot_config, log_file, obstacles, test_mode)
     elif player_info['type'] == 'blind':
-        player = Bot_blind(grid, snake, food, test_mode)
+        player = BotBlind(grid, snake, food, test_mode)
     else:
-        player = Bot_random(grid, snake, food, test_mode)
+        player = BotRandom(grid, snake, food, test_mode)
 
     executions = 0
     while (executions < max_executions):

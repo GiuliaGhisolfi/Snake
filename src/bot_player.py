@@ -2,7 +2,7 @@ from src.player import Player
 import copy
 import time
 
-class Bot(Player):
+class BotPlayer(Player):
     """This class implements a bot which plays Snake."""
 
     def __init__(self, grid, snake, food, config_path, log_path, test_mode):
