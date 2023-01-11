@@ -10,7 +10,7 @@ class BotPlayer(Player):
         self.grid = grid
         self.snake = snake
         self.food = food
-        self.strat = self.strategy
+        self.strategy = self.compute_next_move
         self.data_to_save = []
         self.parse_config(config_path)
         self.log_path = log_path
@@ -18,17 +18,18 @@ class BotPlayer(Player):
             with open(self.log_path, 'w+') as log:
                 log.write('[\n')
 
-    def strategy(self):
+    def compute_next_move(self):
+        """"Implementation of the strategy to compute the next move to make."""
         pass
 
     def parse_config(self, file):
         return None
 
     def get_next_move(self):
-        """Returns next move computed according to a strategy."""
+        """Returns next move according to a strategy."""
         snake_body_len = len(self.snake.body)
         start_time = time.time()
-        ret = self.strat()
+        ret = self.strategy()
         end_time = time.time()
         self.data_to_save.append(
             (end_time - start_time, snake_body_len)

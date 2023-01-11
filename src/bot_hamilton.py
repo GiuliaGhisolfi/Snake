@@ -32,7 +32,7 @@ class BotHamilton(BotPlayer):
             self.min_len_repair = 0.45
             self.max_len_repair = 0.65
 
-    def strategy(self):
+    def compute_next_move(self):
         # restart from the same cycle at every game
         if self.restart_game:
             self.ham_cycle = self.grid.get_cycle(self.obstacles)

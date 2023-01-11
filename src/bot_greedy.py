@@ -172,7 +172,7 @@ class BotGreedy(BotPlayer):
         else:
             self.snake.color = colors.BLUE
 
-    def strategy(self):
+    def compute_next_move(self):
         snake_body = self.snake.get_body()
         if self.debug:
             self.change_color()
@@ -241,7 +241,7 @@ class BotGreedy(BotPlayer):
     def get_path_to_draw(self):
         """Returns the informations needed to draw the path on the game grid."""
         return (
-            [self.default_path, self.path_to_food],
+            [self.default_path, self.safe_path_to_food],
             [colors.WHITE, colors.FUXIA],
             [True, False] # TODO: in certi momenti se fermassimo la schermata i path disegnati non partono dalla testa del serpente, c'è un modo di risolvere?
                           # e poi il path fuxia non è il path verso il cibo (è una parte del vero path verso il cibo)
