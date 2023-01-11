@@ -11,6 +11,8 @@ from src.config_parsing import *
 import src.gui as gui
 import src.colors as colors
 
+DEATH_DELAY = 700
+
 def run_game(
     grid_size,
     grid_width,
@@ -93,7 +95,7 @@ def run_game(
                 text = gui.font1.render('GAME OVER', True, colors.RED)
                 gui.window.blit(text, ((gui.window.get_size()[0]-text.get_width())/2,(gui.window.get_size()[1]-text.get_height())/2))
                 pygame.display.update()
-                pygame.time.delay(gui.DEATH_DELAY)
+                pygame.time.delay(DEATH_DELAY)
             else: # has won
                 snake.draw(pygame, gui.window, grid)
                 grid.draw_obstacles(pygame, gui.window)
@@ -101,7 +103,7 @@ def run_game(
                 text = gui.font1.render('COMPLETE', True, colors.RED)
                 gui.window.blit(text, ((gui.window.get_size()[0]-text.get_width())/2, (gui.window.get_size()[1]-text.get_height())/2))
                 pygame.display.update()
-                pygame.time.delay(gui.DEATH_DELAY)
+                pygame.time.delay(DEATH_DELAY)
             player.set_restart_game()
             snake.respawn(grid)
             grid.spawn_obstacles(obstacles)

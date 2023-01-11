@@ -1,5 +1,7 @@
-import src.gui as gui
+from src.gui import snake_interface
 from src.game import run_game
 
-game_config = gui.snake_interface()
+# get from the GUI the game settings
+game_config = snake_interface()
+# run the game
 run_game(**game_config)
