@@ -15,8 +15,8 @@ class BotHamilton(BotPlayer):
         if len(self.snake.get_body()) < 3: #TODO: necessario? forse in repair?
             print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
-        if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:
-            gui.grid_not_allowed()
+        """if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:
+            gui.grid_not_allowed()"""
 
     def parse_config(self, file):
         param = read_config_file(file)
