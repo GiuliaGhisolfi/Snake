@@ -3,7 +3,7 @@ import sys
 import src.colors as colors
 
 # global variable to use in main file
-FONT_PATH = './src/upheavtt.ttf'
+FONT_PATH = './src/font.ttf'
 player_info = {}
 X_BLOCKS = 15
 Y_BLOCKS = 16

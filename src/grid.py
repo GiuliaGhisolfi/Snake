@@ -1,7 +1,7 @@
 import copy
 import src.gui as gui
 import pygame
-from src.obstacles_configs import ObstaclesConfig
+import src.obstacles_configs as obstacles_configs
 
 class Grid:
     """This class implements the game grid."""
@@ -105,13 +105,13 @@ class Grid:
     def get_cycle(self, obstacles):
         if obstacles == "None": 
             self.current_config = 4
-        obc = ObstaclesConfig(self)
+        obc = ObstaclesConfig(self) # TODO: si può fare meglio?
         return copy.deepcopy(obc.hamcycles[int(self.current_config)])
 
     def get_grid_free_area(self):
         return (self.x_blocks * self.y_blocks) - len(self.obstacles)
     
-    def update_grid_dimensions(self, x_blocks, y_blocks):
+    def update_grid_dimensions(self, x_blocks, y_blocks): # TODO: a cosa serve?
         self.x_blocks = x_blocks
         self.y_blocks = y_blocks
         x_pixel = self.grid_size - (self.grid_size % self.x_blocks)
@@ -128,3 +128,58 @@ class Obstacle:
         self.color = color
         self.x_position = x
         self.y_position = y
+
+class ObstaclesConfig:
+    """This class implements the grid obstacles configurations of the game."""
+
+    def __init__(self, grid):
+        self.grid = grid
+
+        # obstacles configurations
+        self.configs = [
+            obstacles_configs.CROSS_OBST,
+            obstacles_configs.BLOCKS_OBST,
+            obstacles_configs.TUNNEL_OBST,
+            obstacles_configs.SPIRAL_OBST
+        ]
+        # hamiltonian cycles
+        self.hamcycles = [
+            obstacles_configs.CROSS_CYCLE,
+            obstacles_configs.BLOCKS_CYCLE,
+            obstacles_configs.TUNNEL_CYCLE,
+            obstacles_configs.SPIRAL_CYCLE,
+            self.create_hamilton_cycle(self.grid) # empty grid
+        ]
+
+    def create_hamilton_cycle(self, grid):
+        """Creates an Hamiltonian cycle on the empty grid."""
+        hamcycle = {(0, 0): 0}
+        pos = 1
+        if (grid.x_blocks % 2) == 0:
+            for i in range(grid.x_blocks-1): # slide through columns
+                i += 1
+                for j in range(grid.y_blocks-1):
+                    if i % 2 == 1:  # odd column
+                        hamcycle[(i, j)] = pos
+                    else:           # even column
+                        hamcycle[(i, grid.y_blocks-2-j)] = pos
+                    pos += 1
+            for i in range(grid.x_blocks):
+                hamcycle[(grid.x_blocks-1-i, grid.y_blocks-1)] = pos
+                pos += 1
+            for j in range(grid.y_blocks-2):
+                hamcycle[(0, grid.y_blocks-2-j)] = pos
+                pos += 1
+
+        else: 
+            for i in range(grid.y_blocks):  # slide through rows
+                for j in range(grid.x_blocks-1):
+                    if i % 2 == 0:  # even rows
+                        hamcycle[(j+1, i)] = pos
+                    else:           # odd rows
+                        hamcycle[(grid.x_blocks-1-j, i)] = pos
+                    pos += 1
+            for i in range(grid.y_blocks-1):
+                hamcycle[(0, grid.y_blocks-1-i)] = pos
+                pos += 1
+        return hamcycle
