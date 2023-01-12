@@ -28,9 +28,9 @@ class BotHamilton(BotPlayer):
             print(e)
             print('Config values are not allowed.')
             print('Default values will be used.')
-            self.max_len_shortcuts = 0.5 # TODO: change with best
-            self.min_len_repair = 0.45
-            self.max_len_repair = 0.65
+            self.max_len_shortcuts = 0.5
+            self.min_len_repair = 0
+            self.max_len_repair = 0
 
     def compute_next_move(self):
         # restart from the same cycle at every game
@@ -115,40 +115,35 @@ class BotHamilton(BotPlayer):
                         keep_checking = True
                         node_pos = (node_idx - head_idx) % self.grid_area
 
-                if keep_checking:
-                    keep_checking = False
-                    for n1 in self.ham_cycle:
-                        for n2 in self.ham_cycle:
-                            n1_idx = self.ham_cycle[n1]
-                            n2_idx = self.ham_cycle[n2]
-                            n1_pos = (n1_idx - head_idx) % self.grid_area
-                            n2_pos = (n2_idx - head_idx) % self.grid_area
-                            if n2_pos == (n1_pos + 1):
-                                if n1_pos > 0 and n2_pos < node_pos:
-                                    keep_checking = True
-                                    break
-                        if keep_checking:
-                            break
-
-                    if keep_checking:
-                        keep_checking = False
-                        for n1_adjecent in self.ham_cycle:
-                            for n2_adjecnt in self.ham_cycle:
-                                n1_adjecnt_idx = self.ham_cycle[n1_adjecent]
-                                n2_adjecnt_idx = self.ham_cycle[n2_adjecnt]
-                                n1_coll_pos = (
-                                    n1_adjecnt_idx - head_idx) % self.grid_area
-                                n2_adjecent_pos = (
-                                    n2_adjecnt_idx - head_idx) % self.grid_area
-                                if (n2_adjecent_pos > node_pos) and (n1_coll_pos == (n2_adjecent_pos + 1)) and \
-                                        n2_adjecnt in self.grid.grid[n2] and n1_adjecent in self.grid.grid[n1]:
-                                    keep_checking = True
-                                    break
-                            if keep_checking:
+                if not keep_checking: break
+                keep_checking = False
+                for n1 in self.ham_cycle:
+                    for n2 in self.ham_cycle:
+                        n1_idx = self.ham_cycle[n1]
+                        n2_idx = self.ham_cycle[n2]
+                        n1_pos = (n1_idx - head_idx) % self.grid_area
+                        n2_pos = (n2_idx - head_idx) % self.grid_area
+                        if n2_pos == (n1_pos + 1):
+                            if n1_pos > 0 and n2_pos < node_pos:
+                                keep_checking = True
                                 break
+                    if keep_checking: break
 
-                if keep_checking:
-                    break
+                if not keep_checking: break
+                keep_checking = False
+                for n1_adjecent in self.ham_cycle:
+                    for n2_adjecnt in self.ham_cycle:
+                        n1_adjecnt_idx = self.ham_cycle[n1_adjecent]
+                        n2_adjecnt_idx = self.ham_cycle[n2_adjecnt]
+                        n1_coll_pos = (n1_adjecnt_idx - head_idx) % self.grid_area
+                        n2_adjecent_pos = (n2_adjecnt_idx - head_idx) % self.grid_area
+                        if (n2_adjecent_pos > node_pos) and (n1_coll_pos == (n2_adjecent_pos + 1)) and \
+                            n2_adjecnt in self.grid.grid[n2] and n1_adjecent in self.grid.grid[n1]:
+                            keep_checking = True
+                            break
+                    if keep_checking: break
+
+                if keep_checking: break
 
         if keep_checking:
             # change the Hamiltonian cycle
