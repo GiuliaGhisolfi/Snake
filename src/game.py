@@ -47,13 +47,13 @@ def run_game(
     food.respawn(snake, grid)
 
     # selects the player
-    if player_info['type'] == 'human':
+    if player_info == 'human':
         player = HumanPlayer(pygame, pygame.K_UP, pygame.K_DOWN, pygame.K_RIGHT, pygame.K_LEFT)
-    elif player_info['type'] == 'greedy':
+    elif player_info == 'greedy':
         player = BotGreedy(grid, snake, food, bot_config, log_file, test_mode)
-    elif player_info['type'] == 'hamilton':
+    elif player_info == 'hamilton':
         player = BotHamilton(grid, snake, food, bot_config, log_file, obstacles, test_mode)
-    elif player_info['type'] == 'blind':
+    elif player_info == 'blind':
         player = BotBlind(grid, snake, food, test_mode)
     else:
         player = BotRandom(grid, snake, food, test_mode)

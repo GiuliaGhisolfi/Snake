@@ -12,14 +12,14 @@ SIZE = 700
 # initialize game
 pygame.init()
 window = pygame.display.set_mode((SIZE,SIZE))
-window_width = window.get_size()[0] # TODO: per caso cambia mai?
-window_heigth = window.get_size()[1] # TODO: per caso cambia mai?
+window_width = window.get_size()[0] 
+window_heigth = window.get_size()[1] 
 pygame.display.set_caption("Snake")
 font = pygame.font.Font(FONT_PATH, 50)
 font1 = pygame.font.Font(FONT_PATH, 80)
 font2 = pygame.font.Font(FONT_PATH, 60)
 clock = pygame.time.Clock()
-FONT = pygame.font.Font(None, 32)
+FONT = pygame.font.Font(FONT_PATH, 50)
 
 class Button:
     """This class implements a button of the interface."""
@@ -29,13 +29,10 @@ class Button:
     done = False
     try_again = False
     start = False
-    player_info = {}
-    X_BLOCKS = 15 # TODO: possiamo spostare ciò che concettualmente non è un attributo del bottone come variabile globale? 
-                  # eventualmente qualcosa può essere messo anche in game (ci ho messo FRAME_DEALY as esempio)
-                  # avevo detto di evitare variabili globali perchè pensavo di fare un'ulteriore classe GameConfig o qualcosa del genere che raccogliesse questi dati
-                  # ma se è troppo complicato non importa, pardon 
+    player_info = "None"
+    X_BLOCKS = 15 
     Y_BLOCKS = 16
-    FRAME_DELAY = 100 # TODO: se 50 a me va a scatti... anche per giocarci forse è troppo veloce?
+    FRAME_DELAY = 80 
     OBSTACLES = "to_be_setup"
     AUTOSTART = False
 
@@ -104,34 +101,17 @@ class Button:
                 self.dynamic_elevation = 0
                 self.pressed = True
                 if self.text == 'Play yourself': # select the correct dictonary for each player
-                    Button.player_info =  {
-                        "type": "human",
-                        "color": colors.GREEN, # TODO: ho modificato il resto del codice in modo che usi sempre il colore verde per i serpenti e che partano sempre da una certa location
-                                                # per cui puà diventare una sola variable player_type
-                        "start_location": "top-left"
-                    }
+                    Button.player_info = "human"
                     Button.choise_made = 'human'
                     Button.FRAME_DELAY = 100
                 elif self.text == 'Watch an AI':
-                    Button.player_info =  {
-                        "type": "greedy", # TODO: perchè viene messo greedy? immagino la logica del codice richiesa di settarlo con qualche valore, un None funzionerebbe?
-                        "color": colors.GREEN,
-                        "start_location": "top-left"
-                    }
+                    #Button.player_info =  "None"
                     Button.choise_made = 'bot'
                 elif self.text == 'Greedy':
-                    Button.player_info = {
-                        "type": "greedy",
-                        "color": colors.GREEN,
-                        "start_location": "top-left"
-                    }
-                    Button.choise_made = 'astar' # TODO: questo astar possiamo cambiarlo?
+                    Button.player_info = "greedy"
+                    Button.choise_made = 'greedy' 
                 elif self.text == 'Hamilton':
-                    Button.player_info = {
-                        "type": "hamilton",
-                        "color": colors.GREEN,
-                        "start_location": "top-left"
-                    }
+                    Button.player_info = "hamilton"
                     Button.choise_made = 'hamilton'
                 elif self.text == "Yes":
                     Button.choise_made = True
@@ -199,15 +179,15 @@ class InputBox:
                 if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 # re-render the text
-                self.txt_surface = FONT.render(self.text, True, colors.WHITE) # TODO: si può centrare nella casella e fare il testo un po' più grande?
-
+                self.txt_surface = FONT.render(self.text, True, colors.WHITE) 
     def update(self):
         # resize the box if the text is too long
         width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
 
     def draw(self, screen):
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        """(self.rect.w-self.txt_surface.get_width())/2"""
+        screen.blit(self.txt_surface, (self.rect.x+(self.rect.w-self.txt_surface.get_width())/2 , self.rect.y))
         pygame.draw.rect(screen, self.color, self.rect, 2)
 
 def snake_interface():
@@ -255,7 +235,6 @@ def snake_interface():
     # choose an obstacle configuration
     button3 = Button('Cross',300,70,(((window_width)/2 - 300)/2,(window_heigth)/10*4),5)
     button4 = Button('Blocks',300,70,((((window_width)/2 - 300)/2)+window_width/2,window_heigth/10*4),5)
-    # TODO: button5 e button6 non vengono mai usati?
     button5 = Button('Tunnel',300,70,(((window_width)/2 - 300)/2,window_heigth/10*6),5)
     button6 = Button('Spiral',300,70,((((window_width)/2 - 300)/2)+window_width/2,window_heigth/10*6),5)
     button7 = Button('None',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)
@@ -281,7 +260,7 @@ def snake_interface():
     button3.clear_buttons()
 
     # choose grid dimension if obstacles haven't been selected
-    input_box1 = InputBox(((window_width)/2 - 200)/2, window_heigth/10*6, 10, 52, "X") # TODO: ho cambiato l'altezza del rettangolo in 52 in tutti gli InputBox, non so se così ho rotto qualcosa
+    input_box1 = InputBox(((window_width)/2 - 200)/2, window_heigth/10*6, 10, 52, "X")
     input_box2 = InputBox((((window_width)/2 - 200)/2)+window_width/2, window_heigth/10*6, 10, 52, "Y")
     input_boxes = [input_box1, input_box2]
     button7 = Button('Done',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)
@@ -315,7 +294,7 @@ def snake_interface():
         button7.pressed_buttons()
     pygame.display.update()
     button7.clear_buttons()
-    if Button.player_info["type"]=="hamilton":
+    if Button.player_info=="hamilton":
         if ((Button.X_BLOCKS % 2) != 0 and (Button.Y_BLOCKS % 2) != 0) or\
             (Button.X_BLOCKS < 6 or Button.Y_BLOCKS < 6):
                 grid_not_allowed()
@@ -324,11 +303,11 @@ def snake_interface():
                 grid_not_allowed()
 
     config = None
-    if Button.player_info['type']=='greedy':
+    if Button.player_info=='greedy':
         config = GREEDY_CONFIG
-    if Button.player_info['type']=='hamilton':
+    if Button.player_info=='hamilton':
         config = HAMILTON_CONFIG
-
+    #return game configuration
     game_config = {
         'grid_size': SIZE,
         'grid_width': Button.X_BLOCKS,
@@ -343,7 +322,7 @@ def snake_interface():
         'test_mode': False,
     }
 
-    if Button.player_info['type']=='human':
+    if Button.player_info=='human':
         button1 = Button('Start',300,70,(((window_width) - 300)/2,(window_heigth)/10*6),5)
         while not Button.start:
             for event in pygame.event.get():
@@ -363,8 +342,8 @@ def snake_interface():
 
 # at the end of the game, ask whether to play again
 def new_game():
-    button10 = Button('Yes',window_width/4,window_heigth/10,(window_width/10*2, window_heigth/2),5)
-    button20 = Button('No',window_width/4,window_heigth/10,(window_width/10*5.5, window_heigth/2),5)
+    button10 = Button('Yes',window.get_size()[0]/4,window.get_size()[1]/10,(window.get_size()[0]/10*2, window.get_size()[1]/2),5)
+    button20 = Button('No',window.get_size()[0]/4,window.get_size()[1]/10,(window.get_size()[0]/10*5.5, window.get_size()[1]/2),5)
     Button.choise_made = False
     while not button10.choise_made:
         for event in pygame.event.get():
@@ -375,8 +354,8 @@ def new_game():
         button10.draw_new_game()
         text = font2.render('Do you want', True, colors.WHITE)
         text1 = font2.render('to play again?', True, colors.WHITE)
-        window.blit(text, ((window_width-text.get_width())/2, (window_heigth-text.get_height())/10*2))
-        window.blit(text1, ((window_width-text1.get_width())/2, (window_heigth-text1.get_height())/10*3))
+        window.blit(text, ((window.get_size()[0]-text.get_width())/2, (window.get_size()[1]-text.get_height())/10*2))
+        window.blit(text1, ((window.get_size()[0]-text1.get_width())/2, (window.get_size()[1]-text1.get_height())/10*3))
         pygame.display.update()
         clock.tick(60)
     button20.pressed_buttons()
@@ -400,7 +379,7 @@ def grid_not_allowed():
             text1 = font.render("dimensions must be even.",True,colors.WHITE)
             text2 = font.render("The minimum dimension",True,colors.WHITE) 
             text3 = font.render("allowed is 6 x 6.",True,colors.WHITE)
-            if Button.player_info["type"] == "hamilton":
+            if Button.player_info == "hamilton":
                 window.blit(text, ((window_width-text.get_width())/2, (window_heigth-text.get_height())/10))
                 window.blit(text1, ((window_width-text1.get_width())/2, (window_heigth-text1.get_height())/10*2))
             window.blit(text2, ((window_width-text2.get_width())/2, (window_heigth-text2.get_height())/10*3))
@@ -444,7 +423,7 @@ def grid_not_allowed():
         button7.pressed_buttons()
     pygame.display.update()
     button7.clear_buttons()
-    if Button.player_info["type"]=="hamilton":
+    if Button.player_info=="hamilton":
         if ((Button.X_BLOCKS % 2) != 0 and (Button.Y_BLOCKS % 2) != 0) or\
             (Button.X_BLOCKS < 6 or Button.Y_BLOCKS < 6):
                 grid_not_allowed()
