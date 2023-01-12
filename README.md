@@ -22,7 +22,7 @@ python3 start_game.py
 ## Demo
 | Greedy Strategy | Hamilton Strategy |
 | --------------- | ----------------- |
-|<img width="244" alt="hamilton" src="https://user-images.githubusercontent.com/46034276/211070988-fa47410c-d2b9-455f-a16f-e0f3f8c8e387.png">|<img width="250" alt="greedy" src="https://user-images.githubusercontent.com/46034276/211070827-66e5b15d-9ed3-4ff0-b8b0-3e1c268e6b85.png">|
+|<img width="250" alt="greedy" src="https://user-images.githubusercontent.com/49284160/212048175-ec01a9b7-efb0-4e43-a0e0-715efb188a46.gif">|<img width="244" alt="hamilton" src="https://user-images.githubusercontent.com/49284160/212048116-6602d369-73bd-4583-aefb-a7164fad3954.gif">|
 
 ## Strategies comparison (?)
 Some plots.
