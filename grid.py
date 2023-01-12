@@ -77,7 +77,7 @@ class Grid:
 
         # create the Obstacles' list and update the grid
         obc = Obstacles_configurations(self)
-        for pos in obc.configs[self.current_config]:
+        for pos in obc.configs[int(self.current_config)]:
             obstacle = Obstacle("gray", pos[0], pos[1])
             self.obstacles.append(obstacle)
             self.delete_cell(pos)
@@ -96,7 +96,7 @@ class Grid:
         if obstacles == "None": 
             self.current_config = 4
         obc = Obstacles_configurations(self)
-        return copy.deepcopy(obc.hamcycles[self.current_config])
+        return copy.deepcopy(obc.hamcycles[int(self.current_config)])
 
     def get_grid_free_area(self):
         return (self.x_blocks * self.y_blocks) - len(self.obstacles)

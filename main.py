@@ -12,7 +12,7 @@ from config_parsing import *
 import gui
 import colors
 
-TEST_MODE = False
+TEST_MODE = True
 
 def start(params):
     # parameters initialization
@@ -134,10 +134,10 @@ if not TEST_MODE: # normal execution
     config = 'default.config'
     log_file = 'default_log_file.config'
     if gui.player_info['type']=='greedy':
-        config = greedy_configs_fold+'bot3.config'
+        config = greedy_configs_fold+'bot7.config'
         log_file = greedy_configs_fold+'log1.json'
     if gui.player_info['type']=='hamilton':
-        config = hamilton_configs_fold+'bot6.config'
+        config = hamilton_configs_fold+'bot4.config'
         log_file = hamilton_configs_fold+'log6.json'
     start_params = {
         'size': gui.SIZE,
@@ -157,18 +157,30 @@ else: # execute to collect data for tests
         'color': colors.GREEN,
         'start_location': 'top-left'
     }
+
+    
     # get configurations parameters from file and start executions
     print('------ Bot greedy ------')
-    for config_file, log_file in zip(greedy_configs, greedy_logs):
-        print('config = %s'%config_file)
+    for i, log_file in enumerate(greedy_logs):
+        print('config = ' + str(i + 1))
         player_info['type'] = 'greedy'
-        start_params = get_game_config(greedy_configs_fold+'game.config')
+        start_params = get_game_config(greedy_configs_fold + 'game_' + str(i + 1) + '.config')
         start_params['player_info'] = player_info
-        start_params['bot_config'] = config_file
+        start_params['bot_config'] = greedy_configs_fold + 'bot7.config'
         start_params['log_file'] = log_file
         start(start_params)
 
     print('------ Bot hamilton ------')
+    for i, log_file in enumerate(ham_logs):
+        print('config = ' + str(i + 1))
+        player_info['type'] = 'hamilton'
+        start_params = get_game_config(hamilton_configs_fold + 'game_' + str(i + 1) + '.config')
+        start_params['player_info'] = player_info
+        start_params['bot_config'] = hamilton_configs_fold +  'bot4.config'
+        start_params['log_file'] = log_file
+        start(start_params)
+
+    '''
     for config_file, log_file in zip(hamilton_configs, ham_logs):
         print('config = %s'%config_file)
         player_info['type'] = 'hamilton'
@@ -176,4 +188,4 @@ else: # execute to collect data for tests
         start_params['player_info'] = player_info
         start_params['bot_config'] = config_file
         start_params['log_file'] = log_file
-        start(start_params)
+        start(start_params)'''
