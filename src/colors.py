@@ -1,5 +1,7 @@
 import random as r
 
+# RGB colors
+
 BLACK  = (0, 0, 0)
 BLUE   = (0, 0, 255)
 FUXIA  = (255, 0, 100)

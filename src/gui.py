@@ -1,7 +1,7 @@
 import pygame
 import sys
-import src.colors as colors
 import numpy as np
+import src.colors as colors
 
 FONT_PATH = './src/font.ttf'
 LOGFILE = './log.json'
@@ -19,7 +19,6 @@ font = pygame.font.Font(FONT_PATH, 50)
 font1 = pygame.font.Font(FONT_PATH, 80)
 font2 = pygame.font.Font(FONT_PATH, 60)
 clock = pygame.time.Clock()
-FONT = pygame.font.Font(FONT_PATH, 50)
 
 class Button:
     """This class implements a button of the interface."""
@@ -36,6 +35,10 @@ class Button:
     OBSTACLES = "to_be_setup"
     AUTOSTART = False
 
+    # TODO: questa classe è molto confusionaria
+    #       viene istanziata per ogni singolo bottone e ha gli attributi propri di un singolo bottone
+    #       ma allo stesso tempo accede a variabili "globali" e disegna/gestisce tutti i bottoni.
+    #       Bisognerebbe fare una classe button e una Interface che disegna/agisce su tutti i bottoni o comunque renderla più coerente...
     def __init__(self,text,width,height,pos,elevation):
         # core attributes 
         self.pressed = False
@@ -71,7 +74,7 @@ class Button:
 
     # draw buttons & retrieve bot dictonary
     def buttons_draw(self):
-        Button.player_info
+        Button.player_info # TODO: a cosa serve?
         for b in Button.buttons:
             b.draw()
             b.check_click()
@@ -105,7 +108,6 @@ class Button:
                     Button.choise_made = 'human'
                     Button.FRAME_DELAY = 100
                 elif self.text == 'Watch an AI':
-                    #Button.player_info =  "None"
                     Button.choise_made = 'bot'
                 elif self.text == 'Greedy':
                     Button.player_info = "greedy"
@@ -152,7 +154,7 @@ class InputBox:
         self.rect = pygame.Rect(x, y, w, h)
         self.color = colors.GREEN
         self.text = text
-        self.txt_surface = FONT.render(text, True, self.color)
+        self.txt_surface = font.render(text, True, self.color)
         self.active = False
         self.name = name
 
@@ -160,7 +162,7 @@ class InputBox:
         if event.type == pygame.MOUSEBUTTONDOWN:
             # if the user clicked on the input_box rectangle
             if self.rect.collidepoint(event.pos):
-                # Toggle the active variable
+                # toggle the active variable
                 self.active = not self.active
             else:
                 self.active = False
@@ -179,7 +181,7 @@ class InputBox:
                 if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 # re-render the text
-                self.txt_surface = FONT.render(self.text, True, colors.WHITE) 
+                self.txt_surface = font.render(self.text, True, colors.WHITE) 
     def update(self):
         # resize the box if the text is too long
         width = max(200, self.txt_surface.get_width()+10)
@@ -235,6 +237,7 @@ def snake_interface():
     # choose an obstacle configuration
     button3 = Button('Cross',300,70,(((window_width)/2 - 300)/2,(window_heigth)/10*4),5)
     button4 = Button('Blocks',300,70,((((window_width)/2 - 300)/2)+window_width/2,window_heigth/10*4),5)
+    # TODO: a che servono?
     button5 = Button('Tunnel',300,70,(((window_width)/2 - 300)/2,window_heigth/10*6),5)
     button6 = Button('Spiral',300,70,((((window_width)/2 - 300)/2)+window_width/2,window_heigth/10*6),5)
     button7 = Button('None',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)

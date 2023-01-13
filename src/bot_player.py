@@ -1,6 +1,6 @@
-from src.player import Player
 import copy
 import time
+from src.player import Player
 
 class BotPlayer(Player):
     """This class implements a bot which plays Snake."""

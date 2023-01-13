@@ -1,6 +1,5 @@
 import numpy as np
 from src.bot_player import BotPlayer
-import src.gui as gui
 import src.colors as colors
 from src.config_parsing import read_config_file
 
@@ -15,8 +14,6 @@ class BotHamilton(BotPlayer):
         if len(self.snake.get_body()) < 3: #TODO: necessario? forse in repair?
             print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
-        """if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:
-            gui.grid_not_allowed()"""
 
     def parse_config(self, file):
         param = read_config_file(file)
@@ -69,14 +66,14 @@ class BotHamilton(BotPlayer):
                     head_rel = (head_ham_pos - tail_ham_pos) % self.grid_area
                     next_rel = (next_ham_pos - tail_ham_pos) % self.grid_area
                     food_rel = (food_ham_pos - tail_ham_pos) % self.grid_area
-                    head_food_dist = food_rel - next_rel
+                    food_dist = food_rel - next_rel
                     if (
                         next_rel > head_rel and \
                         next_rel <= food_rel and \
-                        head_food_dist < min_dist
+                        food_dist < min_dist
                     ):
                         move = next
-                        min_dist = head_food_dist
+                        min_dist = food_dist
 
         next_move = self.snake.dir_to_cell(move)
         return next_move

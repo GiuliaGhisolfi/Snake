@@ -1,9 +1,10 @@
-from src.directions import Directions
 from src.aima_search import random
-import src.colors as colors
-from src.grid_problem import GridProblem, astar_search_min_turns, astar_search_saving_spaces, longest_path
+from src.grid_problem import astar_search_min_turns, astar_search_saving_spaces, longest_path
+from src.grid_problem import GridProblem
 from src.config_parsing import read_config_file
 from src.bot_player import BotPlayer
+from src.directions import Directions
+import src.colors as colors
 
 class BotGreedy(BotPlayer):
     """This class implements a bot which uses a greedy strategy to play."""
