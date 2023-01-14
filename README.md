@@ -2,8 +2,7 @@
 Implementation of two snake AIs.
 
 This project has been developed for the “Artificial Intelligence Fundamentals” course at the University of Pisa.
-TODO: prima che lo abbia "revisionato" eviterei di linkare la sua pagina, anche se il sito è pubblico bisognerebbe chiedere il permesso...
-Professor Vincenzo Lomonaco
+
 ## How to install
 Clone the repository
 ```bash
@@ -26,7 +25,9 @@ python3 start_game.py
 ## Demo
 | Greedy Strategy | Hamilton Strategy |
 | --------------- | ----------------- |
-|<img width="250" alt="greedy" src="https://user-images.githubusercontent.com/49284160/212048175-ec01a9b7-efb0-4e43-a0e0-715efb188a46.gif">|<img width="244" alt="hamilton" src="https://user-images.githubusercontent.com/49284160/212048116-6602d369-73bd-4583-aefb-a7164fad3954.gif">|
+|<img width="250" alt="greedy" src="https://user-images.githubusercontent.com/46034276/212500513-83cbe4d9-3121-4adb-bbdb-e067e5ac65cd.gif"> | <img width="250" alt="hamilton" src="https://user-images.githubusercontent.com/46034276/212500526-ac935869-0c76-4e70-8d53-d8144b2ccee3.gif">|
+|The white line represents the safe path, <br />the magenta line represents the path to the food.| The white line represents the Hamiltonian cycle.|
+
 
 ## Strategies comparison (?)
 Some plots.
