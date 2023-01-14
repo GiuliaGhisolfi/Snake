@@ -20,9 +20,35 @@ font1 = pygame.font.Font(FONT_PATH, 80)
 font2 = pygame.font.Font(FONT_PATH, 60)
 clock = pygame.time.Clock()
 
+buttons = []
+
+# draw buttons
+def buttons_draw(buttons):
+    for b in buttons:
+        b.draw()
+        b.check_click()
+
+# drop previously used buttons
+def clear_buttons(buttons):
+    while len(buttons) > 0: 
+        buttons.pop(0)
+
+# draw pressed buttons
+def pressed_buttons(buttons):
+    for b in buttons:
+        b.draw()
+
+# draw button in new_game
+def draw_new_game(buttons):
+    for b in buttons:
+        b.draw()
+        if b.check_click() == 'no':
+            pygame.quit()
+            sys.exit()
+
 class Interface:
      # class variables
-    buttons = []
+    #buttons = []
     choise_made = False
     done = False
     try_again = False
@@ -61,7 +87,7 @@ class Button(Interface):
         self.text = text
         self.text_surf = font.render(text,True,colors.WHITE)
         self.text_rect = self.text_surf.get_rect(center = self.top_rect.center)
-        Button.buttons.append(self)
+        #Button.buttons.append(self)
 
     def draw(self):
         # elevation logic 
@@ -75,7 +101,7 @@ class Button(Interface):
         pygame.draw.rect(window,self.top_color, self.top_rect,border_radius = 12)
         window.blit(self.text_surf, self.text_rect)
 
-    # draw buttons
+    """# draw buttons
     def buttons_draw(self):
         for b in Button.buttons:
             b.draw()
@@ -96,7 +122,7 @@ class Button(Interface):
             b.draw()
             if b.check_click() == 'no':
                 pygame.quit()
-                sys.exit()
+                sys.exit()"""
 
     def check_click(self): # check which button has been clicked, then do the respective action
         mouse_pos = pygame.mouse.get_pos()
@@ -209,7 +235,9 @@ def snake_interface():
     """This function handles user input through the GUI."""
 
     button1 = Button('Play yourself',400,100,((window_width-400)/2,window_heigth/10*4.5),5)
+    buttons.append(button1)
     button2 = Button('Watch an AI',400,100,((window_width-400)/2,window_heigth/10*6.5),5)
+    buttons.append(button2)
     # choose human/bot
     while not button1.choise_made:
         for event in pygame.event.get():
@@ -217,43 +245,50 @@ def snake_interface():
                 pygame.quit()
                 sys.exit()
         window.fill('#000000')
-        button1.buttons_draw()
+        buttons_draw(buttons)
         text = font1.render('SNAKE GAME', True, colors.WHITE)
         window.blit(text, ((window_width-text.get_width())/2, (window_heigth-text.get_height())/4))
         pygame.display.update()
         clock.tick(60)
-    button2.pressed_buttons()
+    pressed_buttons(buttons)
     pygame.display.update()
     pygame.time.delay(200)
-    button1.clear_buttons()
+    clear_buttons(buttons)
 
     # choose which bot to use
     button2_1 = Button('Greedy',310,70,(((window_width)/2 - 310)/2,(window_heigth)/2),5)
+    buttons.append(button2_1)
     button3_1 = Button('Hamilton',310,70,((((window_width)/2 - 310)/2)+window_width/2,(window_heigth)/2),5)
+    buttons.append(button3_1)
     while button2_1.choise_made == 'bot': # loop only if bot has been selected
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
         window.fill('#000000')
-        button2_1.buttons_draw()
+        buttons_draw(buttons)
         text = font2.render('Choose a strategy', True, colors.WHITE)
         window.blit(text, ((window_width-text.get_width())/2, (window_heigth-text.get_height())/4))
         pygame.display.update()
         clock.tick(60)
     if button2_1.choise_made != 'human':
-        button3_1.pressed_buttons()
+        pressed_buttons(buttons)
     pygame.display.update()
     pygame.time.delay(200)
-    button2_1.clear_buttons()
+    clear_buttons(buttons)
 
     # choose an obstacle configuration
     button3 = Button('Cross',300,70,(((window_width)/2 - 300)/2,(window_heigth)/10*4),5)
+    buttons.append(button3)
     button4 = Button('Blocks',300,70,((((window_width)/2 - 300)/2)+window_width/2,window_heigth/10*4),5)
+    buttons.append(button4)
     # TODO: a che servono? Creo i bottoni per selezionare gli ostacoli 
     button5 = Button('Tunnel',300,70,(((window_width)/2 - 300)/2,window_heigth/10*6),5)
+    buttons.append(button5)
     button6 = Button('Spiral',300,70,((((window_width)/2 - 300)/2)+window_width/2,window_heigth/10*6),5)
+    buttons.append(button6)
     button7 = Button('None',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)
+    buttons.append(button7)
 
     while Button.OBSTACLES == "to_be_setup":
         for event in pygame.event.get():
@@ -261,24 +296,25 @@ def snake_interface():
                 pygame.quit()
                 sys.exit()
         window.fill('#000000')
-        button3.buttons_draw()
+        buttons_draw(buttons)
         text = font2.render('Choose an obstacle', True, colors.WHITE)
         text1 = font2.render('configuration',True, colors.WHITE)
         window.blit(text, ((window_width-text.get_width())/2, (window_heigth-text.get_height())/6))
         window.blit(text1, ((window_width-text1.get_width())/2, (window_heigth-text1.get_height())/4))
         pygame.display.update()
         clock.tick(60)
-    button4.pressed_buttons()
+    pressed_buttons(buttons)
     pygame.display.update()
     pygame.time.delay(200)
 
     # drop buttons proviously pressed
-    button3.clear_buttons()
+    clear_buttons(buttons)
 
     # choose grid dimension if obstacles haven't been selected
     input_box1 = InputBox(((window_width)/2 - 200)/2, window_heigth/10*6, 10, 52, "X")
     input_box2 = InputBox((((window_width)/2 - 200)/2)+window_width/2, window_heigth/10*6, 10, 52, "Y")
     button7 = Button('Done',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)
+    buttons.append(button7)
 
     while not Button.done and Button.OBSTACLES == "None": # loop only if obstacles haven't been selected
         for event in pygame.event.get():
@@ -292,7 +328,7 @@ def snake_interface():
         window.fill('#000000')
         for box in InputBox.input_boxes:
             box.draw(window)
-        button7.buttons_draw()
+        buttons_draw(buttons)
         text = font2.render('Insert the grid', True, colors.WHITE)
         text1 = font2.render('dimensions in the',True,colors.WHITE)
         text2 = font2.render('rectangles',True, colors.WHITE)
@@ -306,9 +342,9 @@ def snake_interface():
         pygame.display.flip()
         clock.tick(30)
     if Button.OBSTACLES == "None":
-        button7.pressed_buttons()
+        pressed_buttons(buttons)
     pygame.display.update()
-    button7.clear_buttons()
+    clear_buttons(buttons)
     input_box1.clear_input_boxes()
     if Button.player_info=="hamilton":
         if ((InputBox.X_BLOCKS % 2) != 0 and (InputBox.Y_BLOCKS % 2) != 0) or\
@@ -340,26 +376,29 @@ def snake_interface():
 
     if Button.player_info=='human':
         button1 = Button('Start',300,70,(((window_width) - 300)/2,(window_heigth)/10*6),5)
+        buttons.append(button1)
         while not Button.start:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit()
                 window.fill('#000000')
-                button1.buttons_draw()
+                buttons_draw(buttons)
                 text = font2.render("Use the arrow keys", True, colors.WHITE)
                 text1 = font2.render("to move the snake",True,colors.WHITE)
                 window.blit(text, ((window_width-text.get_width())/2, (window_heigth-text.get_height())/10*2))
                 window.blit(text1, ((window_width-text1.get_width())/2, (window_heigth-text1.get_height())/10*3))
                 pygame.display.update()
                 clock.tick(60)
-        button1.clear_buttons()
+        clear_buttons(buttons)
     return game_config
 
 # at the end of the game, ask whether to play again
 def new_game():
     button10 = Button('Yes',window.get_size()[0]/4,window.get_size()[1]/10,(window.get_size()[0]/10*2, window.get_size()[1]/2),5)
+    buttons.append(button10)
     button20 = Button('No',window.get_size()[0]/4,window.get_size()[1]/10,(window.get_size()[0]/10*5.5, window.get_size()[1]/2),5)
+    buttons.append(button20)
     Button.choise_made = False
     while not button10.choise_made:
         for event in pygame.event.get():
@@ -367,21 +406,22 @@ def new_game():
                 pygame.quit()
                 sys.exit()
         window.fill('#000000')
-        button10.draw_new_game()
+        draw_new_game(buttons)
         text = font2.render('Do you want', True, colors.WHITE)
         text1 = font2.render('to play again?', True, colors.WHITE)
         window.blit(text, ((window.get_size()[0]-text.get_width())/2, (window.get_size()[1]-text.get_height())/10*2))
         window.blit(text1, ((window.get_size()[0]-text1.get_width())/2, (window.get_size()[1]-text1.get_height())/10*3))
         pygame.display.update()
         clock.tick(60)
-    button20.pressed_buttons()
+    pressed_buttons(buttons)
     pygame.display.update()
     pygame.time.delay(200)
-    button10.clear_buttons()
+    clear_buttons(buttons)
 
 # halt if the grid dimensions are not allowed for hamilton bot
 def grid_not_allowed():
     button1 = Button('Try again',400,70,(((window_width) - 400)/2,(window_heigth)/10*6),5)
+    buttons.append(button1)
     Button.try_again = False
     Button.done = False
     while not Button.try_again:
@@ -390,7 +430,7 @@ def grid_not_allowed():
                     pygame.quit()
                     sys.exit()
             window.fill('#000000')
-            button1.buttons_draw()
+            buttons_draw(buttons)
             text = font.render("At least one of the", True, colors.WHITE)
             text1 = font.render("dimensions must be even.",True,colors.WHITE)
             text2 = font.render("The minimum dimension",True,colors.WHITE) 
@@ -402,11 +442,12 @@ def grid_not_allowed():
             window.blit(text3, ((window_width-text3.get_width())/2, (window_heigth-text3.get_height())/10*4))
             pygame.display.update()
             clock.tick(60)
-    button1.clear_buttons()
+    clear_buttons(buttons)
     # choose grid dimension obstacles haven't been selected
     input_box1 = InputBox(((window_width)/2 - 200)/2, window_heigth/10*6, 10, 52, "X")
     input_box2 = InputBox((((window_width)/2 - 200)/2)+window_width/2, window_heigth/10*6, 10, 52, "Y")
     button7 = Button('Done',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)
+    buttons.append(button7)
     
     # loop if obstacles haven't been selected
     while not Button.done and Button.OBSTACLES == "None":
@@ -421,7 +462,7 @@ def grid_not_allowed():
         window.fill('#000000')
         for box in InputBox.input_boxes:
             box.draw(window)
-        button7.buttons_draw()
+        buttons_draw(buttons)
         text = font2.render('Insert the grid', True, colors.WHITE)
         text1 = font2.render('dimensions in the',True,colors.WHITE)
         text2 = font2.render('rectangles',True, colors.WHITE)
@@ -435,9 +476,9 @@ def grid_not_allowed():
         pygame.display.flip()
         clock.tick(30)
     if Button.OBSTACLES == "None":
-        button7.pressed_buttons()
+        pressed_buttons(buttons)
     pygame.display.update()
-    button7.clear_buttons()
+    clear_buttons(buttons)
     input_box1.clear_input_boxes()
     if Button.player_info=="hamilton":
         if ((InputBox.X_BLOCKS % 2) != 0 and (InputBox.Y_BLOCKS % 2) != 0) or\
