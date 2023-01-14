@@ -1,6 +1,5 @@
 import numpy as np
 from src.bot_player import BotPlayer
-import src.gui as gui
 import src.colors as colors
 from src.config_parsing import read_config_file
 
@@ -15,8 +14,6 @@ class BotHamilton(BotPlayer):
         if len(self.snake.get_body()) < 3: #TODO: necessario? forse in repair?
             print('MINIMUM LENGTH SUPPORTED: 3')
             exit()
-        """if (grid.x_blocks % 2) != 0 and (grid.y_blocks % 2) != 0:
-            gui.grid_not_allowed()"""
 
     def parse_config(self, file):
         param = read_config_file(file)
@@ -33,16 +30,17 @@ class BotHamilton(BotPlayer):
             self.max_len_repair = 0
 
     def compute_next_move(self):
-        # restart from the same cycle at every game
-        if self.restart_game:
-            self.ham_cycle = self.grid.get_cycle(self.obstacles)
-            self.reset_restart_game()
-
         self.body = self.snake.get_body()
         self.head = self.body[-1]
         self.goal = self.food.position
         grid = self.get_current_grid(self.body[:-1])
         self.grid_area = self.grid.get_grid_free_area()
+
+        # restart from the same cycle at every game
+        if self.restart_game:
+            self.ham_cycle = self.grid.get_cycle(self.obstacles)
+            self.reset_restart_game()
+            self.get_travel_direction()
 
         # repair the Hamiltonian cycle to reach the food faster
         if self.min_len_repair * self.grid_area < len(self.body) and \
@@ -69,14 +67,14 @@ class BotHamilton(BotPlayer):
                     head_rel = (head_ham_pos - tail_ham_pos) % self.grid_area
                     next_rel = (next_ham_pos - tail_ham_pos) % self.grid_area
                     food_rel = (food_ham_pos - tail_ham_pos) % self.grid_area
-                    head_food_dist = food_rel - next_rel
+                    food_dist = food_rel - next_rel
                     if (
                         next_rel > head_rel and \
                         next_rel <= food_rel and \
-                        head_food_dist < min_dist
+                        food_dist < min_dist
                     ):
                         move = next
-                        min_dist = head_food_dist
+                        min_dist = food_dist
 
         next_move = self.snake.dir_to_cell(move)
         return next_move
@@ -203,3 +201,10 @@ class BotHamilton(BotPlayer):
         """Returns the informations needed to draw the path on the game grid."""
         sorted_list = sorted(self.ham_cycle.keys(), key=lambda k: self.ham_cycle[k])
         return ([sorted_list], [colors.WHITE], [True])
+
+    def get_travel_direction(self):
+        """Returns the Hamiltonian cycle with the optimal travel direction 
+        with respect to the initial position of the snake"""
+        if (self.ham_cycle[self.head] % self.grid_area) == self.ham_cycle[self.body[-2]] - 1:
+            for node in self.ham_cycle:
+                self.ham_cycle[node] = self.grid_area - 1 - self.ham_cycle[node]

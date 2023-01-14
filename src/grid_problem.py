@@ -1,5 +1,6 @@
-from src.aima_search import Problem, PriorityQueue, Node, manhattan_distance, heapq, memoize, astar_search
 import numpy as np
+from src.aima_search import Problem, PriorityQueue, Node, heapq
+from src.aima_search import manhattan_distance, memoize, astar_search
 
 class GridProblem(Problem):
     """This class represents the problem of finding a path on a 2D grid."""

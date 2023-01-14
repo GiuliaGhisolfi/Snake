@@ -1,7 +1,7 @@
 import pygame
 import sys
-import src.colors as colors
 import numpy as np
+import src.colors as colors
 
 FONT_PATH = './src/font.ttf'
 LOGFILE = './log.json'
@@ -19,23 +19,29 @@ font = pygame.font.Font(FONT_PATH, 50)
 font1 = pygame.font.Font(FONT_PATH, 80)
 font2 = pygame.font.Font(FONT_PATH, 60)
 clock = pygame.time.Clock()
-FONT = pygame.font.Font(FONT_PATH, 50)
 
-class Button:
-    """This class implements a button of the interface."""
-
+class Interface:
+     # class variables
     buttons = []
     choise_made = False
     done = False
     try_again = False
     start = False
     player_info = "None"
-    X_BLOCKS = 15 
-    Y_BLOCKS = 16
     FRAME_DELAY = 80 
     OBSTACLES = "to_be_setup"
     AUTOSTART = False
+    input_boxes = []
+    X_BLOCKS = 15 
+    Y_BLOCKS = 16
 
+class Button(Interface):
+    """This class implements a button of the interface."""
+
+    # TODO: questa classe è molto confusionaria
+    #       viene istanziata per ogni singolo bottone e ha gli attributi propri di un singolo bottone
+    #       ma allo stesso tempo accede a variabili "globali" e disegna/gestisce tutti i bottoni.
+    #       Bisognerebbe fare una classe button e una Interface che disegna/agisce su tutti i bottoni o comunque renderla più coerente...
     def __init__(self,text,width,height,pos,elevation):
         # core attributes 
         self.pressed = False
@@ -69,9 +75,8 @@ class Button:
         pygame.draw.rect(window,self.top_color, self.top_rect,border_radius = 12)
         window.blit(self.text_surf, self.text_rect)
 
-    # draw buttons & retrieve bot dictonary
+    # draw buttons
     def buttons_draw(self):
-        Button.player_info
         for b in Button.buttons:
             b.draw()
             b.check_click()
@@ -105,7 +110,6 @@ class Button:
                     Button.choise_made = 'human'
                     Button.FRAME_DELAY = 100
                 elif self.text == 'Watch an AI':
-                    #Button.player_info =  "None"
                     Button.choise_made = 'bot'
                 elif self.text == 'Greedy':
                     Button.player_info = "greedy"
@@ -145,22 +149,23 @@ class Button:
             self.top_color = colors.GREEN
             return 0
 
-class InputBox:
+class InputBox(Interface):
     """This class implements an input box of the interface."""
 
     def __init__(self, x, y, w, h, name,text=''):
         self.rect = pygame.Rect(x, y, w, h)
         self.color = colors.GREEN
         self.text = text
-        self.txt_surface = FONT.render(text, True, self.color)
+        self.txt_surface = font.render(text, True, self.color)
         self.active = False
         self.name = name
+        InputBox.input_boxes.append(self)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             # if the user clicked on the input_box rectangle
             if self.rect.collidepoint(event.pos):
-                # Toggle the active variable
+                # toggle the active variable
                 self.active = not self.active
             else:
                 self.active = False
@@ -168,27 +173,37 @@ class InputBox:
             self.color = colors.WHITE if self.active else colors.GREEN
         if event.type == pygame.KEYDOWN:
             if self.active:
+                if event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                    if len(self.text) > 0:
+                        if self.name == "X":
+                            InputBox.X_BLOCKS = int(self.text)
+                        elif self.name == "Y":
+                            InputBox.Y_BLOCKS = int(self.text)
+                        else: print("error: no such input box")
                 for value in [i for i in range(10)]:
                     if event.unicode == str(value):
                         self.text += event.unicode
                         if self.name == "X":
-                            Button.X_BLOCKS = int(self.text)
+                            InputBox.X_BLOCKS = int(self.text)
                         elif self.name == "Y":
-                            Button.Y_BLOCKS = int(self.text)
+                            InputBox.Y_BLOCKS = int(self.text)
                         else: print("error: no such input box")
-                if event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
                 # re-render the text
-                self.txt_surface = FONT.render(self.text, True, colors.WHITE) 
+                self.txt_surface = font.render(self.text, True, colors.WHITE) 
+   
+    # resize the box if the text is too long
     def update(self):
-        # resize the box if the text is too long
         width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
 
     def draw(self, screen):
-        """(self.rect.w-self.txt_surface.get_width())/2"""
         screen.blit(self.txt_surface, (self.rect.x+(self.rect.w-self.txt_surface.get_width())/2 , self.rect.y))
         pygame.draw.rect(screen, self.color, self.rect, 2)
+
+    # drop previously used buttons
+    def clear_input_boxes(self):
+        while len(InputBox.input_boxes) > 0: InputBox.input_boxes.pop(0)
 
 def snake_interface():
     """This function handles user input through the GUI."""
@@ -235,6 +250,7 @@ def snake_interface():
     # choose an obstacle configuration
     button3 = Button('Cross',300,70,(((window_width)/2 - 300)/2,(window_heigth)/10*4),5)
     button4 = Button('Blocks',300,70,((((window_width)/2 - 300)/2)+window_width/2,window_heigth/10*4),5)
+    # TODO: a che servono? Creo i bottoni per selezionare gli ostacoli 
     button5 = Button('Tunnel',300,70,(((window_width)/2 - 300)/2,window_heigth/10*6),5)
     button6 = Button('Spiral',300,70,((((window_width)/2 - 300)/2)+window_width/2,window_heigth/10*6),5)
     button7 = Button('None',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)
@@ -262,7 +278,6 @@ def snake_interface():
     # choose grid dimension if obstacles haven't been selected
     input_box1 = InputBox(((window_width)/2 - 200)/2, window_heigth/10*6, 10, 52, "X")
     input_box2 = InputBox((((window_width)/2 - 200)/2)+window_width/2, window_heigth/10*6, 10, 52, "Y")
-    input_boxes = [input_box1, input_box2]
     button7 = Button('Done',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)
 
     while not Button.done and Button.OBSTACLES == "None": # loop only if obstacles haven't been selected
@@ -270,12 +285,12 @@ def snake_interface():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            for box in input_boxes:
+            for box in InputBox.input_boxes:
                 box.handle_event(event)
-        for box in input_boxes:
+        for box in InputBox.input_boxes:
             box.update()
         window.fill('#000000')
-        for box in input_boxes:
+        for box in InputBox.input_boxes:
             box.draw(window)
         button7.buttons_draw()
         text = font2.render('Insert the grid', True, colors.WHITE)
@@ -294,12 +309,13 @@ def snake_interface():
         button7.pressed_buttons()
     pygame.display.update()
     button7.clear_buttons()
+    input_box1.clear_input_boxes()
     if Button.player_info=="hamilton":
-        if ((Button.X_BLOCKS % 2) != 0 and (Button.Y_BLOCKS % 2) != 0) or\
-            (Button.X_BLOCKS < 6 or Button.Y_BLOCKS < 6):
+        if ((InputBox.X_BLOCKS % 2) != 0 and (InputBox.Y_BLOCKS % 2) != 0) or\
+            (InputBox.X_BLOCKS < 6 or InputBox.Y_BLOCKS < 6):
                 grid_not_allowed()
     else:
-         if (Button.X_BLOCKS < 6 or Button.Y_BLOCKS < 6):
+         if (InputBox.X_BLOCKS < 6 or InputBox.Y_BLOCKS < 6):
                 grid_not_allowed()
 
     config = None
@@ -310,8 +326,8 @@ def snake_interface():
     #return game configuration
     game_config = {
         'grid_size': SIZE,
-        'grid_width': Button.X_BLOCKS,
-        'grid_height': Button.Y_BLOCKS,
+        'grid_width': InputBox.X_BLOCKS,
+        'grid_height': InputBox.Y_BLOCKS,
         'frame_delay': Button.FRAME_DELAY,
         'obstacles': Button.OBSTACLES,
         'autostart': Button.AUTOSTART,
@@ -390,7 +406,6 @@ def grid_not_allowed():
     # choose grid dimension obstacles haven't been selected
     input_box1 = InputBox(((window_width)/2 - 200)/2, window_heigth/10*6, 10, 52, "X")
     input_box2 = InputBox((((window_width)/2 - 200)/2)+window_width/2, window_heigth/10*6, 10, 52, "Y")
-    input_boxes = [input_box1, input_box2]
     button7 = Button('Done',300,70,(((window_width) - 300)/2,(window_heigth/5)*4),5)
     
     # loop if obstacles haven't been selected
@@ -399,12 +414,12 @@ def grid_not_allowed():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            for box in input_boxes:
+            for box in InputBox.input_boxes:
                 box.handle_event(event)
-        for box in input_boxes:
+        for box in InputBox.input_boxes:
             box.update()
         window.fill('#000000')
-        for box in input_boxes:
+        for box in InputBox.input_boxes:
             box.draw(window)
         button7.buttons_draw()
         text = font2.render('Insert the grid', True, colors.WHITE)
@@ -423,10 +438,11 @@ def grid_not_allowed():
         button7.pressed_buttons()
     pygame.display.update()
     button7.clear_buttons()
+    input_box1.clear_input_boxes()
     if Button.player_info=="hamilton":
-        if ((Button.X_BLOCKS % 2) != 0 and (Button.Y_BLOCKS % 2) != 0) or\
-            (Button.X_BLOCKS < 6 or Button.Y_BLOCKS < 6):
+        if ((InputBox.X_BLOCKS % 2) != 0 and (InputBox.Y_BLOCKS % 2) != 0) or\
+            (InputBox.X_BLOCKS < 6 or InputBox.Y_BLOCKS < 6):
                 grid_not_allowed()
     else:
-         if (Button.X_BLOCKS < 6 or Button.Y_BLOCKS < 6):
+         if (InputBox.X_BLOCKS < 6 or InputBox.Y_BLOCKS < 6):
                 grid_not_allowed()

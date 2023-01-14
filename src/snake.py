@@ -1,5 +1,5 @@
-from src.directions import Directions
 import copy
+from src.directions import Directions
 import src.colors as colors
 
 class Snake:
@@ -10,10 +10,8 @@ class Snake:
 
     def respawn(self):
         """Respawn the snake at its starting position."""
-        self.length = 3 # TODO: esplode mai così?
-        self.body = [(3, 0), # 0 / 2
-                        (3, 1), # 1 / 3
-                        (3, 2)] # 2 / 4
+        self.length = 3
+        self.body = [(0, 0), (0, 1), (0, 2)]
         self.direction = Directions.DOWN
     
     def coord_from_graph(self, grid):

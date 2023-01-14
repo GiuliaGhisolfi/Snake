@@ -1,11 +1,9 @@
 # Snake AI 🐍🤖
 Implementation of two snake AIs.
 
-Project implementation for Artificial Intelligence Fundamentals course, Master's Degree Course in Computer Science, Artificial Intelligence curriculum, University of Pisa.
-
-Accademic years 2022/2023
-
-Professor [Vincenzo Lomonaco](https://www.vincenzolomonaco.com/)
+This project has been developed for the “Artificial Intelligence Fundamentals” course at the University of Pisa.
+TODO: prima che lo abbia "revisionato" eviterei di linkare la sua pagina, anche se il sito è pubblico bisognerebbe chiedere il permesso...
+Professor Vincenzo Lomonaco
 ## How to install
 Clone the repository
 ```bash

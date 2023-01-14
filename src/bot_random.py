@@ -1,6 +1,6 @@
+import random
 from src.bot_player import BotPlayer
 from src.directions import Directions
-import random
 
 # TODO: eventualmente cancellare
 

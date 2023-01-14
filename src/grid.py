@@ -1,6 +1,6 @@
 import copy
-import src.gui as gui
 import pygame
+import src.gui as gui
 import src.obstacles_configs as obstacles_configs
 
 class Grid:
@@ -105,13 +105,13 @@ class Grid:
     def get_cycle(self, obstacles):
         if obstacles == "None": 
             self.current_config = 4
-        obc = ObstaclesConfig(self) # TODO: si può fare meglio?
+        obc = ObstaclesConfig(self) # TODO: si può fare meglio? sembra molto convoluto...
         return copy.deepcopy(obc.hamcycles[int(self.current_config)])
 
     def get_grid_free_area(self):
         return (self.x_blocks * self.y_blocks) - len(self.obstacles)
     
-    def update_grid_dimensions(self, x_blocks, y_blocks): # TODO: a cosa serve?
+    def update_grid_dimensions(self, x_blocks, y_blocks): # TODO: vedi TODO in game
         self.x_blocks = x_blocks
         self.y_blocks = y_blocks
         x_pixel = self.grid_size - (self.grid_size % self.x_blocks)
