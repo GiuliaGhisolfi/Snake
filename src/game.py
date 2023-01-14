@@ -33,7 +33,7 @@ def run_game(
     # create the window for the game
     if not test_mode:
         pygame.init()
-        gui.window = pygame.display.set_mode(grid.bounds)
+        gui.wdw = pygame.display.set_mode(grid.bounds)
         pygame.display.set_caption('Snake')
         grid.update_grid_dimensions(grid_width, grid_height) # TODO: perchè non viene creata subito giusta (grid_width e grid_height non cambiano da linea 31 giusto?)
 
@@ -78,11 +78,11 @@ def run_game(
             if has_eaten : 
                 food.respawn(snake, grid)
             if not test_mode:
-                gui.window.fill(colors.BLACK)
-                grid.draw_path(pygame, gui.window, player.get_path_to_draw())
-                snake.draw(pygame, gui.window, grid)
-                grid.draw_obstacles(pygame, gui.window)
-                food.draw(pygame, gui.window, grid)
+                gui.wdw.fill(colors.BLACK)
+                grid.draw_path(pygame, gui.wdw, player.get_path_to_draw())
+                snake.draw(pygame, gui.wdw, grid)
+                grid.draw_obstacles(pygame, gui.wdw)
+                food.draw(pygame, gui.wdw, grid)
                 pygame.display.update()
         else: # game ended
             if test_mode:
@@ -91,15 +91,15 @@ def run_game(
                 print('Execution %d/%d'%(executions, max_executions))
             if crashed: # has lost
                 text = gui.font1.render('GAME OVER', True, colors.PURPLE)
-                gui.window.blit(text, ((gui.window.get_size()[0]-text.get_width())/2,(gui.window.get_size()[1]-text.get_height())/2))
+                gui.wdw.blit(text, ((gui.wdw.get_size()[0]-text.get_width())/2,(gui.wdw.get_size()[1]-text.get_height())/2))
                 pygame.display.update()
                 pygame.time.delay(DEATH_DELAY)
             else: # has won
-                snake.draw(pygame, gui.window, grid)
-                grid.draw_obstacles(pygame, gui.window)
-                snake.draw(pygame, gui.window, grid)
+                snake.draw(pygame, gui.wdw, grid)
+                grid.draw_obstacles(pygame, gui.wdw)
+                snake.draw(pygame, gui.wdw, grid)
                 text = gui.font1.render('WIN', True, colors.PURPLE)
-                gui.window.blit(text, ((gui.window.get_size()[0]-text.get_width())/2, (gui.window.get_size()[1]-text.get_height())/2))
+                gui.wdw.blit(text, ((gui.wdw.get_size()[0]-text.get_width())/2, (gui.wdw.get_size()[1]-text.get_height())/2))
                 pygame.display.update()
                 pygame.time.delay(DEATH_DELAY)
             player.set_restart_game()

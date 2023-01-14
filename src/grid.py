@@ -121,7 +121,7 @@ class Grid:
         self.grid = copy.deepcopy(self.full_grid)
         pygame.display.quit()
         pygame.init()
-        gui.window = pygame.display.set_mode(self.bounds)
+        gui.wdw = pygame.display.set_mode(self.bounds)
 
 class Obstacle:
     def __init__(self, color, x, y):
