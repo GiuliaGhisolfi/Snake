@@ -3,7 +3,7 @@ Implementation of two snake AIs.
 
 This project has been developed for the “Artificial Intelligence Fundamentals” course at the University of Pisa.
 TODO: prima che lo abbia "revisionato" eviterei di linkare la sua pagina, anche se il sito è pubblico bisognerebbe chiedere il permesso...
-Professor [Vincenzo Lomonaco](https://www.vincenzolomonaco.com/)
+Professor Vincenzo Lomonaco
 ## How to install
 Clone the repository
 ```bash
