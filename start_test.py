@@ -61,8 +61,8 @@ ham_logs = [
 ]
 
 # test greedy bot
-
-"""print('------ Bot greedy ------')
+'''
+print('------ Bot greedy ------')
 for i, log_file in enumerate(greedy_logs):
     print('config = ' + str(i + 1))
     player_info = {'color': colors.GREEN, 'start_location': 'top-left'}
@@ -72,22 +72,23 @@ for i, log_file in enumerate(greedy_logs):
     game_config['bot_config'] = greedy_configs_fold + 'bot7.config'
     game_config['log_file'] = log_file
     game_config['test_mode'] = True
-    run_game(**game_config)"""
-
+    run_game(**game_config)
+'''
 # test hamilton bot
 
-"""print('------ Bot hamilton ------')
-for config_file, log_file in zip(hamilton_configs, ham_logs):
-    print('config = %s'%config_file)
-    player_info = {'color': colors.GREEN, 'start_location': 'top-left'}
-    player_info['type'] = 'hamilton'
-    game_config = get_game_config(hamilton_configs_fold+'game.config')
-    game_config['player_info'] = player_info
-    game_config['bot_config'] = config_file
+print('------ Bot hamilton ------')
+for i, log_file in enumerate(ham_logs):
+    print('config = ' + str(i + 1))
+    #player_info = {'color': colors.GREEN, 'start_location': 'top-left'}
+    #player_info['type'] = 'hamilton'
+    game_config = get_game_config(hamilton_configs_fold + 'game_' + str(i + 1) + '.config')
+    game_config['player_info'] = 'hamilton'
+    game_config['bot_config'] = hamilton_configs_fold +  'bot4.config'
     game_config['log_file'] = log_file
     game_config['test_mode'] = True
-    run_game(**game_config)"""
+    run_game(**game_config)
 
+'''
 print('------ Bot hamilton ------')
 for i, log_file in enumerate(ham_logs):
     print('config = ' + str(i + 1))
@@ -98,4 +99,4 @@ for i, log_file in enumerate(ham_logs):
     start_params['bot_config'] = hamilton_configs_fold +  'bot4.config'
     start_params['log_file'] = log_file
     start_params['test_mode'] = True
-    run_game(**start_params)
+    run_game(**start_params)'''
