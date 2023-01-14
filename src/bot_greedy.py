@@ -1,3 +1,4 @@
+import copy
 from src.aima_search import random
 from src.grid_problem import astar_search_min_turns, astar_search_saving_spaces, longest_path
 from src.grid_problem import GridProblem
@@ -30,6 +31,7 @@ class BotGreedy(BotPlayer):
         if len(self.snake.get_body()) < 3: # TODO: è un'assunzione necessaria?
             print('MINIMUM SUPPORTED LENGHT: 3')
             exit()
+        self.move = None
         self.default_path = []      # a long enough cycle to contain the snake's 
                                     # body but which not necessarily contains 
                                     # the food
@@ -180,8 +182,8 @@ class BotGreedy(BotPlayer):
 
         # follow the safe path to the food if it has already been computed
         if len(self.safe_path_to_food) > 0:
-            move = self.safe_path_to_food.pop(0)
-            dir = self.snake.dir_to_cell(move)
+            self.move = self.safe_path_to_food.pop(0)
+            dir = self.snake.dir_to_cell(self.move)
             return dir
 
         # compute the path to the food
@@ -197,9 +199,9 @@ class BotGreedy(BotPlayer):
             # in loop, follow the path to the food (and die)
             if self.no_improvement_counter > self.max_no_improvement:
                 self.safe_path_to_food = path_to_food
-                move = self.safe_path_to_food.pop(0)
+                self.move = self.safe_path_to_food.pop(0)
                 self.no_improvement_counter = 0
-                return self.snake.dir_to_cell(move)
+                return self.snake.dir_to_cell(self.move)
             # check if there is a safe cycle before following the path to the food
             if self.safe_cycle == 1:
                 current_grid = self.get_current_grid(future_body[1:-1])
@@ -212,38 +214,39 @@ class BotGreedy(BotPlayer):
                     self.default_path = path_future_head_tail + future_body[1:]
                     self.next_opt_node = self.default_path[1]
                     self.safe_path_to_food = path_to_food
-                    move = self.safe_path_to_food.pop(0)
+                    self.move = self.safe_path_to_food.pop(0)
                     self.no_improvement_counter = 0
-                    return self.snake.dir_to_cell(move)
+                    return self.snake.dir_to_cell(self.move)
             else: # follow the path to the food
                 self.safe_path_to_food = path_to_food
-                move = self.safe_path_to_food.pop(0)
+                self.move = self.safe_path_to_food.pop(0)
                 self.no_improvement_counter = 0
-                return self.snake.dir_to_cell(move)
+                return self.snake.dir_to_cell(self.move)
 
         # a safe path does not exist
         if self.safe_cycle == 1: # try to optimize the path to the food
             self.no_improvement_counter += 1
             self.optimize_default_path()
-            move = self.default_path.pop(0)
-            self.default_path.append(move)
-            return self.snake.dir_to_cell(move)
+            self.move = self.default_path.pop(0)
+            self.default_path.append(self.move)
+            return self.snake.dir_to_cell(self.move)
         else: # choose a random move
             possible_moves = self.grid.grid[self.snake.body[-1]]
             for node in self.snake.body:
                 try: possible_moves.remove(node)
                 except: pass
             if len(possible_moves) > 0:
-                move = possible_moves[random.randrange(len(possible_moves))]
-                return self.snake.dir_to_cell(move)
+                self.move = possible_moves[random.randrange(len(possible_moves))]
+                return self.snake.dir_to_cell(self.move)
             else:
                 return Directions.random_direction()
 
     def get_path_to_draw(self):
         """Returns the informations needed to draw the path on the game grid."""
+        path_to_food = copy.deepcopy(self.safe_path_to_food)
+        path_to_food.insert(0, self.move) # TODO: così disegna di FUXIA anche la prima mossa, ok?
         return (
-            [self.default_path, self.safe_path_to_food],
+            [self.default_path, path_to_food],
             [colors.WHITE, colors.FUXIA],
-            [True, False] # TODO: in certi momenti se fermassimo la schermata i path disegnati non partono dalla testa del serpente, c'è un modo di risolvere?
-                          # e poi il path fuxia non è il path verso il cibo (è una parte del vero path verso il cibo)
+            [True, False]
             )
