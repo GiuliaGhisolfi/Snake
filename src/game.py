@@ -35,7 +35,6 @@ def run_game(
         pygame.init()
         gui.wdw = pygame.display.set_mode(grid.bounds)
         pygame.display.set_caption('Snake')
-        grid.update_grid_dimensions(grid_width, grid_height) # TODO: perchè non viene creata subito giusta (grid_width e grid_height non cambiano da linea 31 giusto?)
 
     # create snake, obstacles and food
     snake = Snake(color=colors.GREEN)
