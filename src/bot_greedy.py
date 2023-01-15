@@ -115,7 +115,8 @@ class BotGreedy(BotPlayer):
 
         # optimization is performed if the next node to optimize is the snake's head
         current_graph = self.grid.grid
-        if is_optimizable(self.snake.get_body()[-1], current_graph):
+        #if is_optimizable(self.snake.get_body()[-1], current_graph):
+        if is_optimizable(self.next_opt_node, current_graph): # TODO: così è come sopra giusto? è un check di sicurezza, no?
             # find the closest chokepoint
             chokepoint = None
             for node in self.default_path[:-1]:
@@ -128,9 +129,7 @@ class BotGreedy(BotPlayer):
             if chokepoint != None:
                 choke_ind = self.default_path.index(chokepoint)
                 # try to extend the default path as much as possible
-                ctr=0
                 for node_ind in reversed(range(choke_ind + 1)):
-                    ctr+=1
                     node = self.default_path[node_ind]
                     # delete from the graph the nodes which follow 'node' in the default path
                     nodes_to_del = []
@@ -148,14 +147,6 @@ class BotGreedy(BotPlayer):
                         self.default_path = patch + self.default_path[node_ind + 1:]
                         self.next_opt_node = self.default_path[node_ind + 1]
                         return
-                if ctr > 1:
-                    print("!!!!!!!!!!!") # in alcuni strani casi potrebbe servire
-    
-        # TODO: arriva qui se la testa non può essere ottimizzata
-        # oppure se può esserlo ma non sono stati trovati chokepoint e la coda non è ottimizzabile
-        # oppure se un chopkepoint è stato trovato ma non è stato possibile estendere il default path
-        # ma ha senso????
-        # si, no?
 
         # compute the next optimizable node
         # (it will be optimized when the snake reaches it)
@@ -220,7 +211,7 @@ class BotGreedy(BotPlayer):
                 return self.snake.dir_to_cell(self.move)
 
         # a safe path does not exist
-        if self.safe_cycle == 1: # try to optimize the path to the food
+        if self.safe_cycle == 1: # try to optimize the default path
             self.no_improvement_counter += 1
             self.optimize_default_path()
             self.move = self.default_path.pop(0)
@@ -240,10 +231,9 @@ class BotGreedy(BotPlayer):
     def get_path_to_draw(self):
         """Returns the informations needed to draw the path on the game grid."""
         path_to_food = copy.deepcopy(self.safe_path_to_food)
-        path_to_food.insert(0, self.move) # TODO: così disegna di FUXIA anche la prima mossa, ok?
+        path_to_food.insert(0, self.move)
         return (
             [self.default_path, path_to_food],
             [colors.WHITE, colors.FUXIA],
-            [True, False] # TODO: in certi momenti se fermassimo la schermata i path disegnati non partono dalla testa del serpente, c'è un modo di risolvere?
-                          # e poi il path fuxia non è il path verso il cibo (è una parte del vero path verso il cibo)
+            [True, False]
             )
