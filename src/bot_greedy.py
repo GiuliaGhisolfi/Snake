@@ -27,9 +27,7 @@ class BotGreedy(BotPlayer):
         self.debug = debug
         self.no_improvement_counter = 0
         self.max_no_improvement = self.grid.x_blocks * self.grid.y_blocks * self.LOOP_GENEROSITY
-        if len(self.snake.get_body()) < 3: # TODO: è un'assunzione necessaria?
-            print('MINIMUM SUPPORTED LENGHT: 3')
-            exit()
+
         self.default_path = []      # a long enough cycle to contain the snake's 
                                     # body but which not necessarily contains 
                                     # the food
@@ -91,7 +89,8 @@ class BotGreedy(BotPlayer):
 
     def optimize_default_path(self):
         """Tries to optimize the default path (extending it)."""
-        if self.chosen_optimization == 0:
+         # optimization is performed if the next node to optimize is the snake's head
+        if self.chosen_optimization == 0 or self.next_opt_node != self.snake.get_body()[-1]:
             return
 
         def get_n_neighbors(node, graph):
@@ -114,9 +113,6 @@ class BotGreedy(BotPlayer):
             return get_n_neighbors(node, graph) == 0
 
         # optimization is performed if the next node to optimize is the snake's head
-        if self.next_opt_node != self.snake.get_body()[-1]: # TODO: che differenza c'è con riga 120? (era scritto diverso ma dovrebbe essere equivalente a come è adesso)
-            return
-        
         current_graph = self.grid.grid
         if is_optimizable(self.snake.get_body()[-1], current_graph):
             # find the closest chokepoint
@@ -124,14 +120,14 @@ class BotGreedy(BotPlayer):
             for node in self.default_path[:-1]:
                 if is_chokepoint(node, current_graph):
                     chokepoint = node
-                    break # TODO: qui ho cambiato il codice per renderlo più leggible, è equivalente a prima giusto?
+                    break
             if chokepoint == None and is_optimizable(self.snake.body[0], current_graph):
                 chokepoint = self.snake.body[0]
 
             if chokepoint != None:
                 choke_ind = self.default_path.index(chokepoint)
                 # try to extend the default path as much as possible
-                ctr=0 # TODO: messo per capire se fa più di una iterazione, sappiamo di casi in cui avviene?
+                ctr=0
                 for node_ind in reversed(range(choke_ind + 1)):
                     ctr+=1
                     node = self.default_path[node_ind]
@@ -152,12 +148,13 @@ class BotGreedy(BotPlayer):
                         self.next_opt_node = self.default_path[node_ind + 1]
                         return
                 if ctr > 1:
-                    print("!!!!!!!!!!!")
+                    print("!!!!!!!!!!!") # in alcuni strani casi potrebbe servire
     
         # TODO: arriva qui se la testa non può essere ottimizzata
         # oppure se può esserlo ma non sono stati trovati chokepoint e la coda non è ottimizzabile
         # oppure se un chopkepoint è stato trovato ma non è stato possibile estendere il default path
         # ma ha senso????
+        # si, no?
 
         # compute the next optimizable node
         # (it will be optimized when the snake reaches it)
@@ -246,4 +243,6 @@ class BotGreedy(BotPlayer):
             [colors.WHITE, colors.FUXIA],
             [True, False] # TODO: in certi momenti se fermassimo la schermata i path disegnati non partono dalla testa del serpente, c'è un modo di risolvere?
                           # e poi il path fuxia non è il path verso il cibo (è una parte del vero path verso il cibo)
+
+                          # non ho capito
             )
