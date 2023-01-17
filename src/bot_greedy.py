@@ -1,3 +1,4 @@
+import copy
 from src.aima_search import random
 from src.grid_problem import astar_search_min_turns, astar_search_saving_spaces, longest_path
 from src.grid_problem import GridProblem
@@ -27,9 +28,7 @@ class BotGreedy(BotPlayer):
         self.debug = debug
         self.no_improvement_counter = 0
         self.max_no_improvement = self.grid.x_blocks * self.grid.y_blocks * self.LOOP_GENEROSITY
-        if len(self.snake.get_body()) < 3: # TODO: è un'assunzione necessaria?
-            print('MINIMUM SUPPORTED LENGHT: 3')
-            exit()
+
         self.default_path = []      # a long enough cycle to contain the snake's 
                                     # body but which not necessarily contains 
                                     # the food
@@ -91,7 +90,8 @@ class BotGreedy(BotPlayer):
 
     def optimize_default_path(self):
         """Tries to optimize the default path (extending it)."""
-        if self.chosen_optimization == 0:
+         # optimization is performed if the next node to optimize is the snake's head
+        if self.chosen_optimization == 0 or self.next_opt_node != self.snake.get_body()[-1]:
             return
 
         def get_n_neighbors(node, graph):
@@ -114,26 +114,22 @@ class BotGreedy(BotPlayer):
             return get_n_neighbors(node, graph) == 0
 
         # optimization is performed if the next node to optimize is the snake's head
-        if self.next_opt_node != self.snake.get_body()[-1]: # TODO: che differenza c'è con riga 120? (era scritto diverso ma dovrebbe essere equivalente a come è adesso)
-            return
-        
         current_graph = self.grid.grid
-        if is_optimizable(self.snake.get_body()[-1], current_graph):
+        #if is_optimizable(self.snake.get_body()[-1], current_graph):
+        if is_optimizable(self.next_opt_node, current_graph): # TODO: così è come sopra giusto? è un check di sicurezza, no?
             # find the closest chokepoint
             chokepoint = None
             for node in self.default_path[:-1]:
                 if is_chokepoint(node, current_graph):
                     chokepoint = node
-                    break # TODO: qui ho cambiato il codice per renderlo più leggible, è equivalente a prima giusto?
+                    break
             if chokepoint == None and is_optimizable(self.snake.body[0], current_graph):
                 chokepoint = self.snake.body[0]
 
             if chokepoint != None:
                 choke_ind = self.default_path.index(chokepoint)
                 # try to extend the default path as much as possible
-                ctr=0 # TODO: messo per capire se fa più di una iterazione, sappiamo di casi in cui avviene?
                 for node_ind in reversed(range(choke_ind + 1)):
-                    ctr+=1
                     node = self.default_path[node_ind]
                     # delete from the graph the nodes which follow 'node' in the default path
                     nodes_to_del = []
@@ -151,13 +147,6 @@ class BotGreedy(BotPlayer):
                         self.default_path = patch + self.default_path[node_ind + 1:]
                         self.next_opt_node = self.default_path[node_ind + 1]
                         return
-                if ctr > 1:
-                    print("!!!!!!!!!!!")
-    
-        # TODO: arriva qui se la testa non può essere ottimizzata
-        # oppure se può esserlo ma non sono stati trovati chokepoint e la coda non è ottimizzabile
-        # oppure se un chopkepoint è stato trovato ma non è stato possibile estendere il default path
-        # ma ha senso????
 
         # compute the next optimizable node
         # (it will be optimized when the snake reaches it)
@@ -180,8 +169,8 @@ class BotGreedy(BotPlayer):
 
         # follow the safe path to the food if it has already been computed
         if len(self.safe_path_to_food) > 0:
-            move = self.safe_path_to_food.pop(0)
-            dir = self.snake.dir_to_cell(move)
+            self.move = self.safe_path_to_food.pop(0)
+            dir = self.snake.dir_to_cell(self.move)
             return dir
 
         # compute the path to the food
@@ -197,9 +186,9 @@ class BotGreedy(BotPlayer):
             # in loop, follow the path to the food (and die)
             if self.no_improvement_counter > self.max_no_improvement:
                 self.safe_path_to_food = path_to_food
-                move = self.safe_path_to_food.pop(0)
+                self.move = self.safe_path_to_food.pop(0)
                 self.no_improvement_counter = 0
-                return self.snake.dir_to_cell(move)
+                return self.snake.dir_to_cell(self.move)
             # check if there is a safe cycle before following the path to the food
             if self.safe_cycle == 1:
                 current_grid = self.get_current_grid(future_body[1:-1])
@@ -212,38 +201,39 @@ class BotGreedy(BotPlayer):
                     self.default_path = path_future_head_tail + future_body[1:]
                     self.next_opt_node = self.default_path[1]
                     self.safe_path_to_food = path_to_food
-                    move = self.safe_path_to_food.pop(0)
+                    self.move = self.safe_path_to_food.pop(0)
                     self.no_improvement_counter = 0
-                    return self.snake.dir_to_cell(move)
+                    return self.snake.dir_to_cell(self.move)
             else: # follow the path to the food
                 self.safe_path_to_food = path_to_food
-                move = self.safe_path_to_food.pop(0)
+                self.move = self.safe_path_to_food.pop(0)
                 self.no_improvement_counter = 0
-                return self.snake.dir_to_cell(move)
+                return self.snake.dir_to_cell(self.move)
 
         # a safe path does not exist
-        if self.safe_cycle == 1: # try to optimize the path to the food
+        if self.safe_cycle == 1: # try to optimize the default path
             self.no_improvement_counter += 1
             self.optimize_default_path()
-            move = self.default_path.pop(0)
-            self.default_path.append(move)
-            return self.snake.dir_to_cell(move)
+            self.move = self.default_path.pop(0)
+            self.default_path.append(self.move)
+            return self.snake.dir_to_cell(self.move)
         else: # choose a random move
             possible_moves = self.grid.grid[self.snake.body[-1]]
             for node in self.snake.body:
                 try: possible_moves.remove(node)
                 except: pass
             if len(possible_moves) > 0:
-                move = possible_moves[random.randrange(len(possible_moves))]
-                return self.snake.dir_to_cell(move)
+                self.move = possible_moves[random.randrange(len(possible_moves))]
+                return self.snake.dir_to_cell(self.move)
             else:
                 return Directions.random_direction()
 
     def get_path_to_draw(self):
         """Returns the informations needed to draw the path on the game grid."""
+        path_to_food = copy.deepcopy(self.safe_path_to_food)
+        path_to_food.insert(0, self.move)
         return (
-            [self.default_path, self.safe_path_to_food],
+            [self.default_path, path_to_food],
             [colors.WHITE, colors.FUXIA],
-            [True, False] # TODO: in certi momenti se fermassimo la schermata i path disegnati non partono dalla testa del serpente, c'è un modo di risolvere?
-                          # e poi il path fuxia non è il path verso il cibo (è una parte del vero path verso il cibo)
+            [True, False]
             )

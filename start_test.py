@@ -34,7 +34,6 @@ hamilton_logs = [
 ]
 
 # test greedy bot
-
 print('------ Bot greedy ------')
 for i in range(len(greedy_logs)):
     print('test ' + str(i + 1))

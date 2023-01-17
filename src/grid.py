@@ -105,23 +105,11 @@ class Grid:
     def get_cycle(self, obstacles):
         if obstacles == "None": 
             self.current_config = 4
-        obc = ObstaclesConfig(self) # TODO: si può fare meglio? sembra molto convoluto...
+        obc = ObstaclesConfig(self)
         return copy.deepcopy(obc.hamcycles[int(self.current_config)])
 
     def get_grid_free_area(self):
         return (self.x_blocks * self.y_blocks) - len(self.obstacles)
-    
-    def update_grid_dimensions(self, x_blocks, y_blocks): # TODO: vedi TODO in game
-        self.x_blocks = x_blocks
-        self.y_blocks = y_blocks
-        x_pixel = self.grid_size - (self.grid_size % self.x_blocks)
-        self.bounds = (x_pixel, x_pixel * self.y_blocks / self.x_blocks)
-        self.block_size = x_pixel / self.x_blocks
-        self.full_grid = self.build_grid()
-        self.grid = copy.deepcopy(self.full_grid)
-        pygame.display.quit()
-        pygame.init()
-        gui.window = pygame.display.set_mode(self.bounds)
 
 class Obstacle:
     def __init__(self, color, x, y):
