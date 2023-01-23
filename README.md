@@ -1,5 +1,8 @@
 # Snake AI 🐍🤖
 Implementation of two snake AIs.
+
+This project has been developed for the “Artificial Intelligence Fundamentals” course at the University of Pisa.
+
 ## How to install
 Clone the repository
 ```bash
@@ -11,18 +14,20 @@ cd Snake
 ```
 Install the requirements
 ```bash
-python3 -m pip install --r requirements.txt
+python3 -m pip install --requirement requirements.txt
 ```
 ## How to run
 Execute the following instruction ...
 ```bash
-python3 main.py
+python3 start_game.py
 ```
 ... then choose the settings you prefer through the GUI.
 ## Demo
 | Greedy Strategy | Hamilton Strategy |
 | --------------- | ----------------- |
-|<img width="244" alt="hamilton" src="https://user-images.githubusercontent.com/46034276/211070988-fa47410c-d2b9-455f-a16f-e0f3f8c8e387.png">|<img width="250" alt="greedy" src="https://user-images.githubusercontent.com/46034276/211070827-66e5b15d-9ed3-4ff0-b8b0-3e1c268e6b85.png">|
+|<img width="250" alt="greedy" src="https://user-images.githubusercontent.com/46034276/212500513-83cbe4d9-3121-4adb-bbdb-e067e5ac65cd.gif"> | <img width="250" alt="hamilton" src="https://user-images.githubusercontent.com/46034276/212500526-ac935869-0c76-4e70-8d53-d8144b2ccee3.gif">|
+|The white line represents the safe path, <br />the magenta line represents the path to the food.| The white line represents the Hamiltonian cycle.|
+
 
 ## Strategies comparison (?)
 Some plots.
