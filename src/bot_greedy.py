@@ -115,8 +115,7 @@ class BotGreedy(BotPlayer):
 
         # optimization is performed if the next node to optimize is the snake's head
         current_graph = self.grid.grid
-        #if is_optimizable(self.snake.get_body()[-1], current_graph):
-        if is_optimizable(self.next_opt_node, current_graph): # TODO: così è come sopra giusto? è un check di sicurezza, no?
+        if is_optimizable(self.next_opt_node, current_graph):
             # find the closest chokepoint
             chokepoint = None
             for node in self.default_path[:-1]:

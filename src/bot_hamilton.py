@@ -11,8 +11,8 @@ class BotHamilton(BotPlayer):
     def __init__(self, grid, snake, food, config_path, log_path, obstacles, test_mode):
         super().__init__(grid, snake, food, config_path, log_path, test_mode)
         self.obstacles = obstacles
-        if len(self.snake.get_body()) < 3: #TODO: necessario? forse in repair?
-            print('MINIMUM LENGTH SUPPORTED: 3')
+        if len(self.snake.get_body()) < 3:
+            print('The minimum supported snake length is 3')
             exit()
 
     def parse_config(self, file):

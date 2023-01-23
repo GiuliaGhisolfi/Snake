@@ -2,8 +2,6 @@ import random
 from src.bot_player import BotPlayer
 from src.directions import Directions
 
-# TODO: eventualmente cancellare
-
 class BotRandom(BotPlayer):
     """This class implements a bot which chooses to move randomly in one of the 
     free cells adjacent to its head (if any exist)."""
