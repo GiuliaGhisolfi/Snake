@@ -32,6 +32,7 @@ def run_game(
 
     # create the window for the game
     if not test_mode:
+        pygame.display.quit()
         pygame.init()
         gui.wdw = pygame.display.set_mode(grid.bounds)
         pygame.display.set_caption('Snake')
